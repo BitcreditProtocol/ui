@@ -1,5 +1,3 @@
-/// <reference types="vitest/config" />
-
 // https://vite.dev/config/
 import path from "node:path";
 import { fileURLToPath } from "node:url";
