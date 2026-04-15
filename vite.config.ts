@@ -15,6 +15,9 @@ const dirname = typeof __dirname !== "undefined" ? __dirname : path.dirname(file
 export default defineConfig({
   plugins: [react()],
   test: {
+    coverage: {
+      reporter: ["text", "lcov", "clover", "json"],
+    },
     projects: [
       {
         extends: true,

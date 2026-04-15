@@ -50,6 +50,7 @@ jobs:
         run: npm run test -- --coverage
 
       - name: Upload coverage to Codecov
+        if: ${{ secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -57,3 +58,7 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
+
+      - name: Skip Codecov upload
+        if: ${{ secrets.CODECOV_TOKEN == '' }}
+        run: echo "Skipping Codecov upload because CODECOV_TOKEN is not configured."
