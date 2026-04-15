@@ -18,6 +18,7 @@ interface ProfileFormValues {
 }
 
 export const Default: Story = {
+  args: {} as never,
   render: () => {
     const form = useForm<ProfileFormValues>({
       defaultValues: {
