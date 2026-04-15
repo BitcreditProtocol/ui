@@ -8,10 +8,12 @@
     "build": "tsc -b && vite build",
     "format": "biome format --write .",
     "check:format": "biome check .",
+    "style:check": "npm run check:format",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "test": "vitest run"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.11",
