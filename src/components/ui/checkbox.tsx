@@ -1,8 +1,9 @@
+import * as React from "react";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Check, Minus } from "lucide-react";
-import * as React from "react";
 
+import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
 const checkboxVariants = cva(
@@ -27,12 +28,12 @@ export interface CheckboxProps
   indeterminate?: boolean;
 }
 
-const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root>, CheckboxProps>(
-  ({ className, size, checked, indeterminate, disabled, ...props }, ref) => (
+const Checkbox = React.forwardRef<React.ComponentRef<typeof CheckboxPrimitive.Root>, CheckboxProps>(
+  ({ className, size, checked: isChecked, indeterminate: isIndeterminate, disabled: isDisabled, ...props }, ref) => (
     <CheckboxPrimitive.Root
       ref={ref}
-      checked={checked}
-      disabled={disabled}
+      checked={isChecked}
+      disabled={isDisabled}
       className={cn(
         checkboxVariants({ size, className }),
         "bg-elevation-200 border-divider-75",
@@ -45,8 +46,8 @@ const Checkbox = React.forwardRef<React.ElementRef<typeof CheckboxPrimitive.Root
       )}
       {...props}
     >
-      <CheckboxPrimitive.Indicator className={cn("flex items-center justify-center", disabled ? "text-white" : "text-brand-200")}>
-        {indeterminate ? <Minus /> : <Check />}
+      <CheckboxPrimitive.Indicator className={cn("flex items-center justify-center", isDisabled ? "text-white" : "text-brand-200")}>
+        {isIndeterminate ? <AppIcon icon={Minus} /> : <AppIcon icon={Check} />}
       </CheckboxPrimitive.Indicator>
     </CheckboxPrimitive.Root>
   )

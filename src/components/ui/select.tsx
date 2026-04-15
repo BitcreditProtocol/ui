@@ -1,6 +1,8 @@
+import * as React from "react";
 import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp, XIcon } from "lucide-react";
-import * as React from "react";
+
+import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
 interface SelectProps {
@@ -11,10 +13,17 @@ interface SelectProps {
   required?: boolean;
 }
 
-function Select({ children, value, onValueChange, clearable, required }: SelectProps) {
+const Select: React.FC<SelectProps> = ({ children, value, onValueChange, clearable: isClearable, required: isRequired }) => {
   const hasValue = React.useMemo(() => !!value, [value]);
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
+
+  const blurActiveElement = () => {
+    const active = document.activeElement;
+    if (active instanceof HTMLElement) {
+      active.blur();
+    }
+  };
 
   const handleValueChange = (value: string) => {
     if (onValueChange) onValueChange(value);
@@ -28,14 +37,24 @@ function Select({ children, value, onValueChange, clearable, required }: SelectP
 
   return (
     <div className="relative">
-      <SelectPrimitive.Root onValueChange={handleValueChange} onOpenChange={setIsOpen} value={value}>
+      <SelectPrimitive.Root
+        onValueChange={handleValueChange}
+        onOpenChange={(isOpenState) => {
+          setIsOpen(isOpenState);
+          if (!isOpenState) {
+            window.requestAnimationFrame(blurActiveElement);
+            window.setTimeout(blurActiveElement, 0);
+          }
+        }}
+        value={value}
+      >
         {React.Children.map(children, (child) => {
           if (React.isValidElement(child) && child.type === SelectTrigger) {
             return React.cloneElement(child as React.ReactElement<SelectTriggerProps>, {
               hasValue,
               setTriggerWidth,
               isOpen,
-              required,
+              required: isRequired,
             });
           }
           if (React.isValidElement(child) && child.type === SelectContent) {
@@ -47,14 +66,18 @@ function Select({ children, value, onValueChange, clearable, required }: SelectP
         })}
       </SelectPrimitive.Root>
 
-      {clearable && hasValue && (
-        <button className="absolute top-1/2 right-12 -translate-y-1/2 z-[5px] bg-transparent!" onClick={handleClear}>
-          <XIcon className="text-text-300 h-4 w-4 stroke-1" />
+      {isClearable && hasValue && (
+        <button
+          aria-label="Clear selection"
+          className="absolute top-1/2 right-12 -translate-y-1/2 z-[5px] bg-transparent!"
+          onClick={handleClear}
+        >
+          <AppIcon icon={XIcon} className="text-text-300" />
         </button>
       )}
     </div>
   );
-}
+};
 
 interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof SelectPrimitive.Trigger> {
   label: string;
@@ -65,15 +88,25 @@ interface SelectTriggerProps extends React.ComponentPropsWithoutRef<typeof Selec
   required?: boolean;
 }
 
-const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Trigger>, SelectTriggerProps>(
-  ({ id, className, label, hasValue, setTriggerWidth, isOpen, icon, required, ...props }, ref) => {
+const SelectTrigger = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Trigger>, SelectTriggerProps>(
+  ({ id, className, label, hasValue, setTriggerWidth, isOpen, icon, required: isRequired, ...props }, ref) => {
     const triggerRef = React.useRef<HTMLButtonElement>(null);
+    const wasOpenRef = React.useRef(false);
 
     React.useEffect(() => {
       if (triggerRef.current && setTriggerWidth) {
         setTriggerWidth(triggerRef.current.offsetWidth);
       }
     }, [setTriggerWidth]);
+
+    React.useEffect(() => {
+      if (wasOpenRef.current && !isOpen) {
+        window.requestAnimationFrame(() => {
+          triggerRef.current?.blur();
+        });
+      }
+      wasOpenRef.current = Boolean(isOpen);
+    }, [isOpen]);
 
     return (
       <div className="relative">
@@ -102,7 +135,7 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
               )}
             >
               {label}
-              {required && (
+              {isRequired && (
                 <span className={cn("ml-0", hasValue ? "text-text-200" : "text-signal-error")} aria-hidden="true">
                   *
                 </span>
@@ -114,7 +147,11 @@ const SelectTrigger = React.forwardRef<React.ElementRef<typeof SelectPrimitive.T
           </div>
           <div className="flex items-center justify-center h-full">
             <SelectPrimitive.Icon asChild>
-              {isOpen ? <ChevronUp className="text-text-300 w-6 stroke-1" /> : <ChevronDown className="text-text-300 w-6 stroke-1" />}
+              {isOpen ? (
+                <AppIcon icon={ChevronUp} className="text-text-300 w-6" />
+              ) : (
+                <AppIcon icon={ChevronDown} className="text-text-300 w-6" />
+              )}
             </SelectPrimitive.Icon>
           </div>
         </SelectPrimitive.Trigger>
@@ -128,7 +165,7 @@ interface SelectContentProps extends React.ComponentPropsWithoutRef<typeof Selec
   triggerWidth?: number | null;
 }
 
-const SelectContent = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Content>, SelectContentProps>(
+const SelectContent = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Content>, SelectContentProps>(
   ({ className, children, triggerWidth, position = "popper", ...props }, ref) => (
     <SelectPrimitive.Portal>
       <SelectPrimitive.Content
@@ -156,14 +193,14 @@ const SelectValue = SelectPrimitive.Value;
 
 type SelectLabelProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Label>;
 
-const SelectLabel = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Label>, SelectLabelProps>(({ className, ...props }, ref) => (
+const SelectLabel = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Label>, SelectLabelProps>(({ className, ...props }, ref) => (
   <SelectPrimitive.Label ref={ref} className={cn("py-1.5 pl-8 pr-2 text-sm font-semibold", className)} {...props} />
 ));
 SelectLabel.displayName = SelectPrimitive.Label.displayName;
 
 type SelectItemProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Item>;
 
-const SelectItem = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Item>, SelectItemProps>(
+const SelectItem = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Item>, SelectItemProps>(
   ({ className, children, ...props }, ref) => (
     <SelectPrimitive.Item
       ref={ref}
@@ -178,7 +215,7 @@ const SelectItem = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Item
       <SelectPrimitive.ItemText>{children}</SelectPrimitive.ItemText>
       <span className="absolute right-2 flex items-center justify-center">
         <SelectPrimitive.ItemIndicator>
-          <Check className="h-4 w-4 text-[#006F29]" />
+          <AppIcon icon={Check} className="text-[#006F29]" />
         </SelectPrimitive.ItemIndicator>
       </span>
     </SelectPrimitive.Item>
@@ -188,7 +225,7 @@ SelectItem.displayName = SelectPrimitive.Item.displayName;
 
 type SelectSeparatorProps = React.ComponentPropsWithoutRef<typeof SelectPrimitive.Separator>;
 
-const SelectSeparator = React.forwardRef<React.ElementRef<typeof SelectPrimitive.Separator>, SelectSeparatorProps>(
+const SelectSeparator = React.forwardRef<React.ComponentRef<typeof SelectPrimitive.Separator>, SelectSeparatorProps>(
   ({ className, ...props }, ref) => <SelectPrimitive.Separator ref={ref} className={cn("-mx-1 my-1 h-px bg-muted", className)} {...props} />
 );
 SelectSeparator.displayName = SelectPrimitive.Separator.displayName;
