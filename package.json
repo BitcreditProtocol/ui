@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "format": "biome format --write .",
+    "check:format": "biome check .",
     "lint": "eslint .",
     "preview": "vite preview",
     "storybook": "storybook dev -p 6006",
@@ -37,6 +39,7 @@
     "vaul": "^1.1.2"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
     "@chromatic-com/storybook": "^5.1.2",
     "@eslint/js": "^10.0.1",
     "@storybook/addon-a11y": "^10.3.5",
