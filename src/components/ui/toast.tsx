@@ -11,7 +11,7 @@ const ToastProvider = ToastPrimitives.Provider;
 const ToastViewport = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Viewport>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport> & {
-    position?: string;
+    position?: ToastViewportPosition;
   }
 >(({ className, position, ...props }, ref) => {
   const resolvedPosition = position ?? "top-right";
@@ -121,6 +121,7 @@ ToastDescription.displayName = ToastPrimitives.Description.displayName;
 type ToastProps = React.ComponentPropsWithoutRef<typeof Toast>;
 
 type ToastActionElement = React.ReactElement<typeof ToastAction>;
+type ToastViewportPosition = "top-left" | "top-right" | "bottom-left" | "bottom-right" | "bottom-center" | "top-center";
 
 export {
   Toast,
@@ -132,4 +133,5 @@ export {
   ToastProvider,
   ToastTitle,
   ToastViewport,
+  type ToastViewportPosition,
 };

@@ -1,16 +1,27 @@
 import * as React from "react";
 
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
+import type { ToastActionElement, ToastProps, ToastViewportPosition } from "@/components/ui/toast";
 
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
 
-type ToasterToast = ToastProps & {
-  id: string;
+type ToastContent = ToastProps & {
   title?: React.ReactNode;
   description?: React.ReactNode;
   action?: ToastActionElement;
-  position?: string;
+};
+
+type ToastMetadata = {
+  id: string;
+  position?: ToastViewportPosition;
+};
+
+type ToasterToast = ToastContent & ToastMetadata;
+
+type ToastUpdate = Partial<ToastContent & Omit<ToastMetadata, "id">>;
+
+type ToastCreation = ToastContent & {
+  position?: ToastViewportPosition;
 };
 
 const actionType = {
@@ -27,7 +38,8 @@ type Action =
     }
   | {
       type: (typeof actionType)["updateToast"];
-      toast: Partial<ToasterToast>;
+      id: ToasterToast["id"];
+      toast: ToastUpdate;
     }
   | {
       type: (typeof actionType)["dismissToast"];
@@ -89,7 +101,7 @@ export const reducer = (state: State, action: Action): State => {
     case actionType.updateToast:
       return {
         ...state,
-        toasts: state.toasts.map((toast) => (toast.id === action.toast.id ? { ...toast, ...action.toast } : toast)),
+        toasts: state.toasts.map((toast) => (toast.id === action.id ? { ...toast, ...action.toast } : toast)),
       };
 
     case actionType.dismissToast: {
@@ -131,15 +143,16 @@ export const reducer = (state: State, action: Action): State => {
   }
 };
 
-type Toast = Omit<ToasterToast, "id">;
+type Toast = ToastCreation;
 
 function toast({ ...props }: Toast) {
   const id = genId();
 
-  const update = (nextToast: ToasterToast) => {
+  const update = (nextToast: ToastUpdate) => {
     dispatch({
       type: actionType.updateToast,
-      toast: { ...nextToast, id },
+      id,
+      toast: nextToast,
     });
   };
 
