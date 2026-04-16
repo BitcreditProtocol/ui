@@ -104,7 +104,7 @@ export function TermsAndConditions({ mode = "drawer", className }: TermsAndCondi
   } else {
     return (
       <Drawer>
-        <DrawerTrigger className="bg-transparent!">
+        <DrawerTrigger className="!bg-transparent">
           <span className="text-brand-200 text-base font-medium -tracking-[0.32px]">
             <FormattedMessage
               id="termsAndConditions.review.terms"

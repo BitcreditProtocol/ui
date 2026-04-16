@@ -3,7 +3,6 @@ import { useIntl } from "react-intl";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button } from "@/components/ui/button";
-
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,7 +11,7 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdownMenu";
+} from "@/components/ui/dropdown-menu";
 
 interface DateRangeDropdownProps {
   value?: number;

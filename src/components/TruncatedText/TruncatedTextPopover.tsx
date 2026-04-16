@@ -1,6 +1,6 @@
 import * as React from "react";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { extractTextFromNode, getTruncatedTextState } from "@/components/TruncatedText/truncated-text.ts";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
 type TruncatedTextPopoverProps = {
@@ -60,8 +60,8 @@ export function TruncatedTextPopover({ text, maxLength, className, contentClassN
   }, [hasComputedTruncation, textStr]);
 
   const shouldShowPopover = hasComputedTruncation || hasWidthOverflow || hasLengthFallbackOverflow;
-  const visibleTextNode = visibleLines.map((line: string) => (
-    <span key={line} data-truncated-text-line className="block w-full min-w-0 max-w-full truncate">
+  const visibleTextNode = visibleLines.map((line: string, index: number) => (
+    <span key={`${index}-${line}`} data-truncated-text-line className="block w-full min-w-0 max-w-full truncate">
       {line}
     </span>
   ));

@@ -17,7 +17,7 @@ import {
   type Matcher,
 } from "@/utils/dates";
 
-import { DateRangeDropdown } from "./dataRangeDropdown";
+import { DateRangeDropdown } from "./dateRangeDropdown";
 import { MonthPicker } from "./monthPicker";
 import { YearPicker } from "./yearPicker";
 
@@ -104,6 +104,7 @@ export function DatePicker({
   const [draft, setDraft] = useState(getInitialDate());
   const [rangeFocus, setRangeFocus] = useState<"from" | "to">("from");
   const lastFooterTouchAtRef = React.useRef(0);
+  const previousValueRef = React.useRef(value);
   const baseDate = useMemo(() => current.from || new Date(), [current.from]);
   const calendarMonth = useMemo(() => draft.from || current.from || new Date(), [draft.from, current.from]);
   const displayedSingleDate = useMemo(() => draft.from || current.from, [draft.from, current.from]);
@@ -112,11 +113,21 @@ export function DatePicker({
     if (showCalendar || showYearPicker || showMonthPicker) {
       return;
     }
+
     if (value) {
       setCurrent((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
       setDraft((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
       setHasBeenCleared(false);
+    } else if (previousValueRef.current) {
+      const clearedRange = { from: undefined, to: undefined };
+      setCurrent((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
+      setDraft((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
+      setHasBeenCleared(true);
+      setSelectedRange(undefined);
+      setRangeFocus("from");
     }
+
+    previousValueRef.current = value;
   }, [showCalendar, showMonthPicker, showYearPicker, value]);
 
   useEffect(
@@ -305,6 +316,7 @@ export function DatePicker({
       {customComponent ? (
         React.cloneElement(customComponent, {
           onClick: (e: React.MouseEvent) => {
+            customComponent.props.onClick?.(e);
             if (e.defaultPrevented) {
               return;
             }
@@ -342,9 +354,9 @@ export function DatePicker({
         className={cn(
           "fixed inset-0 bg-black/30 transition-opacity duration-300 max-w-[430px] mx-auto",
           showCalendar
-            ? "opacity-100 visible z-45"
+            ? "opacity-100 visible z-50"
             : isClosing
-              ? "opacity-0 visible pointer-events-auto z-45"
+              ? "opacity-0 visible pointer-events-auto z-50"
               : "opacity-0 invisible pointer-events-none z-0"
         )}
         onClick={closePicker}
@@ -395,7 +407,7 @@ export function DatePicker({
 
                 <div className="text-xs text-text-200">
                   <FormattedMessage
-                    id="Select date range"
+                    id="datePicker.range.selectRange"
                     defaultMessage="Select date range"
                     description="Header label for picking date range in datepicker form"
                   />
@@ -424,7 +436,7 @@ export function DatePicker({
                       {draft.from && formatDisplayDate(draft.from, lang.locale)}
                       {!draft.from && (
                         <span className="text-text-200">
-                          <FormattedMessage id="range.start" defaultMessage="Start" />
+                          <FormattedMessage id="datePicker.range.start" defaultMessage="Start" />
                         </span>
                       )}
                     </button>
@@ -448,7 +460,7 @@ export function DatePicker({
                       {draft.to && formatDisplayDate(draft.to, lang.locale)}
                       {!draft.to && (
                         <span className="text-text-200">
-                          <FormattedMessage id="range.end" defaultMessage="End" />
+                          <FormattedMessage id="datePicker.range.end" defaultMessage="End" />
                         </span>
                       )}
                     </button>
@@ -460,7 +472,7 @@ export function DatePicker({
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-text-200">
                     <FormattedMessage
-                      id="calendar.date.picker.selected.date"
+                      id="datePicker.single.selectedDate"
                       defaultMessage="Selected date"
                       description="Header label for picking single date in datepicker form"
                     />
@@ -565,7 +577,11 @@ export function DatePicker({
                 handleCancel();
               }}
             >
-              <FormattedMessage id="Cancel" defaultMessage="Cancel" description="Cancel button text in datepicker form" />
+              <FormattedMessage
+                id="datePicker.actions.cancel"
+                defaultMessage="Cancel"
+                description="Cancel button text in datepicker form"
+              />
             </Button>
             <Button
               className="w-full"
@@ -583,7 +599,11 @@ export function DatePicker({
                 handleConfirm();
               }}
             >
-              <FormattedMessage id="Confirm" defaultMessage="Confirm" description="Confirm button text in datepicker form" />
+              <FormattedMessage
+                id="datePicker.actions.confirm"
+                defaultMessage="Confirm"
+                description="Confirm button text in datepicker form"
+              />
             </Button>
           </div>
         </div>

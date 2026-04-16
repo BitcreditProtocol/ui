@@ -20,7 +20,7 @@ const meta = {
     ),
   ],
   args: {
-    value: "bitcr1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+    value: "bitcr1qxy2kgdygjrsqtzq2n9yrf243p83kkfjhxwlhc5m7v8n6d",
   },
 } satisfies Meta<typeof CopyToClipboardButton>;
 

@@ -46,6 +46,10 @@ export function Attachment({ id, fileName, getFile }: { id?: string; fileName: s
   }, []);
 
   const openFile = () => {
+    if (!url) {
+      return;
+    }
+
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
@@ -61,7 +65,13 @@ export function Attachment({ id, fileName, getFile }: { id?: string; fileName: s
         <span className="shrink-0 text-text-200 text-xs font-normal leading-normal">{fileSize} KB</span>
         <AppIcon icon={CircleCheckIcon} className="shrink-0 text-signal-success" />
       </div>
-      <button type="button" className="shrink-0 p-1 !bg-transparent" onClick={openFile} aria-label={`Open ${fileName}`}>
+      <button
+        type="button"
+        className="shrink-0 p-1 !bg-transparent disabled:cursor-not-allowed disabled:opacity-40"
+        onClick={openFile}
+        aria-label={`Open ${fileName}`}
+        disabled={!url}
+      >
         <AppIcon icon={SquareArrowOutUpRightIcon} className="text-text-200" />
       </button>
     </div>

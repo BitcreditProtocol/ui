@@ -34,7 +34,7 @@ export function containsRtl(value: string): boolean {
 
 export function isLikelyNodeId(value: string): boolean {
   const trimmed = value.trim();
-  return /^bitcr[a-z0-9][0-9a-f]{20,}$/i.test(trimmed);
+  return /^bitcr1[023456789acdefghjklmnpqrstuvwxyz]{20,}$/i.test(trimmed);
 }
 
 type SegmentPart = { segment: string };

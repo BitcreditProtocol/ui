@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
 
-import { DateRangeDropdown } from "./dataRangeDropdown";
+import { DateRangeDropdown } from "./dateRangeDropdown";
 
 const messages = {
   "displayRange.days": "{value} Days",

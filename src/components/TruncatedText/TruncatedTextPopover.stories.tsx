@@ -29,7 +29,7 @@ export const Default: Story = {
 export const ButtonTrigger: Story = {
   args: {
     as: "button",
-    text: "bitcr1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlha6g5x9l6fdt",
+    text: "bitcr1qxy2kgdygjrsqtzq2n9yrf243p83kkfjhxwlhc5m7v8n6ds4e",
     maxLength: 18,
   },
   render: (args) => (

@@ -22,12 +22,12 @@ const messages = {
   "bills.list.filter.by": "Filter by",
   "bills.list.filter.date.issue": "Issue date",
   "bills.list.filter.date.maturity": "Maturity date",
-  "Select date range": "Select date range",
-  "range.start": "Start",
-  "range.end": "End",
-  "calendar.date.picker.selected.date": "Selected date",
-  Cancel: "Cancel",
-  Confirm: "Confirm",
+  "datePicker.range.selectRange": "Select date range",
+  "datePicker.range.start": "Start",
+  "datePicker.range.end": "End",
+  "datePicker.single.selectedDate": "Selected date",
+  "datePicker.actions.cancel": "Cancel",
+  "datePicker.actions.confirm": "Confirm",
 };
 
 const meta = {

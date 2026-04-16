@@ -13,7 +13,7 @@ type CoinbaseResponse = {
   };
 };
 
-async function fetchCoinbaseRates(signal?: AbortSignal): Promise<Rates | undefined> {
+async function fetchCoinbaseRates(signal?: AbortSignal): Promise<Rates> {
   const url = "https://api.coinbase.com/v2/exchange-rates?currency=BTC";
   const res = await fetch(url, {
     signal,
@@ -51,14 +51,14 @@ async function fetchCoinbaseRates(signal?: AbortSignal): Promise<Rates | undefin
 }
 
 export function useRates() {
-  return useQuery<Rates | undefined>({
+  return useQuery<Rates>({
     queryKey: ["rates", "coinbase"],
     queryFn: async ({ signal }: QueryFunctionContext) => {
       try {
         return await fetchCoinbaseRates(signal);
       } catch (error) {
         console.error("[useRates] Failed to fetch rates", error);
-        return undefined;
+        throw error;
       }
     },
     staleTime: 60_000,
