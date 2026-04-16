@@ -1,5 +1,5 @@
-import { FormattedMessage, useIntl } from "react-intl";
 import { MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
+import { FormattedMessage, useIntl } from "react-intl";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";

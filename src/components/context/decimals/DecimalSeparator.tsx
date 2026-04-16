@@ -1,15 +1,14 @@
+import { AlignVerticalJustifyCenterIcon, CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { AlignVerticalJustifyCenterIcon, CheckIcon } from "lucide-react";
 
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
-import { type DecimalFormat, usePreferences } from "../preferences/PreferencesContext";
 import { cn } from "@/lib/utils";
-
 import MenuOption from "../MenuOption";
+import { type DecimalFormat, usePreferences } from "../preferences/PreferencesContext";
 
 type DecimalSeparatorProps = PropsWithChildren<{
   value: DecimalFormat;

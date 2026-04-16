@@ -1,6 +1,6 @@
+import { CheckIcon, DollarSignIcon, EuroIcon } from "lucide-react";
 import React, { type PropsWithChildren, useMemo, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { CheckIcon, DollarSignIcon, EuroIcon } from "lucide-react";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -9,11 +9,7 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
 function BitcoinBadge() {
-  return (
-    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7931A] text-xs font-semibold text-white">
-      B
-    </div>
-  );
+  return <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7931A] text-xs font-semibold text-white">B</div>;
 }
 
 function Label({ children }: { children: React.ReactNode }) {

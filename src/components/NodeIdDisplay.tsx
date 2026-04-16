@@ -1,0 +1,25 @@
+import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
+import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
+import { cn } from "@/lib/utils";
+
+type NodeIdDisplayProps = {
+  nodeId: string;
+  maxLength?: number;
+  className?: string;
+  textClassName?: string;
+  copyButtonClassName?: string;
+};
+
+export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName, copyButtonClassName }: NodeIdDisplayProps) {
+  return (
+    <div className={cn("flex items-center gap-1", className)}>
+      <TruncatedTextPopover
+        text={nodeId}
+        maxLength={maxLength}
+        as="button"
+        className={cn("text-text-200 text-xs font-normal leading-[18px] !bg-transparent !p-0 !text-text-200", textClassName)}
+      />
+      <CopyToClipboardButton value={nodeId} className={copyButtonClassName} />
+    </div>
+  );
+}

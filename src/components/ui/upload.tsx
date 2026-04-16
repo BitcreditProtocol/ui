@@ -1,6 +1,5 @@
-/* eslint-disable import/no-default-export */
-import { FormattedMessage } from "react-intl";
 import { UploadIcon } from "lucide-react";
+import { FormattedMessage } from "react-intl";
 
 import { AppIcon } from "@/components/ui/app-icon";
 

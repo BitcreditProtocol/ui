@@ -7,7 +7,19 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!coverage", "!coverage/**", "!dev-dist", "!dev-dist/**", "!public", "!public/**"]
+    "includes": [
+      "**",
+      "!coverage",
+      "!coverage/**",
+      "!dev-dist",
+      "!dev-dist/**",
+      "!dist",
+      "!dist/**",
+      "!public",
+      "!public/**",
+      "!storybook-static",
+      "!storybook-static/**"
+    ]
   },
   "formatter": {
     "enabled": true,
