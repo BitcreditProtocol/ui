@@ -5,7 +5,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all ease-in-out focus-visible:outline-hidden focus-visible:box-content disabled:cursor-not-allowed cursor-pointer",
+  "inline-flex items-center justify-center whitespace-nowrap font-medium transition-all ease-in-out focus-visible:outline-hidden disabled:cursor-not-allowed cursor-pointer touch-manipulation",
   {
     variants: {
       variant: {
@@ -13,12 +13,9 @@ const buttonVariants = cva(
           "bg-text-300 text-text-active hover:bg-base-hover focus:ring-[6px] focus:ring-divider-75 active:bg-base-active disabled:bg-base-inactive disabled:text-text-inactive",
         outline:
           "border border-divider-300 text-text-300 hover:border-divider-100 focus:ring-[6px] focus:ring-divider-75 active:border-base-active disabled:border-base-inactive disabled:text-base-inactive !bg-transparent dark:hover:!bg-elevation-100",
-        destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-destructive/50",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:bg-secondary/50 disabled:text-base-inactive",
-        ghost:
-          "hover:bg-accent hover:text-accent-foreground disabled:text-base-inactive",
+        destructive: "bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-destructive/50",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/80 disabled:bg-secondary/50 disabled:text-base-inactive",
+        ghost: "hover:bg-elevation-200 hover:text-accent-foreground disabled:text-base-inactive",
         link: "text-primary underline-offset-4 hover:underline !bg-transparent",
         filter:
           "bg-transparent max-h-7 py-1! px-3! border border-divider-100 rounded-lg text-text-300 text-xs! font-normal! hover:bg-transparent",
@@ -38,22 +35,14 @@ const buttonVariants = cva(
   }
 );
 
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-  VariantProps<typeof buttonVariants> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
   asChild?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "button";
-    return (
-      <Comp
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
+  ({ className, variant, size, asChild: useAsChild = false, ...props }, ref) => {
+    const Comp = useAsChild ? Slot : "button";
+    return <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
   }
 );
 Button.displayName = "Button";
