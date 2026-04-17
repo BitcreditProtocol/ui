@@ -18,6 +18,7 @@ export default defineConfig({
     },
   },
   test: {
+    setupFiles: ["./src/vitest.setup.ts"],
     coverage: {
       reporter: ["text", "lcov", "clover", "json"],
     },
