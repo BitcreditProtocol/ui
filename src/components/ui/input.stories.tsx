@@ -67,7 +67,7 @@ export const StateColors: Story = {
     ...Styled.args,
   },
   render: (args) => (
-    <div className="flex flex-col gap-2">
+    <div className="w-fit flex flex-col gap-2">
       <Input {...args} label="Default" />
       <Input {...args} label="Success" success />
       <Input {...args} label="Error" error />

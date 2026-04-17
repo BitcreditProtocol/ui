@@ -27,7 +27,7 @@ export const Default: Story = {
 
 export const States: Story = {
   render: () => (
-    <div className="flex flex-col gap-4">
+    <div className="w-fit flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <Switch id="off" />
         <Label htmlFor="off">Off</Label>

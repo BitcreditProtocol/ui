@@ -34,7 +34,7 @@ export const Default: Story = {
 
 export const Positions: Story = {
   render: () => (
-    <div className="flex items-center gap-3">
+    <div className="w-fit flex items-center gap-3">
       <Tooltip>
         <TooltipTrigger asChild>
           <Button size="sm" variant="outline">

@@ -32,7 +32,7 @@ export const Default: Story = {};
 
 export const InRow: Story = {
   render: (args) => (
-    <div className="flex items-center gap-2">
+    <div className="w-fit flex items-center gap-2">
       <span className="text-sm text-text-300">Wallet address</span>
       <CopyToClipboardButton {...args} />
     </div>
