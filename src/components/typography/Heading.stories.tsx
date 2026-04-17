@@ -24,9 +24,7 @@ export const StepStyle: Story = {
   render: () => (
     <div className="w-fit flex flex-col gap-1.5">
       <Heading.Title>Verify identity</Heading.Title>
-      <Heading.Description>
-        Upload an identification document and confirm your billing address.
-      </Heading.Description>
+      <Heading.Description>Upload an identification document and confirm your billing address.</Heading.Description>
     </div>
   ),
 };

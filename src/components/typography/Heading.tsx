@@ -34,11 +34,23 @@ const defaultTags: Record<HeadingVariant, HeadingTag> = {
 };
 
 export function HeadingTitle({ className, "data-ignore-test": isDataIgnoreTest, ...props }: HeadingTitleProps) {
-  return <h1 data-ignore-test={isDataIgnoreTest || undefined} className={cn("text-text-300 text-2xl font-medium leading-8", className)} {...props} />;
+  return (
+    <h1
+      data-ignore-test={isDataIgnoreTest || undefined}
+      className={cn("text-text-300 text-2xl font-medium leading-8", className)}
+      {...props}
+    />
+  );
 }
 
 export function HeadingDescription({ className, "data-ignore-test": isDataIgnoreTest, ...props }: HeadingDescriptionProps) {
-  return <span data-ignore-test={isDataIgnoreTest || undefined} className={cn("text-text-200 text-base font-normal leading-6", className)} {...props} />;
+  return (
+    <span
+      data-ignore-test={isDataIgnoreTest || undefined}
+      className={cn("text-text-200 text-base font-normal leading-6", className)}
+      {...props}
+    />
+  );
 }
 
 export function Heading<T extends HeadingTag = "h2">({
