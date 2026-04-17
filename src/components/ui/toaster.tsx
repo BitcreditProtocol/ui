@@ -16,10 +16,10 @@ export function Toaster() {
 
   return (
     <ToastProvider>
-      {toasts.map(function ({ id, title, description, action, variant, ...props }) {
+      {toasts.map(function ({ id, title, description, action, variant, ...toastProps }) {
         const icon = icons[variant || "info"];
         return (
-          <Toast key={id} variant={variant} {...props}>
+          <Toast key={id} variant={variant} {...toastProps}>
             <div className="flex gap-2">
               {icon}
               <div className="flex flex-col gap-1.5">
