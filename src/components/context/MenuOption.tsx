@@ -1,5 +1,5 @@
-import React from "react";
 import { ChevronRightIcon } from "lucide-react";
+import React from "react";
 
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";

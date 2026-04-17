@@ -1,6 +1,6 @@
-import React, { forwardRef, useEffect, useId, useRef, useState } from "react";
 import { cva } from "class-variance-authority";
 import { XIcon } from "lucide-react";
+import React, { forwardRef, useEffect, useId, useRef, useState } from "react";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";

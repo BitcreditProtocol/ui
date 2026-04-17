@@ -1,7 +1,6 @@
-/* eslint-disable import/no-default-export */
-import { useEffect, useRef, useState } from "react";
 import { cva } from "class-variance-authority";
 import { SearchIcon, XIcon } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";

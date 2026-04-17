@@ -1,14 +1,6 @@
+import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 import { FormattedMessage, useIntl } from "react-intl";
-import { CheckIcon } from "lucide-react";
-
-import { Text } from "@/components/typography/Text";
-import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
-import { Search } from "@/components/ui/search";
-import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-
 // import ArFlag from "@/components/assets/flags/AR.svg";
 // import AtFlag from "@/components/assets/flags/AT.svg";
 import GerFlag from "@/components/assets/flags/DE.svg";
@@ -17,6 +9,12 @@ import ItFlag from "@/components/assets/flags/IT.svg";
 import TrFlag from "@/components/assets/flags/TR.svg";
 // import UkFlag from "@/components/assets/flags/UK.svg";
 import UsFlag from "@/components/assets/flags/US.svg";
+import { Text } from "@/components/typography/Text";
+import { AppIcon } from "@/components/ui/app-icon";
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Search } from "@/components/ui/search";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
 
 type LanguagePreferenceProps = PropsWithChildren<{
   value: string;

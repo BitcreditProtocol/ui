@@ -1,11 +1,9 @@
-import { useIntl } from "react-intl";
 import { BanknoteIcon } from "lucide-react";
-
-import { CurrencySelector } from "./CurrencySelector";
+import { useIntl } from "react-intl";
 import { AppIcon } from "@/components/ui/app-icon";
-import { usePreferences } from "../preferences/PreferencesContext";
-
 import MenuOption from "../MenuOption";
+import { usePreferences } from "../preferences/PreferencesContext";
+import { CurrencySelector } from "./CurrencySelector";
 
 export default function DisplayCurrency() {
   const intl = useIntl();
