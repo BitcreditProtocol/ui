@@ -29,7 +29,7 @@ export const Default: Story = {
 
 export const BrandColors: Story = {
   render: (args) => (
-    <div className="flex items-center gap-2">
+    <div className="w-fit flex items-center gap-2">
       <Button {...args}>Default</Button>
       <Button {...args} variant="outline">
         Outline
@@ -55,7 +55,7 @@ export const BrandColors: Story = {
 
 export const Disabled: Story = {
   render: (args) => (
-    <div className="flex items-center gap-2">
+    <div className="w-fit flex items-center gap-2">
       <Button {...args} disabled>
         Default
       </Button>
@@ -83,7 +83,7 @@ export const Disabled: Story = {
 
 export const ButtonSizes: Story = {
   render: (args) => (
-    <div className="flex items-center gap-2">
+    <div className="w-fit flex items-center gap-2">
       <Button {...args} size="lg">
         Large
       </Button>

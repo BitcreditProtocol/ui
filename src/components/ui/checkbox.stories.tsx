@@ -27,7 +27,7 @@ export const Default: Story = {};
 
 export const States: Story = {
   render: (args) => (
-    <div className="flex flex-col gap-4">
+    <div className="w-fit flex flex-col gap-4">
       <div className="flex items-center gap-3">
         <Checkbox {...args} id="unchecked" />
         <Label htmlFor="unchecked">Unchecked</Label>
@@ -53,7 +53,7 @@ export const Interactive: Story = {
     const [checked, setChecked] = React.useState(false);
 
     return (
-      <div className="flex items-center gap-3">
+      <div className="w-fit flex items-center gap-3">
         <Checkbox
           {...args}
           checked={checked}

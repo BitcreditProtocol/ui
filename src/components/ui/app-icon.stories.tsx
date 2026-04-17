@@ -70,7 +70,7 @@ export const Weights: Story = {
 
 export const CommonIcons: Story = {
   render: (args) => (
-    <div className="flex items-center gap-4">
+    <div className="w-fit flex items-center gap-4">
       <AppIcon {...args} icon={CalendarIcon} />
       <AppIcon {...args} icon={CheckIcon} className="text-signal-success" />
       <AppIcon {...args} icon={TriangleAlertIcon} className="text-signal-alert" />

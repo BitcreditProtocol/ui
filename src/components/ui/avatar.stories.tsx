@@ -27,7 +27,7 @@ export const Default: Story = {
 
 export const Fallbacks: Story = {
   render: () => (
-    <div className="flex items-center gap-4">
+    <div className="w-fit flex items-center gap-4">
       <Avatar>
         <AvatarFallback>JD</AvatarFallback>
       </Avatar>

@@ -16,7 +16,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Default: Story = {
   render: (args) => (
-    <div className="rounded-full bg-text-300 p-3">
+    <div className="w-fit rounded-full bg-text-300 p-3">
       <AnonymousUserIcon {...args} className="h-8 w-8" />
     </div>
   ),
@@ -24,7 +24,7 @@ export const Default: Story = {
 
 export const Sizes: Story = {
   render: (args) => (
-    <div className="flex items-center gap-4 rounded-full bg-text-300 p-4">
+    <div className="w-fit flex items-center gap-4 rounded-full bg-text-300 p-4">
       <AnonymousUserIcon {...args} className="h-5 w-5" />
       <AnonymousUserIcon {...args} className="h-8 w-8" />
       <AnonymousUserIcon {...args} className="h-12 w-12" />
