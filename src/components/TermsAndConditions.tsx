@@ -1,5 +1,5 @@
 import { FormattedMessage } from "react-intl";
-import { PageTitle } from "@/components/typography/PageTitle.tsx";
+import { Heading } from "@/components/typography/Heading.tsx";
 import { cn } from "@/lib/utils";
 
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "./ui/drawer.tsx";
@@ -139,13 +139,13 @@ export function TermsAndConditions({ mode = "drawer", className }: TermsAndCondi
 function TermsAndConditionsPage({ className }: { className?: string }) {
   return (
     <section className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
-      <PageTitle>
+      <Heading as="h1" variant="sub">
         <FormattedMessage
           id="termsAndConditions.page.title"
           defaultMessage="Terms and Conditions"
           description="Title for the Terms and Conditions page"
         />
-      </PageTitle>
+      </Heading>
       <div className="flex flex-col gap-6">
         <TermsContent />
       </div>
