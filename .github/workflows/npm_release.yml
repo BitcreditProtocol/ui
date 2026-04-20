@@ -73,7 +73,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-package
-          path: release
+          path: release/package
 
       - name: Set up Node.js for npmjs
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
@@ -130,7 +130,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: release-package
-          path: release
+          path: release/package
 
       - name: Set up Node.js for GitHub Packages
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
