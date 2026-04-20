@@ -1,0 +1,175 @@
+name: npm release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  NODE_VERSION: "24"
+  NPMJS_PACKAGE_NAME: "@bitcredit/ui"
+  GITHUB_PACKAGE_NAME: "@bitcreditprotocol/ui"
+  REPOSITORY_URL: "git+https://github.com/BitcreditProtocol/ui.git"
+
+jobs:
+  build:
+    name: Build release package
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.release-meta.outputs.version }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Resolve release version
+        id: release-meta
+        shell: bash
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+
+          if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
+            echo "Invalid release version: ${VERSION}" >&2
+            exit 1
+          fi
+
+          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package assets
+        run: npm run build
+
+      - name: Stage publishable package
+        run: |
+          mkdir -p release/package
+          cp -R dist release/package/dist
+          cp package.json release/package/package.json
+          cp README.md release/package/README.md
+
+      - name: Upload release package
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-package
+          path: release/package
+
+  publish-npmjs:
+    name: Publish to npmjs
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release-npmjs
+    steps:
+      - name: Download staged package
+        uses: actions/download-artifact@v4
+        with:
+          name: release-package
+          path: release
+
+      - name: Set up Node.js for npmjs
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Prepare npmjs manifest and registry config
+        shell: bash
+        run: |
+          cd release/package
+          npm pkg set name="${NPMJS_PACKAGE_NAME}"
+          npm pkg set version="${{ needs.build.outputs.version }}"
+          npm pkg set private=false
+          npm pkg set repository.type=git
+          npm pkg set repository.url="${REPOSITORY_URL}"
+          cat > .npmrc <<'EOF'
+          registry=https://registry.npmjs.org/
+          //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+
+      - name: Verify npmjs package
+        working-directory: release/package
+        run: npm pack --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish to npmjs
+        working-directory: release/package
+        shell: bash
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          TAG="latest"
+
+          case "$VERSION" in
+            *-test|*-test.*|*-test-*) TAG="test" ;;
+            *-beta|*-beta.*|*-beta-*) TAG="beta" ;;
+            *-rc|*-rc.*|*-rc-*) TAG="rc" ;;
+          esac
+
+          npm publish --access public --tag "$TAG"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # change to Trusted Publishing after bootstrapping package
+
+  publish-github-packages:
+    name: Publish to GitHub Packages
+    needs: build
+    runs-on: ubuntu-latest
+    environment: release-github
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Download staged package
+        uses: actions/download-artifact@v4
+        with:
+          name: release-package
+          path: release
+
+      - name: Set up Node.js for GitHub Packages
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Prepare GitHub Packages manifest and registry config
+        shell: bash
+        run: |
+          cd release/package
+          npm pkg set name="${GITHUB_PACKAGE_NAME}"
+          npm pkg set version="${{ needs.build.outputs.version }}"
+          npm pkg set private=false
+          npm pkg set repository.type=git
+          npm pkg set repository.url="${REPOSITORY_URL}"
+          cat > .npmrc <<'EOF'
+          @bitcreditprotocol:registry=https://npm.pkg.github.com
+          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
+          EOF
+
+      - name: Verify GitHub Packages package
+        working-directory: release/package
+        run: npm pack --dry-run
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish to GitHub Packages
+        working-directory: release/package
+        shell: bash
+        run: |
+          VERSION="${{ needs.build.outputs.version }}"
+          TAG="latest"
+
+          case "$VERSION" in
+            *-test|*-test.*|*-test-*) TAG="test" ;;
+            *-beta|*-beta.*|*-beta-*) TAG="beta" ;;
+            *-rc|*-rc.*|*-rc-*) TAG="rc" ;;
+          esac
+
+          npm publish --tag "$TAG"
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
