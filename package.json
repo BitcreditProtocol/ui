@@ -2,6 +2,10 @@
   "name": "ui",
   "private": true,
   "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BitcreditProtocol/ui.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "vite",
