@@ -86,7 +86,7 @@ jobs:
           cd release/package
           npm pkg set name="${NPMJS_PACKAGE_NAME}"
           npm pkg set version="${{ needs.build.outputs.version }}"
-          npm pkg set private=false
+          npm pkg delete private
           npm pkg set repository.type=git
           npm pkg set repository.url="${REPOSITORY_URL}"
           cat > .npmrc <<'EOF'
@@ -143,7 +143,7 @@ jobs:
           cd release/package
           npm pkg set name="${GITHUB_PACKAGE_NAME}"
           npm pkg set version="${{ needs.build.outputs.version }}"
-          npm pkg set private=false
+          npm pkg delete private
           npm pkg set repository.type=git
           npm pkg set repository.url="${REPOSITORY_URL}"
           cat > .npmrc <<'EOF'
