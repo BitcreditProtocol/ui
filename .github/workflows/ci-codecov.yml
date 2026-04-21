@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_VERSION: 25
+      RELEASE_PACKAGE_NAME: "@bitcredit/ui-library"
+      REPOSITORY_URL: "git+https://github.com/BitcreditProtocol/ui.git"
 
     steps:
       - name: Checkout code
@@ -38,19 +40,57 @@ jobs:
         run: npx playwright install --with-deps chromium
 
       - name: Check code style
-        run: npm run style:check
+        id: style_check
+        shell: bash
+        run: |
+          set +e
+          npm exec biome ci --reporter=github .
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Lint
-        run: npm run lint
+        id: lint_check
+        shell: bash
+        run: |
+          set +e
+          npm run lint
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
 
       - name: Build
         run: npm run build
 
       - name: Test
-        run: npm run test -- --coverage
+        id: test_check
+        shell: bash
+        run: |
+          set +e
+          npm run test -- --coverage
+          status=$?
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Stage release package
+        run: |
+          mkdir -p release/package
+          cp -R dist release/package/dist
+          cp package.json release/package/package.json
+          cp README.md release/package/README.md
+          cp LICENSE release/package/LICENSE
+          cd release/package
+          npm pkg set name="${RELEASE_PACKAGE_NAME}"
+          npm pkg set version="0.0.0-ci"
+          npm pkg delete private
+          npm pkg set repository.type=git
+          npm pkg set repository.url="${REPOSITORY_URL}"
+
+      - name: Verify release package
+        working-directory: release/package
+        run: npm pack --dry-run
 
       - name: Upload coverage to Codecov
-        if: ${{ secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -59,6 +99,36 @@ jobs:
           name: codecov-umbrella
           fail_ci_if_error: true
 
-      - name: Skip Codecov upload
-        if: ${{ secrets.CODECOV_TOKEN == '' }}
-        run: echo "Skipping Codecov upload because CODECOV_TOKEN is not configured."
+      - name: Report deferred failures
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          FAILED=0
+          {
+            echo "## CI Summary"
+            echo ""
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [[ "${{ steps.style_check.outputs.status }}" != "0" ]]; then
+            echo "::error title=Style check failed::Biome found formatting or import-order issues."
+            echo "- Style check failed" >> "$GITHUB_STEP_SUMMARY"
+            FAILED=1
+          fi
+
+          if [[ "${{ steps.lint_check.outputs.status }}" != "0" ]]; then
+            echo "::error title=Lint failed::ESLint reported violations."
+            echo "- Lint failed" >> "$GITHUB_STEP_SUMMARY"
+            FAILED=1
+          fi
+
+          if [[ "${{ steps.test_check.outputs.status }}" != "0" ]]; then
+            echo "::error title=Tests failed::Vitest reported failing tests."
+            echo "- Tests failed" >> "$GITHUB_STEP_SUMMARY"
+            FAILED=1
+          fi
+
+          if [[ "$FAILED" == "0" ]]; then
+            echo "- All deferred checks passed" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+          exit "$FAILED"
