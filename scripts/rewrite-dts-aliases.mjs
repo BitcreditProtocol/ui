@@ -18,7 +18,7 @@ function visit(directory) {
     }
 
     const source = readFileSync(fullPath, "utf8");
-    const withoutCssSideEffects = source.replace(/^import\s+["'][^"']+\.css["'];?\n/gm, "");
+    const withoutCssSideEffects = source.replace(/^import\s+["'][^"']+\.css["'];?\r?\n/gm, "");
     const rewritten = withoutCssSideEffects.replaceAll(/from\s+["']@\/([^"']+)["']/g, (_match, specifier) => {
       const absoluteTarget = path.resolve(distDir, specifier);
       const relativePath = path.relative(path.dirname(fullPath), absoluteTarget).replaceAll(path.sep, "/");

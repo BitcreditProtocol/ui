@@ -32,7 +32,7 @@ export default defineConfig({
     lib: {
       entry: path.resolve(dirname, "./src/index.ts"),
       formats: ["es", "cjs"],
-      fileName: (format) => (format === "es" ? "index.mjs" : "index.js"),
+      fileName: (format) => (format === "es" ? "index.mjs" : "index.cjs"),
       cssFileName: "style",
     },
     rollupOptions: {
