@@ -20,6 +20,8 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_VERSION: 25
+      RELEASE_PACKAGE_NAME: "@bitcredit/ui-library"
+      REPOSITORY_URL: "git+https://github.com/BitcreditProtocol/ui.git"
 
     steps:
       - name: Checkout code
@@ -49,8 +51,24 @@ jobs:
       - name: Test
         run: npm run test -- --coverage
 
+      - name: Stage release package
+        run: |
+          mkdir -p release/package
+          cp -R dist release/package/dist
+          cp package.json release/package/package.json
+          cp README.md release/package/README.md
+          cd release/package
+          npm pkg set name="${RELEASE_PACKAGE_NAME}"
+          npm pkg set version="0.0.0-ci"
+          npm pkg delete private
+          npm pkg set repository.type=git
+          npm pkg set repository.url="${REPOSITORY_URL}"
+
+      - name: Verify release package
+        working-directory: release/package
+        run: npm pack --dry-run
+
       - name: Upload coverage to Codecov
-        if: ${{ secrets.CODECOV_TOKEN != '' }}
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -58,7 +76,3 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           fail_ci_if_error: true
-
-      - name: Skip Codecov upload
-        if: ${{ secrets.CODECOV_TOKEN == '' }}
-        run: echo "Skipping Codecov upload because CODECOV_TOKEN is not configured."
