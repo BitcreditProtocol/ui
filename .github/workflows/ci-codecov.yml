@@ -78,6 +78,7 @@ jobs:
           cp -R dist release/package/dist
           cp package.json release/package/package.json
           cp README.md release/package/README.md
+          cp LICENSE release/package/LICENSE
           cd release/package
           npm pkg set name="${RELEASE_PACKAGE_NAME}"
           npm pkg set version="0.0.0-ci"
