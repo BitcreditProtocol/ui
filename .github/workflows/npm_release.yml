@@ -97,8 +97,6 @@ jobs:
       - name: Verify npmjs package
         working-directory: release/package
         run: npm pack --dry-run
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Publish to npmjs
         working-directory: release/package
@@ -114,8 +112,6 @@ jobs:
           esac
 
           npm publish --access public --tag "$TAG"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # change to Trusted Publishing after bootstrapping package
 
   publish-github-packages:
     name: Publish to GitHub Packages
