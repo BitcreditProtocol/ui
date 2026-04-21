@@ -111,7 +111,7 @@ jobs:
             *-rc|*-rc.*|*-rc-*) TAG="rc" ;;
           esac
 
-          npm publish --access public --tag "$TAG"
+          npm publish --access public --provenance --tag "$TAG"
 
   publish-github-packages:
     name: Publish to GitHub Packages
