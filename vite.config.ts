@@ -1,4 +1,5 @@
 // https://vite.dev/config/
+import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { storybookTest } from "@storybook/addon-vitest/vitest-plugin";
@@ -8,6 +9,15 @@ import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite";
 
 const dirname = typeof __dirname !== "undefined" ? __dirname : path.dirname(fileURLToPath(import.meta.url));
+const packageJson = JSON.parse(fs.readFileSync(path.resolve(dirname, "package.json"), "utf8")) as {
+  dependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+};
+const externalPackages = [
+  ...Object.keys(packageJson.dependencies ?? {}),
+  ...Object.keys(packageJson.peerDependencies ?? {}),
+  "react/jsx-runtime",
+];
 
 // More info at: https://storybook.js.org/docs/next/writing-tests/integrations/vitest-addon
 export default defineConfig({
@@ -15,6 +25,18 @@ export default defineConfig({
   resolve: {
     alias: {
       "@": path.resolve(dirname, "./src"),
+    },
+  },
+  build: {
+    copyPublicDir: false,
+    lib: {
+      entry: path.resolve(dirname, "./src/index.ts"),
+      formats: ["es", "cjs"],
+      fileName: (format) => (format === "es" ? "index.mjs" : "index.cjs"),
+      cssFileName: "style",
+    },
+    rollupOptions: {
+      external: externalPackages,
     },
   },
   test: {

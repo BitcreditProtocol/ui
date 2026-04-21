@@ -90,6 +90,65 @@ jobs:
         working-directory: release/package
         run: npm pack --dry-run
 
+      - name: Smoke test packed library in a Vite consumer
+        shell: bash
+        run: |
+          mkdir -p release/smoke
+          npm pack --pack-destination release/smoke
+
+          mkdir -p release/smoke/consumer/src
+          cat > release/smoke/consumer/package.json <<'EOF'
+          {
+            "name": "ui-library-smoke-test",
+            "private": true,
+            "type": "module",
+            "scripts": {
+              "build": "vite build"
+            }
+          }
+          EOF
+
+          cat > release/smoke/consumer/vite.config.ts <<'EOF'
+          import { defineConfig } from "vite";
+          import react from "@vitejs/plugin-react";
+
+          export default defineConfig({
+            plugins: [react()],
+          });
+          EOF
+
+          cat > release/smoke/consumer/index.html <<'EOF'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="UTF-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+              <title>Smoke Test</title>
+            </head>
+            <body>
+              <div id="root"></div>
+              <script type="module" src="/src/main.tsx"></script>
+            </body>
+          </html>
+          EOF
+
+          cat > release/smoke/consumer/src/main.tsx <<'EOF'
+          import React from "react";
+          import ReactDOM from "react-dom/client";
+          import "ui/style.css";
+          import { Button } from "ui";
+
+          ReactDOM.createRoot(document.getElementById("root")!).render(
+            <React.StrictMode>
+              <Button>Smoke Test</Button>
+            </React.StrictMode>
+          );
+          EOF
+
+          cd release/smoke/consumer
+          npm install --no-package-lock ../../smoke/ui-*.tgz react react-dom vite @vitejs/plugin-react typescript @types/react @types/react-dom
+          npm run build
+
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@57e3a136b779b570ffcdbf80b3bdc90e7fab3de2 # v6.0.0
         with:

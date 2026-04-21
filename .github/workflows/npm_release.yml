@@ -97,7 +97,10 @@ jobs:
 
       - name: Verify npmjs package
         working-directory: release/package
-        run: npm pack --dry-run
+        shell: bash
+        run: |
+          npm pack --json --dry-run > pack-summary.json
+          node --input-type=module -e "import fs from 'node:fs'; const summary=JSON.parse(fs.readFileSync('pack-summary.json','utf8')); const files=summary[0]?.files?.map((file)=>file.path) ?? []; const required=['dist/index.cjs','dist/index.mjs','dist/index.d.ts']; const missing=required.filter((file)=>!files.includes(file)); if (files.includes('dist/index.html')) { console.error('Error: app bundle artifact dist/index.html would be published.'); process.exit(1); } if (missing.length > 0) { console.error('Error: missing library artifacts:', missing.join(', ')); process.exit(1); } console.log('npmjs package contents look correct.');"
 
       - name: Publish to npmjs
         working-directory: release/package
@@ -150,7 +153,10 @@ jobs:
 
       - name: Verify GitHub Packages package
         working-directory: release/package
-        run: npm pack --dry-run
+        shell: bash
+        run: |
+          npm pack --json --dry-run > pack-summary.json
+          node --input-type=module -e "import fs from 'node:fs'; const summary=JSON.parse(fs.readFileSync('pack-summary.json','utf8')); const files=summary[0]?.files?.map((file)=>file.path) ?? []; const required=['dist/index.cjs','dist/index.mjs','dist/index.d.ts']; const missing=required.filter((file)=>!files.includes(file)); if (files.includes('dist/index.html')) { console.error('Error: app bundle artifact dist/index.html would be published.'); process.exit(1); } if (missing.length > 0) { console.error('Error: missing library artifacts:', missing.join(', ')); process.exit(1); } console.log('GitHub package contents look correct.');"
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
