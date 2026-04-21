@@ -115,6 +115,7 @@ export function DatePicker({
     }
 
     if (value) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setCurrent((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
       setDraft((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
       setHasBeenCleared(false);
@@ -247,12 +248,14 @@ export function DatePicker({
       to: addDays(startDate, selectedRange),
     };
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrent(newRange);
     setDraft(newRange);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRange]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setSelectedRange((val) => {
       if (current.from === undefined || current.to === undefined) {
         return val;
