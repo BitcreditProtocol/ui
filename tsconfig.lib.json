@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.app.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": false,
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.lib.tsbuildinfo",
+    "types": ["vite/client"]
+  },
+  "include": ["src/index.ts", "src/components/**/*.ts", "src/components/**/*.tsx", "src/hooks/**/*.ts", "src/lib/**/*.ts", "src/utils/**/*.ts", "src/constants/**/*.ts"],
+  "exclude": [
+    "src/**/*.stories.ts",
+    "src/**/*.stories.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.mdx",
+    "src/App.tsx",
+    "src/main.tsx",
+    "src/vitest.setup.ts"
+  ]
+}
