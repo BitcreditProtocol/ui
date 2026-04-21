@@ -29,6 +29,9 @@ export function Example() {
 }
 ```
 
+For predictable consumer behavior, treat the explicit `style.css` import as required public API.
+The JS package entry currently carries the stylesheet through the library build, but consumers should not rely on implicit style loading.
+
 The package ships:
 
 - `dist/index.mjs` for ESM consumers
@@ -45,6 +48,13 @@ import "@bitcredit/ui-library/style.css";
 ```
 
 Without that import, many components will render without the expected design system styling.
+
+Recommended pattern:
+
+```tsx
+import "@bitcredit/ui-library/style.css";
+import { Button, Card } from "@bitcredit/ui-library";
+```
 
 ## Provider Setup
 
@@ -94,6 +104,7 @@ import {
 - The package is built in Vite library mode.
 - Only library artifacts are published; app bundle files like `index.html` are not part of the package.
 - `react` and `react-dom` are peer dependencies and must be provided by the consuming app.
+- Tailwind and Vite integration packages are build-time dependencies of this repository, not runtime requirements for consumers.
 - TypeScript declarations are generated and published with the package.
 
 ## Development
