@@ -2,7 +2,7 @@ import { CircleCheckIcon, SquareArrowOutUpRightIcon } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
-import { AppIcon } from "@/components/ui/app-icon.tsx";
+import { AppIcon } from "@/components/ui/app-icon";
 
 type BinaryFileResponse = {
   data: ArrayLike<number>;

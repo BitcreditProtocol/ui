@@ -1,8 +1,8 @@
 import { FormattedMessage } from "react-intl";
-import { Heading } from "@/components/typography/Heading.tsx";
+import { Heading } from "@/components/typography/Heading";
 import { cn } from "@/lib/utils";
 
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "./ui/drawer.tsx";
+import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 
 function TermsContent() {
   return (

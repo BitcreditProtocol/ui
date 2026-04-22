@@ -2,8 +2,8 @@ import { CheckIcon, CopyIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useIntl } from "react-intl";
 
-import { Button, type ButtonProps } from "@/components/ui/button.tsx";
-import { AppIcon } from "@/components/ui/app-icon.tsx";
+import { AppIcon } from "@/components/ui/app-icon";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast.ts";
 
 async function copyToClipboard(value: string) {
