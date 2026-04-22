@@ -29,7 +29,9 @@ export function CopyToClipboardButton({
   showCheckmark = false,
   variant = "ghost",
   size = "xxs",
+  type = "button",
   className,
+  onClick,
   ...props
 }: CopyToClipboardButtonProps) {
   const { formatMessage: f } = useIntl();
@@ -58,8 +60,14 @@ export function CopyToClipboardButton({
       })}
       className={className}
       size={size}
+      type={type}
       variant={variant}
-      onClick={() => {
+      onClick={(event) => {
+        onClick?.(event);
+        if (event.defaultPrevented) {
+          return;
+        }
+
         void copyToClipboard(value)
           .then(() => {
             onCopy?.();
