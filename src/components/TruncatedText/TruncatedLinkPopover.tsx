@@ -1,4 +1,6 @@
 import * as React from "react";
+
+import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
 import { extractTextFromNode, getTruncatedTextState } from "@/components/TruncatedText/truncated-text.ts";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -14,6 +16,7 @@ type TruncatedLinkPopoverProps = {
   pressOpenDelay?: number;
   target?: React.HTMLAttributeAnchorTarget;
   rel?: string;
+  showCopyButton?: boolean;
 };
 
 export function TruncatedLinkPopover({
@@ -27,6 +30,7 @@ export function TruncatedLinkPopover({
   pressOpenDelay = 400,
   target = "_blank",
   rel = "noopener noreferrer",
+  showCopyButton = false,
 }: TruncatedLinkPopoverProps) {
   const triggerRef = React.useRef<HTMLAnchorElement | null>(null);
   const hoverTimeoutRef = React.useRef<number | null>(null);
@@ -202,7 +206,10 @@ export function TruncatedLinkPopover({
           contentClassName
         )}
       >
-        <span className="text-sm whitespace-pre-line">{textStr}</span>
+        <div className="flex items-start gap-2">
+          <span className="min-w-0 flex-1 text-sm whitespace-pre-line">{textStr}</span>
+          {showCopyButton ? <CopyToClipboardButton value={href} className="shrink-0" /> : null}
+        </div>
       </PopoverContent>
     </Popover>
   );

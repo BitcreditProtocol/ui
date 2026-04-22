@@ -163,7 +163,7 @@ export default function LanguagePreference({ children, onChange, value, values }
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerTrigger className={cn("", "bg-elevation-50 outline-none focus-visible:outline-none")}>{children}</DrawerTrigger>
+      <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">{children}</DrawerTrigger>
 
       <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
         <DrawerDescription className="sr-only">
