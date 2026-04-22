@@ -112,11 +112,7 @@ export function CopyToClipboardButton({
       }}
       {...props}
     >
-      <AppIcon
-        icon={copied && showCheckmark ? CheckIcon : CopyIcon}
-        className="text-current"
-        size={size === "lg" ? "md" : "sm"}
-      />
+      <AppIcon icon={copied && showCheckmark ? CheckIcon : CopyIcon} className="text-current" size={size === "lg" ? "md" : "sm"} />
     </Button>
   );
 }
