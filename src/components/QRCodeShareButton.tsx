@@ -92,7 +92,7 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
             dataUrl = canvas.toDataURL("image/png");
           }
 
-          if (file && navigator.canShare && navigator.canShare({ files: [file] })) {
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
             shareData.files = [file];
           }
         } catch (error) {
