@@ -49,6 +49,7 @@ export const Default: Story = {
 };
 
 export const WithClassNames: Story = {
+  args: { value: 0 },
   render: () => (
     <div className="flex flex-col gap-3">
       <Currency value={1234.56} currency="USD" amountClassName="font-bold text-lg" currencyClassName="text-muted-foreground" />
@@ -58,6 +59,7 @@ export const WithClassNames: Story = {
 };
 
 export const WithHighlight: Story = {
+  args: { value: 0 },
   render: () => (
     <div className="flex flex-col gap-3">
       <Currency value={1234.56} currency="USD" highlightQuery="1,234" />
@@ -67,6 +69,7 @@ export const WithHighlight: Story = {
 };
 
 export const WithSecondary: Story = {
+  args: { value: 0 },
   decorators: [
     (Story) => (
       <QueryClientProvider client={makeQueryClient(mockRates)}>
@@ -84,6 +87,7 @@ export const WithSecondary: Story = {
 };
 
 export const SecondaryToggle: Story = {
+  args: { value: 0 },
   decorators: [
     (Story) => (
       <QueryClientProvider client={makeQueryClient(mockRates)}>
