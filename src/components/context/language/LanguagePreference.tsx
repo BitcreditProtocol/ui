@@ -182,7 +182,7 @@ export default function LanguagePreference({ children, onChange, value, values }
         </DrawerTitle>
 
         <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label="Language selection area">
-          <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 bg-white dark:bg-elevation-250">
+          <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 dark:bg-elevation-250">
             <Search
               className={cn(
                 "bg-elevation-50 hover:bg-elevation-250 focus:bg-elevation-250",
