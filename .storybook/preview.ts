@@ -1,6 +1,8 @@
 import type { Preview } from "@storybook/react-vite";
 import "../src/index.css";
-import { createElement, type ReactElement, useEffect } from "react";
+import { createElement, Fragment, type ReactElement, useEffect } from "react";
+
+import { Toaster } from "../src/components/ui/toaster";
 
 type ThemeMode = "light" | "dark";
 
@@ -14,7 +16,7 @@ function ThemeWrapper({ story, theme }: { story: () => ReactElement; theme: Them
     document.body.setAttribute("data-theme", theme);
   }, [theme]);
 
-  return story();
+  return createElement(Fragment, null, story(), createElement(Toaster));
 }
 
 function ThemeDecorator(Story: () => ReactElement, context: { globals: { theme?: ThemeMode } }) {

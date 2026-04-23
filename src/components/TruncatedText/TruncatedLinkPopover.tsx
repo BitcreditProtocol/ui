@@ -150,67 +150,70 @@ export function TruncatedLinkPopover({
 
   if (!shouldShowPopover) {
     return (
-      <a
-        ref={triggerRef}
-        href={href}
-        target={target}
-        rel={rel}
-        className={cn("block w-full min-w-0 max-w-full overflow-hidden align-top hover:underline focus:outline-none", className)}
-        title={resolvedTitle}
-        aria-label={title ?? flatLabel}
-      >
-        {visibleTextNode}
-      </a>
-    );
-  }
-
-  return (
-    <Popover open={isOpen} onOpenChange={setIsOpen}>
-      <PopoverAnchor asChild>
+      <div className="flex min-w-0 items-center gap-2">
         <a
           ref={triggerRef}
           href={href}
           target={target}
           rel={rel}
           className={cn("block w-full min-w-0 max-w-full overflow-hidden align-top hover:underline focus:outline-none", className)}
+          title={resolvedTitle}
           aria-label={title ?? flatLabel}
-          aria-expanded={isOpen}
-          aria-haspopup="dialog"
-          onMouseEnter={scheduleOpen}
-          onMouseLeave={closePopover}
-          onPointerDown={startPressOpen}
-          onPointerUp={stopPressOpen}
-          onPointerCancel={stopPressOpen}
-          onFocus={() => {
-            setIsOpen(true);
-          }}
-          onBlur={closePopover}
-          onClick={(event) => {
-            if (openedByLongPressRef.current) {
-              event.preventDefault();
-              event.stopPropagation();
-              openedByLongPressRef.current = false;
-            }
-          }}
         >
           {visibleTextNode}
         </a>
-      </PopoverAnchor>
+        {showCopyButton ? <CopyToClipboardButton value={href} className="shrink-0" /> : null}
+      </div>
+    );
+  }
 
-      <PopoverContent
-        align="center"
-        sideOffset={6}
-        collisionPadding={16}
-        className={cn(
-          "z-50 break-all rounded-lg border border-[#1B0F004D] bg-elevation-50 p-4 text-center shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-          contentClassName
-        )}
-      >
-        <div className="flex items-start gap-2">
-          <span className="min-w-0 flex-1 text-sm whitespace-pre-line">{textStr}</span>
-          {showCopyButton ? <CopyToClipboardButton value={href} className="shrink-0" /> : null}
-        </div>
-      </PopoverContent>
-    </Popover>
+  return (
+    <div className="flex min-w-0 items-center gap-2">
+      <Popover open={isOpen} onOpenChange={setIsOpen}>
+        <PopoverAnchor asChild>
+          <a
+            ref={triggerRef}
+            href={href}
+            target={target}
+            rel={rel}
+            className={cn("block w-full min-w-0 max-w-full overflow-hidden align-top hover:underline focus:outline-none", className)}
+            aria-label={title ?? flatLabel}
+            aria-expanded={isOpen}
+            aria-haspopup="dialog"
+            onMouseEnter={scheduleOpen}
+            onMouseLeave={closePopover}
+            onPointerDown={startPressOpen}
+            onPointerUp={stopPressOpen}
+            onPointerCancel={stopPressOpen}
+            onFocus={() => {
+              setIsOpen(true);
+            }}
+            onBlur={closePopover}
+            onClick={(event) => {
+              if (openedByLongPressRef.current) {
+                event.preventDefault();
+                event.stopPropagation();
+                openedByLongPressRef.current = false;
+              }
+            }}
+          >
+            {visibleTextNode}
+          </a>
+        </PopoverAnchor>
+
+        <PopoverContent
+          align="center"
+          sideOffset={6}
+          collisionPadding={16}
+          className={cn(
+            "z-50 w-[--radix-popover-anchor-width] break-all rounded-lg border border-[#1B0F004D] bg-elevation-50 p-4 text-center shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+            contentClassName
+          )}
+        >
+          <span className="min-w-0 text-sm whitespace-pre-line">{textStr}</span>
+        </PopoverContent>
+      </Popover>
+      {showCopyButton ? <CopyToClipboardButton value={textStr} className="shrink-0" /> : null}
+    </div>
   );
 }
