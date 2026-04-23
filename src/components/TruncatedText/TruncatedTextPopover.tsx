@@ -1,4 +1,6 @@
 import * as React from "react";
+
+import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
 import { extractTextFromNode, getTruncatedTextState } from "@/components/TruncatedText/truncated-text.ts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
@@ -10,9 +12,18 @@ type TruncatedTextPopoverProps = {
   contentClassName?: string;
   title?: string;
   as?: "button" | "span";
+  showCopyButton?: boolean;
 };
 
-export function TruncatedTextPopover({ text, maxLength, className, contentClassName, title, as = "span" }: TruncatedTextPopoverProps) {
+export function TruncatedTextPopover({
+  text,
+  maxLength,
+  className,
+  contentClassName,
+  title,
+  as = "span",
+  showCopyButton = false,
+}: TruncatedTextPopoverProps) {
   const triggerRef = React.useRef<HTMLElement | null>(null);
   const [hasWidthOverflow, setHasWidthOverflow] = React.useState(false);
   const textStr = extractTextFromNode(text);
@@ -120,7 +131,10 @@ export function TruncatedTextPopover({ text, maxLength, className, contentClassN
           contentClassName
         )}
       >
-        <span className="text-sm whitespace-pre-line">{textStr}</span>
+        <div className="flex items-start gap-2">
+          <span className="min-w-0 flex-1 text-sm whitespace-pre-line">{textStr}</span>
+          {showCopyButton ? <CopyToClipboardButton value={textStr} className="shrink-0" /> : null}
+        </div>
       </PopoverContent>
     </Popover>
   );

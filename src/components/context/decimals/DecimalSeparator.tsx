@@ -121,7 +121,7 @@ export default function DecimalSeparator({ children, onChange, value }: DecimalS
 
   return (
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
-      <DrawerTrigger className="bg-elevation-50 outline-none focus-visible:outline-none">{children}</DrawerTrigger>
+      <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">{children}</DrawerTrigger>
 
       <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
         <DrawerTitle className="text-text-300 text-left text-lg font-medium leading-[28px] mb-3">

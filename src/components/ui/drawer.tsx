@@ -76,7 +76,7 @@ const DrawerContent = React.forwardRef<
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-2xl border bg-elevation-50 data-[state=closed]:pointer-events-none dark:bg-elevation-250",
+          "fixed bottom-0 left-1/2 z-50 mt-24 flex h-auto w-full max-w-[430px] -translate-x-1/2 flex-col rounded-t-2xl border bg-elevation-50 data-[state=closed]:pointer-events-none dark:bg-elevation-250",
           className
         )}
         aria-modal="true"
