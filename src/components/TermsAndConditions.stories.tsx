@@ -40,3 +40,24 @@ export const PageMode: Story = {
     mode: "page",
   },
 };
+
+export const CustomContent: Story = {
+  args: {
+    mode: "drawer",
+    labels: {
+      trigger: "House Rules",
+      drawerTitle: "House Rules",
+      drawerDescription: "Custom legal and compliance text supplied by the consuming app",
+      pageTitle: "House Rules",
+    },
+    content: (
+      <div className="text-text-200 text-xs leading-normal whitespace-pre-wrap break-words">
+        <p className="font-medium mb-2">Marketplace Agreement</p>
+        <p className="mt-4 mb-2">Summary:</p>
+        <p>This content is supplied by the consuming app instead of the UI library defaults.</p>
+        <p className="mt-4 mb-2">Terms:</p>
+        <p>The app can provide its own wording, legal copy, and structure here.</p>
+      </div>
+    ),
+  },
+};

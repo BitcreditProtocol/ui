@@ -1,10 +1,11 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { useIntl } from "react-intl";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button, type ButtonProps } from "@/components/ui/button";
+import { useUiText } from "@/components/context/i18n/UiI18nProvider";
 import { toast } from "@/hooks/use-toast.ts";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 
 async function copyToClipboard(value: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
@@ -20,6 +21,8 @@ type CopyToClipboardButtonProps = {
   onCopy?: () => void;
   label?: string;
   showCheckmark?: boolean;
+  t?: UiT;
+  messages?: UiMessages;
 } & Omit<ButtonProps, "onCopy">;
 
 export function CopyToClipboardButton({
@@ -27,6 +30,8 @@ export function CopyToClipboardButton({
   onCopy,
   label,
   showCheckmark = false,
+  t,
+  messages,
   variant = "ghost",
   size = "xxs",
   type = "button",
@@ -34,14 +39,16 @@ export function CopyToClipboardButton({
   onClick,
   ...props
 }: CopyToClipboardButtonProps) {
-  const { formatMessage: f } = useIntl();
+  const uiText = useUiText();
   const [copied, setCopied] = useState(false);
   const resetTimeoutRef = useRef<number | null>(null);
   const labelValue =
     label ??
-    f({
-      id: "action.copyToClipboard.label",
-      defaultMessage: "Value",
+    uiText({
+      key: "ui.copyToClipboard.valueLabel",
+      legacyKey: "action.copyToClipboard.label",
+      messages,
+      t,
     });
 
   useEffect(() => {
@@ -54,9 +61,11 @@ export function CopyToClipboardButton({
 
   return (
     <Button
-      aria-label={f({
-        id: "action.copyToClipboard.ariaLabel",
-        defaultMessage: "Copy to clipboard",
+      aria-label={uiText({
+        key: "ui.copyToClipboard.ariaLabel",
+        legacyKey: "action.copyToClipboard.ariaLabel",
+        messages,
+        t,
       })}
       className={className}
       size={size}
@@ -84,34 +93,38 @@ export function CopyToClipboardButton({
             }
 
             toast({
-              title: f({
-                id: "action.copyToClipboard.title",
-                defaultMessage: "Success!",
+              title: uiText({
+                key: "ui.copyToClipboard.successTitle",
+                legacyKey: "action.copyToClipboard.title",
+                messages,
+                t,
               }),
-              description: f(
-                {
-                  id: "action.copyToClipboard.description",
-                  defaultMessage: "{label} copied to clipboard!",
-                },
-                { label: labelValue }
-              ),
+              description: uiText({
+                key: "ui.copyToClipboard.successDescription",
+                legacyKey: "action.copyToClipboard.description",
+                params: { label: labelValue },
+                messages,
+                t,
+              }),
               position: "top-center",
               duration: 2500,
             });
           })
           .catch(() => {
             toast({
-              title: f({
-                id: "action.copyToClipboard.errorTitle",
-                defaultMessage: "Copy failed",
+              title: uiText({
+                key: "ui.copyToClipboard.errorTitle",
+                legacyKey: "action.copyToClipboard.errorTitle",
+                messages,
+                t,
               }),
-              description: f(
-                {
-                  id: "action.copyToClipboard.errorDescription",
-                  defaultMessage: "Failed to copy {label}.",
-                },
-                { label: labelValue }
-              ),
+              description: uiText({
+                key: "ui.copyToClipboard.errorDescription",
+                legacyKey: "action.copyToClipboard.errorDescription",
+                params: { label: labelValue },
+                messages,
+                t,
+              }),
               variant: "error",
               position: "top-center",
               duration: 2500,

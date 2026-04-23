@@ -1,154 +1,171 @@
-import { FormattedMessage } from "react-intl";
+import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import type { ReactNode } from "react";
 import { Heading } from "@/components/typography/Heading";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "./ui/drawer";
 
-function TermsContent() {
+type TermsAndConditionsProps = {
+  mode?: "drawer" | "page";
+  className?: string;
+  messages?: UiMessages;
+  t?: UiT;
+  content?: ReactNode;
+  labels?: {
+    trigger?: string;
+    drawerTitle?: string;
+    drawerDescription?: string;
+    pageTitle?: string;
+  };
+};
+
+function TermsContent({ messages, t }: { messages?: UiMessages; t?: UiT }) {
+  const uiText = useUiText();
   return (
     <div className="text-text-200 text-xs font-sans font-normal leading-normal whitespace-pre-wrap break-words">
       <p className="font-medium mb-2">
-        <FormattedMessage
-          id="termsAndConditions.content.title"
-          defaultMessage="Bill of Exchange Agreement"
-          description="Title of the terms and conditions content"
-        />
+        {uiText({ key: "ui.termsAndConditions.content.title", legacyKey: "termsAndConditions.content.title", messages, t })}
       </p>
 
       <p className="mt-4 mb-2">
-        <FormattedMessage id="termsAndConditions.content.summary.heading" defaultMessage="Summary:" description="Summary section heading" />
+        {uiText({ key: "ui.termsAndConditions.content.summary.heading", legacyKey: "termsAndConditions.content.summary.heading", messages, t })}
       </p>
       <p>
-        <FormattedMessage
-          id="termsAndConditions.content.summary.text"
-          defaultMessage="Bitcredit's software lets you issue and use bills of exchange digitally. E-Bills have the same key features as handwritten bills but are faster, easier, and cryptographically secure."
-          description="Summary description of Bitcredit's E-Bills"
-        />
+        {uiText({ key: "ui.termsAndConditions.content.summary.text", legacyKey: "termsAndConditions.content.summary.text", messages, t })}
       </p>
 
       <p className="mt-4 mb-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.heading"
-          defaultMessage="Terms of Use:"
-          description="Terms of Use section heading"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.heading",
+          legacyKey: "termsAndConditions.content.termsOfUse.heading",
+          messages,
+          t,
+        })}
       </p>
       <p>
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph1"
-          defaultMessage="E-Bills reproduce the legal and practical features of handwritten bills of exchange in digital form. They include all required elements and use electronic signatures instead of handwritten ones."
-          description="First paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph1",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph1",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph2"
-          defaultMessage="The rightful holder of an E-Bill can always be verified through cryptographic proof."
-          description="Second paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph2",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph2",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph3"
-          defaultMessage="By signing or transacting with an E-Bill, you agree that electronic signatures are legally binding."
-          description="Third paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph3",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph3",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph4"
-          defaultMessage="Each party is responsible for reasonable due diligence to confirm the identity of their counterparty."
-          description="Fourth paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph4",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph4",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph5"
-          defaultMessage="The United Nations Convention on International Bills of Exchange and other applicable international rules apply to all E-Bills, whether domestic or international."
-          description="Fifth paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph5",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph5",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph6"
-          defaultMessage="Where legally possible, the parties agree to use fast-track court procedures for bill of exchange disputes to ensure quick decisions."
-          description="Sixth paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph6",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph6",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph7"
-          defaultMessage="If a provision of bill of exchange law cannot apply directly to an E-Bill, the closest permissible alternative with the same economic effect shall apply."
-          description="Seventh paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph7",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph7",
+          messages,
+          t,
+        })}
       </p>
       <p className="mt-2">
-        <FormattedMessage
-          id="termsAndConditions.content.termsOfUse.paragraph8"
-          defaultMessage="If national or international laws recognize E-Bills as equivalent to handwritten bills, those laws will apply automatically."
-          description="Eighth paragraph of Terms of Use"
-        />
+        {uiText({
+          key: "ui.termsAndConditions.content.termsOfUse.paragraph8",
+          legacyKey: "termsAndConditions.content.termsOfUse.paragraph8",
+          messages,
+          t,
+        })}
       </p>
     </div>
   );
 }
 
-interface TermsAndConditionsProps {
-  mode?: "drawer" | "page";
-  className?: string;
-}
+export function TermsAndConditions({ mode = "drawer", className, messages, t, content, labels }: TermsAndConditionsProps) {
+  const uiText = useUiText();
+  const resolvedContent = content ?? <TermsContent messages={messages} t={t} />;
 
-export function TermsAndConditions({ mode = "drawer", className }: TermsAndConditionsProps) {
   if (mode === "page") {
-    return <TermsAndConditionsPage className={className} />;
+    return <TermsAndConditionsPage className={className} messages={messages} t={t} content={resolvedContent} labels={labels} />;
   } else {
     return (
       <Drawer>
         <DrawerTrigger className="!bg-transparent">
           <span className="text-brand-200 text-base font-medium -tracking-[0.32px]">
-            <FormattedMessage
-              id="termsAndConditions.review.terms"
-              defaultMessage="Terms and Conditions"
-              description="Trigger to terms and conditions drawer"
-            />
+            {labels?.trigger ?? uiText({ key: "ui.termsAndConditions.review.terms", legacyKey: "termsAndConditions.review.terms", messages, t })}
           </span>
         </DrawerTrigger>
         <DrawerContent className="flex flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto">
           <DrawerTitle className="text-text-300 text-base font-medium leading-normal text-center">
-            <FormattedMessage
-              id="termsAndConditions.review.title"
-              defaultMessage="Terms"
-              description="Title to terms and conditions drawer"
-            />
+            {labels?.drawerTitle ?? uiText({ key: "ui.termsAndConditions.review.title", legacyKey: "termsAndConditions.review.title", messages, t })}
           </DrawerTitle>
           <DrawerDescription className="sr-only">
-            <FormattedMessage
-              id="termsAndConditions.review.description"
-              defaultMessage="Bill of exchange agreement and terms of use for terms and conditions"
-              description="Description to terms and conditions drawer"
-            />
+            {labels?.drawerDescription ??
+              uiText({
+                key: "ui.termsAndConditions.review.description",
+                legacyKey: "termsAndConditions.review.description",
+                messages,
+                t,
+              })}
           </DrawerDescription>
 
-          <TermsContent />
+          {resolvedContent}
         </DrawerContent>
       </Drawer>
     );
   }
 }
 
-function TermsAndConditionsPage({ className }: { className?: string }) {
+function TermsAndConditionsPage({
+  className,
+  messages,
+  t,
+  content,
+  labels,
+}: {
+  className?: string;
+  messages?: UiMessages;
+  t?: UiT;
+  content: ReactNode;
+  labels?: TermsAndConditionsProps["labels"];
+}) {
+  const uiText = useUiText();
   return (
     <section className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
       <Heading as="h1" variant="sub">
-        <FormattedMessage
-          id="termsAndConditions.page.title"
-          defaultMessage="Terms and Conditions"
-          description="Title for the Terms and Conditions page"
-        />
+        {labels?.pageTitle ?? uiText({ key: "ui.termsAndConditions.page.title", legacyKey: "termsAndConditions.page.title", messages, t })}
       </Heading>
-      <div className="flex flex-col gap-6">
-        <TermsContent />
-      </div>
+      <div className="flex flex-col gap-6">{content}</div>
     </section>
   );
 }

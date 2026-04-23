@@ -1,11 +1,12 @@
 import { AlignVerticalJustifyCenterIcon, CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
 
+import { useUiText } from "@/components/context/i18n/UiI18nProvider";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 import MenuOption from "../MenuOption";
 import { type DecimalFormat, usePreferences } from "../preferences/PreferencesContext";
@@ -13,28 +14,34 @@ import { type DecimalFormat, usePreferences } from "../preferences/PreferencesCo
 type DecimalSeparatorProps = PropsWithChildren<{
   value: DecimalFormat;
   onChange: (value: DecimalFormat) => void;
+  messages?: UiMessages;
+  t?: UiT;
 }>;
 
 interface DecimalFormatDef {
   value: DecimalFormat;
-  labelKey: string;
+  labelKey: "ui.decimalSeparator.point" | "ui.decimalSeparator.comma" | "ui.decimalSeparator.space";
+  legacyKey: string;
   example: string;
 }
 
 const DECIMAL_FORMATS: DecimalFormatDef[] = [
   {
     value: "point",
-    labelKey: "settings.decimalFormat.point",
+    labelKey: "ui.decimalSeparator.point",
+    legacyKey: "settings.decimalFormat.point",
     example: "1.000,00",
   },
   {
     value: "comma",
-    labelKey: "settings.decimalFormat.comma",
+    labelKey: "ui.decimalSeparator.comma",
+    legacyKey: "settings.decimalFormat.comma",
     example: "1,000.00",
   },
   {
     value: "space",
-    labelKey: "settings.decimalFormat.space",
+    labelKey: "ui.decimalSeparator.space",
+    legacyKey: "settings.decimalFormat.space",
     example: "1 000,00",
   },
 ];
@@ -45,14 +52,18 @@ function DecimalFormatOption({
   onSelect,
   index,
   hasActiveVisible,
+  messages,
+  t,
 }: {
   def: DecimalFormatDef;
   isActive: boolean;
   onSelect: (value: DecimalFormat) => void;
   index: number;
   hasActiveVisible: boolean;
+  messages?: UiMessages;
+  t?: UiT;
 }) {
-  const intl = useIntl();
+  const uiText = useUiText();
   const tabIndex = isActive ? 0 : !hasActiveVisible && index === 0 ? 0 : -1;
   return (
     <div
@@ -72,10 +83,7 @@ function DecimalFormatOption({
     >
       <div className="flex flex-col gap-0.5">
         <Text variant="titleSm" as="span">
-          {intl.formatMessage({
-            id: def.labelKey,
-            defaultMessage: def.value.charAt(0).toUpperCase() + def.value.slice(1),
-          })}
+          {uiText({ key: def.labelKey, legacyKey: def.legacyKey, messages, t })}
         </Text>
         <Text variant="caption" as="span">
           {def.example}
@@ -88,7 +96,8 @@ function DecimalFormatOption({
   );
 }
 
-export default function DecimalSeparator({ children, onChange, value }: DecimalSeparatorProps) {
+export default function DecimalSeparator({ children, onChange, value, messages, t }: DecimalSeparatorProps) {
+  const uiText = useUiText();
   const [isOpen, setIsOpen] = useState(false);
 
   const _onChange = useCallback(
@@ -125,20 +134,16 @@ export default function DecimalSeparator({ children, onChange, value }: DecimalS
 
       <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
         <DrawerTitle className="text-text-300 text-left text-lg font-medium leading-[28px] mb-3">
-          <FormattedMessage id="settings.decimalSeparator.title" defaultMessage="Decimals" description="Decimal separator drawer title" />
+          {uiText({ key: "ui.decimalSeparator.title", legacyKey: "settings.decimalSeparator.title", messages, t })}
         </DrawerTitle>
         <DrawerDescription className="sr-only">
-          <FormattedMessage
-            id="settings.decimalSeparator.description"
-            defaultMessage="Select your preferred decimal and thousands separator format"
-            description="Decimal separator description for screen readers"
-          />
+          {uiText({ key: "ui.decimalSeparator.description", legacyKey: "settings.decimalSeparator.description", messages, t })}
         </DrawerDescription>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label="Decimal separator selection area">
+        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}>
           <div
             role="radiogroup"
-            aria-label="Select decimal separator format"
+            aria-label={uiText({ key: "ui.decimalSeparator.radioLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
             className="flex flex-col gap-3 pb-2"
@@ -154,6 +159,8 @@ export default function DecimalSeparator({ children, onChange, value }: DecimalS
                     onSelect={_onChange}
                     index={idx}
                     hasActiveVisible={hasActiveVisible}
+                    messages={messages}
+                    t={t}
                   />
                   {idx < DECIMAL_FORMATS.length - 1 && <Separator key={`${def.value}-sep`} className="bg-divider-75" />}
                 </React.Fragment>
@@ -167,7 +174,7 @@ export default function DecimalSeparator({ children, onChange, value }: DecimalS
 }
 
 export function DecimalSeparatorSetting() {
-  const intl = useIntl();
+  const uiText = useUiText();
   const { decimalFormat, setDecimalFormat } = usePreferences();
 
   const getDisplayValue = (format: DecimalFormat): string => {
@@ -179,11 +186,7 @@ export function DecimalSeparatorSetting() {
     <DecimalSeparator value={decimalFormat} onChange={setDecimalFormat}>
       <MenuOption
         icon={<AppIcon icon={AlignVerticalJustifyCenterIcon} className="text-text-300" size="lg" />}
-        label={intl.formatMessage({
-          id: "settings.menu.decimals",
-          defaultMessage: "Decimals",
-          description: "Decimals menu item",
-        })}
+        label={uiText({ key: "ui.decimalSeparator.menuLabel", legacyKey: "settings.menu.decimals" })}
         defaultValue={getDisplayValue(decimalFormat)}
       />
     </DecimalSeparator>

@@ -1,7 +1,7 @@
 import { cleanup, render, screen } from "@testing-library/react";
-import { IntlProvider } from "react-intl";
 import { afterEach, describe, expect, it } from "vitest";
 
+import { UiI18nProvider } from "@/components/context/i18n/UiI18nProvider";
 import { Upload } from "./upload";
 
 describe("Upload", () => {
@@ -11,9 +11,9 @@ describe("Upload", () => {
 
   const renderComponent = () =>
     render(
-      <IntlProvider locale="en" messages={{}}>
+      <UiI18nProvider>
         <Upload />
-      </IntlProvider>
+      </UiI18nProvider>
     );
 
   it("should render upload label", () => {
@@ -44,5 +44,20 @@ describe("Upload", () => {
     const { container } = renderComponent();
     const svg = container.querySelector("svg");
     expect(svg).toBeInTheDocument();
+  });
+
+  it("should allow consumer text overrides", () => {
+    render(
+      <UiI18nProvider
+        messages={{
+          "ui.upload.label": "Datei hochladen",
+        }}
+      >
+        <Upload description="Nur PDF" />
+      </UiI18nProvider>
+    );
+
+    expect(screen.getByText("Datei hochladen")).toBeInTheDocument();
+    expect(screen.getByText("Nur PDF")).toBeInTheDocument();
   });
 });

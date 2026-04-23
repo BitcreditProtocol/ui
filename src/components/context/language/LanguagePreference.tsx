@@ -1,6 +1,5 @@
 import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
 // import ArFlag from "@/components/assets/flags/AR.svg";
 // import AtFlag from "@/components/assets/flags/AT.svg";
 import GerFlag from "@/components/assets/flags/DE.svg";
@@ -9,17 +8,21 @@ import ItFlag from "@/components/assets/flags/IT.svg";
 import TrFlag from "@/components/assets/flags/TR.svg";
 // import UkFlag from "@/components/assets/flags/UK.svg";
 import UsFlag from "@/components/assets/flags/US.svg";
+import { useUiText } from "@/components/context/i18n/UiI18nProvider";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 type LanguagePreferenceProps = PropsWithChildren<{
   value: string;
   values: string[];
   onChange: (value: string) => void;
+  messages?: UiMessages;
+  t?: UiT;
 }>;
 
 interface LanguageDef {
@@ -95,8 +98,8 @@ function LanguageOption({
   );
 }
 
-export default function LanguagePreference({ children, onChange, value, values }: LanguagePreferenceProps) {
-  const { formatMessage: f } = useIntl();
+export default function LanguagePreference({ children, onChange, value, values, messages, t }: LanguagePreferenceProps) {
+  const uiText = useUiText();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
@@ -167,21 +170,13 @@ export default function LanguagePreference({ children, onChange, value, values }
 
       <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
         <DrawerDescription className="sr-only">
-          <FormattedMessage
-            id="settings.languagePreference.description"
-            defaultMessage="Select your preferred language from the list"
-            description="Language preference description for screen readers"
-          />
+          {uiText({ key: "ui.languagePreference.description", legacyKey: "settings.languagePreference.description", messages, t })}
         </DrawerDescription>
         <DrawerTitle className="text-text-300 text-left text-lg font-medium leading-[28px] mb-3">
-          <FormattedMessage
-            id="settings.languagePreference.title"
-            defaultMessage="Language preference"
-            description="Language preference title"
-          />
+          {uiText({ key: "ui.languagePreference.title", legacyKey: "settings.languagePreference.title", messages, t })}
         </DrawerTitle>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label="Language selection area">
+        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}>
           <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 dark:bg-elevation-250">
             <Search
               className={cn(
@@ -189,11 +184,7 @@ export default function LanguagePreference({ children, onChange, value, values }
                 "dark:bg-elevation-250 dark:hover:bg-elevation-50 dark:focus:bg-elevation-50"
               )}
               value={searchTerm}
-              placeholder={f({
-                id: "language.search.placeholder",
-                defaultMessage: "Search...",
-                description: "Placeholder text for language search input",
-              })}
+              placeholder={uiText({ key: "ui.languagePreference.searchPlaceholder", legacyKey: "language.search.placeholder", messages, t })}
               onChange={(val) => {
                 setSearchTerm(val);
               }}
@@ -205,24 +196,21 @@ export default function LanguagePreference({ children, onChange, value, values }
 
             <div aria-live="polite" className="sr-only">
               {isNoResults
-                ? f({
-                    id: "language.search.no.results",
-                    defaultMessage: "No languages found",
-                  })
-                : f(
-                    {
-                      id: "language.search.results.count",
-                      defaultMessage: "{count, plural, one {# language} other {# languages}}",
-                    },
-                    { count: available.length }
-                  )}
+                ? uiText({ key: "ui.languagePreference.noResults", legacyKey: "language.search.no.results", messages, t })
+                : uiText({
+                    key: "ui.languagePreference.resultsCount",
+                    legacyKey: "language.search.results.count",
+                    params: { count: available.length },
+                    messages,
+                    t,
+                  })}
             </div>
           </div>
 
           <div
             ref={listRef}
             role="radiogroup"
-            aria-label="Select language preference"
+            aria-label={uiText({ key: "ui.languagePreference.ariaLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
             className="flex flex-col gap-3 pb-2"
