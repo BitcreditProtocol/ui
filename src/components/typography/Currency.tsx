@@ -330,16 +330,9 @@ function CurrencyWithConversion({
         srHidden={true}
       />
       {showSecondaryDisplay && secondaryValue !== null && secondaryFormatted !== null ? (
-        <span
-          aria-hidden="true"
-          className={cn("inline-flex items-baseline gap-1 text-sm text-muted-foreground", secondaryClassName)}
-        >
-          <span>
-            {withSign(<HighlightText text={secondaryFormatted} highlight={highlightQuery ?? ""} />, secondaryValue, signDisplay)}
-          </span>
-          {secondarySymbol ? (
-            <span className={cn(symbolClass, currencyClassName)}>{secondarySymbol}</span>
-          ) : null}
+        <span aria-hidden="true" className={cn("inline-flex items-baseline gap-1 text-sm text-muted-foreground", secondaryClassName)}>
+          <span>{withSign(<HighlightText text={secondaryFormatted} highlight={highlightQuery ?? ""} />, secondaryValue, signDisplay)}</span>
+          {secondarySymbol ? <span className={cn(symbolClass, currencyClassName)}>{secondarySymbol}</span> : null}
         </span>
       ) : null}
       <span className="sr-only">{outerAriaLabel}</span>
