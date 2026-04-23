@@ -2,7 +2,7 @@ import type { Preview } from "@storybook/react-vite";
 import "../src/index.css";
 import { createElement, Fragment, type ReactElement, useEffect } from "react";
 
-import { Toaster } from "../src/components/ui/toaster";
+import { Toaster } from "@/components/ui/toaster";
 
 type ThemeMode = "light" | "dark";
 
