@@ -31,8 +31,12 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
   const onLoadingChangeRef = useRef(onLoadingChange);
   const onOpeningChangeRef = useRef(onOpeningChange);
 
-  useEffect(() => { onLoadingChangeRef.current = onLoadingChange; }, [onLoadingChange]);
-  useEffect(() => { onOpeningChangeRef.current = onOpeningChange; }, [onOpeningChange]);
+  useEffect(() => {
+    onLoadingChangeRef.current = onLoadingChange;
+  }, [onLoadingChange]);
+  useEffect(() => {
+    onOpeningChangeRef.current = onOpeningChange;
+  }, [onOpeningChange]);
 
   useEffect(() => {
     onLoadingChangeRef.current?.(true);

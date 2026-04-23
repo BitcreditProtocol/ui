@@ -107,7 +107,18 @@ const symbolClass = "text-text-200 text-xs font-normal leading-normal";
 
 type BaseProps = Omit<FormattedCurrencyProps, "sourceCurrency" | "showSecondary" | "secondaryClassName">;
 
-function CurrencyBase({ value, className, amountClassName, currencyClassName, color = "auto", type = "auto", currency, currencyDisplay = "symbol", signDisplay = "exceptZero", highlightQuery }: BaseProps) {
+function CurrencyBase({
+  value,
+  className,
+  amountClassName,
+  currencyClassName,
+  color = "auto",
+  type = "auto",
+  currency,
+  currencyDisplay = "symbol",
+  signDisplay = "exceptZero",
+  highlightQuery,
+}: BaseProps) {
   const { currency: selected, decimalFormat } = usePreferences();
   const intl = useIntl();
   const locale = getLocaleForFormat(intl.locale, decimalFormat);
@@ -193,10 +204,12 @@ function CurrencyWithConversion({
   const showSecondaryDisplay = showSecondary && secondaryFormatted !== null;
 
   return (
-    <span className={cn("inline-flex items-baseline gap-2", className, {
-      "text-signal-success": color !== "none" && (type === "credit" || (type === "auto" && value > 0)),
-      "text-signal-error": color !== "none" && (type === "debit" || (type === "auto" && value < 0)),
-    })}>
+    <span
+      className={cn("inline-flex items-baseline gap-2", className, {
+        "text-signal-success": color !== "none" && (type === "credit" || (type === "auto" && value > 0)),
+        "text-signal-error": color !== "none" && (type === "debit" || (type === "auto" && value < 0)),
+      })}
+    >
       <CurrencyBase
         value={value}
         currency={sourceCurrency}
