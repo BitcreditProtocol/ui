@@ -12,7 +12,7 @@ function Upload() {
 
       <div className="flex flex-col gap-0.5">
         <span className="text-text-300 text-sm font-medium">
-          <FormattedMessage id="Upload document" defaultMessage="Upload document" description="Upload files placeholder" />
+          <FormattedMessage id="ui.upload.label" defaultMessage="Upload document" description="Upload files placeholder" />
         </span>
 
         <span className="text-text-200 text-xs font-normal">PDF, PNG or JPG (max. 10 MB)</span>
@@ -22,4 +22,3 @@ function Upload() {
 }
 
 export { Upload };
-export default Upload;

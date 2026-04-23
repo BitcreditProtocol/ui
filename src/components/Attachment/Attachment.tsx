@@ -1,8 +1,9 @@
 import { CircleCheckIcon, SquareArrowOutUpRightIcon } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
 import { AppIcon } from "@/components/ui/app-icon";
+import { cn } from "@/lib/utils";
 
 type BinaryFileResponse = {
   data: ArrayLike<number>;
@@ -12,11 +13,34 @@ type BinaryFileResponse = {
 type GetFileWithId = (id: string, file_name: string) => Promise<BinaryFileResponse>;
 type GetFileWithoutId = (file_name: string) => Promise<BinaryFileResponse>;
 
-export function Attachment({ id, fileName, getFile }: { id?: string; fileName: string; getFile: GetFileWithId | GetFileWithoutId }) {
+type AttachmentProps = {
+  id?: string;
+  fileName: string;
+  getFile: GetFileWithId | GetFileWithoutId;
+  className?: string;
+  disabled?: boolean;
+  onLoadingChange?: (loading: boolean) => void;
+  onOpeningChange?: (opening: boolean) => void;
+};
+
+export function Attachment({ id, fileName, getFile, className, disabled, onLoadingChange, onOpeningChange }: AttachmentProps) {
   const [fileSize, setFileSize] = useState(0);
   const [url, setUrl] = useState("");
+  const [isOpening, setIsOpening] = useState(false);
+  const openingTimeoutRef = useRef<number | null>(null);
+  const onLoadingChangeRef = useRef(onLoadingChange);
+  const onOpeningChangeRef = useRef(onOpeningChange);
 
   useEffect(() => {
+    onLoadingChangeRef.current = onLoadingChange;
+  }, [onLoadingChange]);
+  useEffect(() => {
+    onOpeningChangeRef.current = onOpeningChange;
+  }, [onOpeningChange]);
+
+  useEffect(() => {
+    onLoadingChangeRef.current?.(true);
+
     const retrieveFile = async () => {
       try {
         let response: BinaryFileResponse;
@@ -32,12 +56,11 @@ export function Attachment({ id, fileName, getFile }: { id?: string; fileName: s
         });
 
         setFileSize(Math.round(blob.size / 1024));
-
-        const url = URL.createObjectURL(blob);
-
-        setUrl(url);
+        setUrl(URL.createObjectURL(blob));
       } catch (error) {
         console.error("Failed to download file:", error);
+      } finally {
+        onLoadingChangeRef.current?.(false);
       }
     };
 
@@ -45,16 +68,30 @@ export function Attachment({ id, fileName, getFile }: { id?: string; fileName: s
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const openFile = () => {
-    if (!url) {
-      return;
-    }
+  useEffect(() => {
+    return () => {
+      if (openingTimeoutRef.current !== null) {
+        window.clearTimeout(openingTimeoutRef.current);
+      }
+    };
+  }, []);
 
+  const openFile = () => {
+    if (!url) return;
+
+    setIsOpening(true);
+    onOpeningChangeRef.current?.(true);
     window.open(url, "_blank", "noopener,noreferrer");
+
+    openingTimeoutRef.current = window.setTimeout(() => {
+      setIsOpening(false);
+      onOpeningChangeRef.current?.(false);
+      openingTimeoutRef.current = null;
+    }, 2000);
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-elevation-200 border border-divider-50 rounded-lg">
+    <div className={cn("flex items-center justify-between p-4 bg-elevation-200 border border-divider-50 rounded-lg", className)}>
       <div className="flex gap-1 items-center min-w-0 flex-1">
         <TruncatedTextPopover
           text={fileName}
@@ -70,9 +107,13 @@ export function Attachment({ id, fileName, getFile }: { id?: string; fileName: s
         className="shrink-0 p-1 !bg-transparent disabled:cursor-not-allowed disabled:opacity-40"
         onClick={openFile}
         aria-label={`Open ${fileName}`}
-        disabled={!url}
+        disabled={!url || isOpening || disabled}
       >
-        <AppIcon icon={SquareArrowOutUpRightIcon} className="text-text-200" />
+        {isOpening ? (
+          <span className="text-xs text-text-200">Opening...</span>
+        ) : (
+          <AppIcon icon={SquareArrowOutUpRightIcon} className="text-text-200" />
+        )}
       </button>
     </div>
   );

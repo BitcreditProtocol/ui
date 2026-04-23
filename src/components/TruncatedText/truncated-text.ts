@@ -141,7 +141,7 @@ export function getTruncatedTextState(text: React.ReactNode, maxLength?: number)
   const hasExplicitMaxLength = maxLength !== undefined;
   const textStr = extractTextFromNode(text);
   const rawLines = textStr.split(/\r?\n/);
-  const lines = rawLines.map((line) => line.replace(/\s+$/g, ""));
+  const lines = rawLines.map((line) => line.trimEnd());
   const computedVisibleLines = lines.map((line) => {
     if (isLikelyNodeId(line)) {
       return truncateWithSafeguard(line, effectiveMaxLength, "middle");
