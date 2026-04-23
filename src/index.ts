@@ -46,6 +46,7 @@ export * from "./components/ui/dialog";
 export * from "./components/ui/drawer";
 export * from "./components/ui/dropdown-menu";
 export * from "./components/ui/form";
+export * from "./components/ui/highlight-text";
 export * from "./components/ui/input";
 export * from "./components/ui/label";
 export * from "./components/ui/popover";

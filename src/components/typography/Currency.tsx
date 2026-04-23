@@ -2,30 +2,25 @@ import React, { useMemo } from "react";
 import { type FormatNumberOptions, useIntl } from "react-intl";
 
 import { usePreferences } from "@/components/context/preferences/PreferencesContext";
+import { HighlightText } from "@/components/ui/highlight-text";
+import { useRates } from "@/hooks/useRates";
+import { convert, formatAmountNumber, getLocaleForFormat, type CurrencyCode } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 export type FormattedCurrencyProps = {
   value: number;
   className?: string;
+  amountClassName?: string;
+  currencyClassName?: string;
+  secondaryClassName?: string;
   color?: "auto" | "none";
   type?: "auto" | "credit" | "debit";
   currency?: FormatNumberOptions["currency"];
   currencyDisplay?: FormatNumberOptions["currencyDisplay"] | "none";
+  sourceCurrency?: CurrencyCode;
+  showSecondary?: boolean;
+  highlightQuery?: string;
 } & Pick<FormatNumberOptions, "signDisplay">;
-
-type CurrencyCode = "usd" | "eur" | "btc" | "sat";
-
-const getLocaleForFormat = (locale: string, decimalFormat: "point" | "comma" | "space") => {
-  if (decimalFormat === "point") {
-    return locale.startsWith("de") || locale.startsWith("es") || locale.startsWith("it") || locale.startsWith("tr") ? "de-DE" : locale;
-  }
-
-  if (decimalFormat === "space") {
-    return "fr-FR";
-  }
-
-  return locale;
-};
 
 // Helper: apply sign wrapping around a string or JSX content
 const withSign = (content: React.ReactNode, amount: number, signDisplay: FormattedCurrencyProps["signDisplay"]): React.ReactNode => {
@@ -59,169 +54,179 @@ const formatPlain = (locale: string, abs: number, minFrac = 2, maxFrac = 2): str
   }).format(abs);
 };
 
-// Helper: fiat formatting (USD/EUR) with Intl currency style
-const formatFiat = (
+type FormattedParts = {
+  numberStr: string;
+  symbolStr: string | null;
+  symbolBefore: boolean;
+};
+
+const getFormattedParts = (
   locale: string,
   abs: number,
-  code: "usd" | "eur",
-  currencyDisplay: Exclude<FormattedCurrencyProps["currencyDisplay"], "none">
-): string => {
-  const currencyCode = code.toUpperCase();
-
-  if (abs > 0 && abs < 0.005) {
-    const formatter = new Intl.NumberFormat(locale, {
-      style: "currency",
-      currency: currencyCode,
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-      currencyDisplay,
-    });
-    const zeroOneFormatted = formatter.format(0.01);
-    return zeroOneFormatted.replace("0.01", "<0.01").replace("0,01", "<0,01");
+  code: string,
+  currencyDisplay: FormatNumberOptions["currencyDisplay"] | "none"
+): FormattedParts => {
+  if (code === "btc") {
+    return { numberStr: formatPlain(locale, abs, 8, 8), symbolStr: currencyDisplay !== "none" ? "BTC" : null, symbolBefore: false };
+  }
+  if (code === "sat") {
+    return { numberStr: formatPlain(locale, abs, 0, 0), symbolStr: currencyDisplay !== "none" ? "sat" : null, symbolBefore: false };
+  }
+  if (currencyDisplay === "none") {
+    return { numberStr: formatPlain(locale, abs, 2, 2), symbolStr: null, symbolBefore: false };
   }
 
-  return new Intl.NumberFormat(locale, {
+  // USD/EUR — use formatToParts to separate number from symbol
+  const isSubCent = abs > 0 && abs < 0.005;
+  const parts = new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: currencyCode,
+    currency: code.toUpperCase(),
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
     currencyDisplay,
-  }).format(abs);
+  }).formatToParts(isSubCent ? 0.01 : abs);
+
+  const currencyIdx = parts.findIndex((p) => p.type === "currency");
+  const integerIdx = parts.findIndex((p) => p.type === "integer");
+  const symbolBefore = currencyIdx !== -1 && integerIdx !== -1 && currencyIdx < integerIdx;
+  const symbolStr = parts.find((p) => p.type === "currency")?.value ?? null;
+  const numberStr = parts
+    .filter((p) => p.type !== "currency")
+    .map((p) => p.value)
+    .join("")
+    .trim();
+
+  return {
+    numberStr: isSubCent ? `<${numberStr}` : numberStr,
+    symbolStr,
+    symbolBefore,
+  };
 };
 
-// Helper: BTC formatting returning JSX with "BTC" text at the end
-const formatBtc = (locale: string, abs: number, currencyDisplay: FormattedCurrencyProps["currencyDisplay"]): React.ReactNode => {
-  const number = formatPlain(locale, abs, 8, 8);
-  const symbolSpan = (text: string) => (
-    <span className="text-text-200 text-xs font-normal leading-normal" aria-hidden>
-      {text}
-    </span>
-  );
+const symbolClass = "text-text-200 text-xs font-normal leading-normal";
 
-  if (currencyDisplay === "none") {
-    return number;
-  }
+type BaseProps = Omit<FormattedCurrencyProps, "sourceCurrency" | "showSecondary" | "secondaryClassName">;
 
-  return (
-    <>
-      {number} {symbolSpan("BTC")}
-    </>
-  );
-};
-
-// Helper: SAT formatting returning JSX with zero fraction digits and \"sat\" tag
-const formatSat = (locale: string, abs: number, currencyDisplay: FormattedCurrencyProps["currencyDisplay"]): React.ReactNode => {
-  const number = formatPlain(locale, abs, 0, 0);
-  if (currencyDisplay === "none") {
-    return number;
-  }
-  return (
-    <>
-      {number}{" "}
-      <span className="text-text-200 text-xs font-normal leading-normal" aria-hidden>
-        sat
-      </span>
-    </>
-  );
-};
-
-const Currency = ({
-  value,
-  className,
-  color = "auto",
-  type = "auto",
-  currency,
-  currencyDisplay = "symbol",
-  signDisplay = "exceptZero",
-}: FormattedCurrencyProps) => {
+function CurrencyBase({ value, className, amountClassName, currencyClassName, color = "auto", type = "auto", currency, currencyDisplay = "symbol", signDisplay = "exceptZero", highlightQuery }: BaseProps) {
   const { currency: selected, decimalFormat } = usePreferences();
   const intl = useIntl();
   const locale = getLocaleForFormat(intl.locale, decimalFormat);
 
-  const derived = useMemo(() => {
-    if (currency) {
-      return {
-        amount: value,
-        code: currency.toLowerCase() as CurrencyCode,
-      } as const;
-    }
+  const code = useMemo(() => (currency ?? selected).toLowerCase(), [currency, selected]);
+  const abs = Math.abs(value);
 
-    return { amount: value, code: selected as CurrencyCode } as const;
-  }, [value, currency, selected]);
+  const parts = useMemo(() => getFormattedParts(locale, abs, code, currencyDisplay), [locale, abs, code, currencyDisplay]);
 
-  const formattedValue = useMemo(() => {
-    const hasExplicitCurrency = Boolean(currency);
+  const numberNode = useMemo(
+    () => (
+      <span className={amountClassName}>
+        <HighlightText text={parts.numberStr} highlight={highlightQuery ?? ""} />
+      </span>
+    ),
+    [amountClassName, parts.numberStr, highlightQuery]
+  );
 
-    if (!hasExplicitCurrency && currencyDisplay === "none") {
-      const abs = Math.abs(value);
-      const base = formatPlain(locale, abs, 2, 8);
-      return withSign(base, value, signDisplay);
-    }
+  const symbolNode = parts.symbolStr ? (
+    <span className={cn(symbolClass, currencyClassName)} aria-hidden>
+      {parts.symbolStr}
+    </span>
+  ) : null;
 
-    if (!hasExplicitCurrency && currencyDisplay !== "none") {
-      const selectedCode = derived.code;
-      const abs = Math.abs(derived.amount);
-
-      if (selectedCode === "usd" || selectedCode === "eur") {
-        const formatted = formatFiat(locale, abs, selectedCode, currencyDisplay);
-        return withSign(formatted, derived.amount, signDisplay);
-      }
-
-      if (selectedCode === "btc") {
-        const content = formatBtc(locale, abs, currencyDisplay);
-        return withSign(content, derived.amount, signDisplay);
-      }
-
-      if (selectedCode === "sat") {
-        const content = formatSat(locale, abs, currencyDisplay);
-        return withSign(content, derived.amount, signDisplay);
-      }
-
-      const base = formatPlain(locale, abs, 2, 2);
-      return withSign(base, derived.amount, signDisplay);
-    }
-
-    const code = (currency as string).toLowerCase();
-    const abs = Math.abs(value);
-
-    if (currencyDisplay === "none") {
-      if (code === "sat") {
-        const base = formatPlain(locale, abs, 0, 0);
-        return withSign(base, value, signDisplay);
-      }
-      const base = formatPlain(locale, abs, 2, 2);
-      return withSign(base, value, signDisplay);
-    }
-
-    if (code === "usd" || code === "eur") {
-      const formatted = formatFiat(locale, abs, code, currencyDisplay);
-      return withSign(formatted, value, signDisplay);
-    }
-
-    if (code === "btc") {
-      const content = formatBtc(locale, abs, currencyDisplay);
-      return withSign(content, value, signDisplay);
-    }
-
-    if (code === "sat") {
-      const content = formatSat(locale, abs, currencyDisplay);
-      return withSign(content, value, signDisplay);
-    }
-
-    const formatted = formatPlain(locale, abs, 2, 2);
-    return withSign(formatted, value, signDisplay);
-  }, [currency, currencyDisplay, value, signDisplay, locale, derived.code, derived.amount]);
+  const content = (
+    <>
+      {parts.symbolBefore ? symbolNode : null}
+      {numberNode}
+      {!parts.symbolBefore ? symbolNode : null}
+    </>
+  );
 
   return (
     <span
       className={cn(className, {
-        "text-signal-success": color !== "none" && (type === "credit" || (type === "auto" && derived.amount > 0)),
-        "text-signal-error": color !== "none" && (type === "debit" || (type === "auto" && derived.amount < 0)),
+        "text-signal-success": color !== "none" && (type === "credit" || (type === "auto" && value > 0)),
+        "text-signal-error": color !== "none" && (type === "debit" || (type === "auto" && value < 0)),
       })}
     >
-      {formattedValue}
+      {withSign(content, value, signDisplay)}
     </span>
   );
+}
+
+function CurrencyWithConversion({
+  value,
+  sourceCurrency,
+  currency,
+  showSecondary = true,
+  secondaryClassName,
+  currencyClassName,
+  className,
+  color = "auto",
+  type = "auto",
+  signDisplay = "exceptZero",
+  highlightQuery,
+  ...rest
+}: FormattedCurrencyProps & { sourceCurrency: CurrencyCode }) {
+  const { currency: preferred, decimalFormat } = usePreferences();
+  const intl = useIntl();
+  const locale = getLocaleForFormat(intl.locale, decimalFormat);
+  const { data: rates } = useRates();
+
+  const displayCurrency = (currency ?? preferred) as CurrencyCode;
+
+  const secondaryValue = useMemo(() => {
+    if (!rates || displayCurrency === sourceCurrency) return null;
+    try {
+      return convert(value, sourceCurrency, displayCurrency, rates);
+    } catch {
+      return null;
+    }
+  }, [rates, value, sourceCurrency, displayCurrency]);
+
+  const secondaryFormatted = useMemo(() => {
+    if (secondaryValue === null) return null;
+    return formatAmountNumber(Math.abs(secondaryValue), displayCurrency, locale);
+  }, [secondaryValue, displayCurrency, locale]);
+
+  const secondarySymbol = displayCurrency === "btc" ? "BTC" : displayCurrency === "sat" ? "sat" : displayCurrency.toUpperCase();
+  const secondarySign = secondaryValue !== null && secondaryValue < 0 ? "-" : "";
+
+  const showSecondaryDisplay = showSecondary && secondaryFormatted !== null;
+
+  return (
+    <span className={cn("inline-flex items-baseline gap-2", className, {
+      "text-signal-success": color !== "none" && (type === "credit" || (type === "auto" && value > 0)),
+      "text-signal-error": color !== "none" && (type === "debit" || (type === "auto" && value < 0)),
+    })}>
+      <CurrencyBase
+        value={value}
+        currency={sourceCurrency}
+        color="none"
+        type="auto"
+        signDisplay={signDisplay}
+        highlightQuery={highlightQuery}
+        currencyClassName={currencyClassName}
+        {...rest}
+      />
+      {showSecondaryDisplay ? (
+        <span className={cn("inline-flex items-baseline gap-1 text-sm text-muted-foreground", secondaryClassName)}>
+          <span>
+            {secondarySign}
+            <HighlightText text={secondaryFormatted} highlight={highlightQuery ?? ""} />
+          </span>
+          <span className={cn(symbolClass, currencyClassName)} aria-hidden>
+            {secondarySymbol}
+          </span>
+        </span>
+      ) : null}
+    </span>
+  );
+}
+
+const Currency = (props: FormattedCurrencyProps) => {
+  if (props.sourceCurrency !== undefined) {
+    return <CurrencyWithConversion {...props} sourceCurrency={props.sourceCurrency} />;
+  }
+  return <CurrencyBase {...props} />;
 };
 
 Currency.displayName = "Currency";
