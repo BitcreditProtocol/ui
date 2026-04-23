@@ -4,7 +4,7 @@ import { type FormatNumberOptions, useIntl } from "react-intl";
 import { usePreferences } from "@/components/context/preferences/PreferencesContext";
 import { HighlightText } from "@/components/ui/highlight-text";
 import { useRates } from "@/hooks/useRates";
-import { convert, formatAmountNumber, getLocaleForFormat, type CurrencyCode } from "@/lib/currency";
+import { type CurrencyCode, convert, formatAmountNumber, getLocaleForFormat } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 export type FormattedCurrencyProps = {
