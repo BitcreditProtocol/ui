@@ -17,7 +17,13 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const stubGetFile = async () => ({ data: sampleData, content_type: "application/pdf" });
+
 export const WithoutId: Story = {
+  args: {
+    fileName: "Quarterly-report-for-board-review.pdf",
+    getFile: stubGetFile,
+  },
   render: () => (
     <div className="w-[360px]">
       <Attachment
@@ -29,6 +35,10 @@ export const WithoutId: Story = {
 };
 
 export const WithId: Story = {
+  args: {
+    fileName: "invoice-42-supporting-document.png",
+    getFile: stubGetFile,
+  },
   render: () => (
     <div className="w-[360px]">
       <Attachment
@@ -44,6 +54,10 @@ export const WithId: Story = {
 };
 
 export const WithClassName: Story = {
+  args: {
+    fileName: "custom-styled-document.pdf",
+    getFile: stubGetFile,
+  },
   render: () => (
     <div className="w-[360px]">
       <Attachment
@@ -56,6 +70,10 @@ export const WithClassName: Story = {
 };
 
 export const MultipleWithCoordination: Story = {
+  args: {
+    fileName: "Annual-report-2024.pdf",
+    getFile: stubGetFile,
+  },
   render: () => {
     const files = ["Annual-report-2024.pdf", "Invoice-details.xlsx", "Supporting-evidence.png"];
     const [openingIndex, setOpeningIndex] = useState<number | null>(null);
