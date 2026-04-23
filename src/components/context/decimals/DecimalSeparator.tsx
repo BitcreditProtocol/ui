@@ -1,7 +1,7 @@
 import { AlignVerticalJustifyCenterIcon, CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useState } from "react";
 
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -140,7 +140,11 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
           {uiText({ key: "ui.decimalSeparator.description", legacyKey: "settings.decimalSeparator.description", messages, t })}
         </DrawerDescription>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}>
+        <div
+          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+          role="group"
+          aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}
+        >
           <div
             role="radiogroup"
             aria-label={uiText({ key: "ui.decimalSeparator.radioLabel", messages, t })}

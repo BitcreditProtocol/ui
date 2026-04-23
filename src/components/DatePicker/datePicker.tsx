@@ -1,6 +1,6 @@
 import { ArrowRight, CalendarIcon } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { Calendar, type CalendarSelectHandler } from "@/components/DatePicker/calendar";
 import { AppIcon } from "@/components/ui/app-icon";
@@ -434,7 +434,9 @@ export function DatePicker({
                     >
                       {draft.from && formatDisplayDate(draft.from, lang.locale)}
                       {!draft.from && (
-                        <span className="text-text-200">{uiText({ key: "ui.datePicker.range.start", legacyKey: "datePicker.range.start", messages, t })}</span>
+                        <span className="text-text-200">
+                          {uiText({ key: "ui.datePicker.range.start", legacyKey: "datePicker.range.start", messages, t })}
+                        </span>
                       )}
                     </button>
                   </div>
@@ -456,7 +458,9 @@ export function DatePicker({
                     >
                       {draft.to && formatDisplayDate(draft.to, lang.locale)}
                       {!draft.to && (
-                        <span className="text-text-200">{uiText({ key: "ui.datePicker.range.end", legacyKey: "datePicker.range.end", messages, t })}</span>
+                        <span className="text-text-200">
+                          {uiText({ key: "ui.datePicker.range.end", legacyKey: "datePicker.range.end", messages, t })}
+                        </span>
                       )}
                     </button>
                   </div>
@@ -465,7 +469,9 @@ export function DatePicker({
             ) : (
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
-                  <div className="text-xs text-text-200">{uiText({ key: "ui.datePicker.single.selectedDate", legacyKey: "datePicker.single.selectedDate", messages, t })}</div>
+                  <div className="text-xs text-text-200">
+                    {uiText({ key: "ui.datePicker.single.selectedDate", legacyKey: "datePicker.single.selectedDate", messages, t })}
+                  </div>
                   {shouldDisplayIncrementButtons && (
                     <div className="flex items-center gap-0.5">
                       {[30, 60, 90, 120].map((days) => (

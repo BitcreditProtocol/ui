@@ -1,5 +1,5 @@
 import { CircleX } from "lucide-react";
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button } from "@/components/ui/button";
 import {

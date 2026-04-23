@@ -1,7 +1,7 @@
 import { CheckIcon, DollarSignIcon, EuroIcon } from "lucide-react";
 import React, { type PropsWithChildren, useMemo, useRef, useState } from "react";
 
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
@@ -30,7 +30,11 @@ type CurrencySelectorProps = PropsWithChildren<{
 
 type CurrencyDef = {
   code: string;
-  labelKey: "ui.currencySelector.option.usd" | "ui.currencySelector.option.eur" | "ui.currencySelector.option.btc" | "ui.currencySelector.option.sat";
+  labelKey:
+    | "ui.currencySelector.option.usd"
+    | "ui.currencySelector.option.eur"
+    | "ui.currencySelector.option.btc"
+    | "ui.currencySelector.option.sat";
   legacyLabel: string;
   icon?: React.ReactNode;
 };
@@ -177,7 +181,11 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
           {uiText({ key: "ui.currencySelector.description", legacyKey: "settings.displayCurrency.description", messages, t })}
         </DrawerDescription>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}>
+        <div
+          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+          role="group"
+          aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}
+        >
           <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 pb-2">
             <Search
               className={cn(

@@ -8,7 +8,7 @@ import ItFlag from "@/components/assets/flags/IT.svg";
 import TrFlag from "@/components/assets/flags/TR.svg";
 // import UkFlag from "@/components/assets/flags/UK.svg";
 import UsFlag from "@/components/assets/flags/US.svg";
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
@@ -176,7 +176,11 @@ export default function LanguagePreference({ children, onChange, value, values, 
           {uiText({ key: "ui.languagePreference.title", legacyKey: "settings.languagePreference.title", messages, t })}
         </DrawerTitle>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}>
+        <div
+          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+          role="group"
+          aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}
+        >
           <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 dark:bg-elevation-250">
             <Search
               className={cn(
@@ -184,7 +188,12 @@ export default function LanguagePreference({ children, onChange, value, values, 
                 "dark:bg-elevation-250 dark:hover:bg-elevation-50 dark:focus:bg-elevation-50"
               )}
               value={searchTerm}
-              placeholder={uiText({ key: "ui.languagePreference.searchPlaceholder", legacyKey: "language.search.placeholder", messages, t })}
+              placeholder={uiText({
+                key: "ui.languagePreference.searchPlaceholder",
+                legacyKey: "language.search.placeholder",
+                messages,
+                t,
+              })}
               onChange={(val) => {
                 setSearchTerm(val);
               }}

@@ -1,5 +1,6 @@
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
 import type { ReactNode } from "react";
+
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { Heading } from "@/components/typography/Heading";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
@@ -29,7 +30,12 @@ function TermsContent({ messages, t }: { messages?: UiMessages; t?: UiT }) {
       </p>
 
       <p className="mt-4 mb-2">
-        {uiText({ key: "ui.termsAndConditions.content.summary.heading", legacyKey: "termsAndConditions.content.summary.heading", messages, t })}
+        {uiText({
+          key: "ui.termsAndConditions.content.summary.heading",
+          legacyKey: "termsAndConditions.content.summary.heading",
+          messages,
+          t,
+        })}
       </p>
       <p>
         {uiText({ key: "ui.termsAndConditions.content.summary.text", legacyKey: "termsAndConditions.content.summary.text", messages, t })}
@@ -122,12 +128,14 @@ export function TermsAndConditions({ mode = "drawer", className, messages, t, co
       <Drawer>
         <DrawerTrigger className="!bg-transparent">
           <span className="text-brand-200 text-base font-medium -tracking-[0.32px]">
-            {labels?.trigger ?? uiText({ key: "ui.termsAndConditions.review.terms", legacyKey: "termsAndConditions.review.terms", messages, t })}
+            {labels?.trigger ??
+              uiText({ key: "ui.termsAndConditions.review.terms", legacyKey: "termsAndConditions.review.terms", messages, t })}
           </span>
         </DrawerTrigger>
         <DrawerContent className="flex flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto">
           <DrawerTitle className="text-text-300 text-base font-medium leading-normal text-center">
-            {labels?.drawerTitle ?? uiText({ key: "ui.termsAndConditions.review.title", legacyKey: "termsAndConditions.review.title", messages, t })}
+            {labels?.drawerTitle ??
+              uiText({ key: "ui.termsAndConditions.review.title", legacyKey: "termsAndConditions.review.title", messages, t })}
           </DrawerTitle>
           <DrawerDescription className="sr-only">
             {labels?.drawerDescription ??

@@ -55,7 +55,8 @@ export const defaultUiMessages = {
   "ui.termsAndConditions.content.termsOfUse.heading": "Terms of Use:",
   "ui.termsAndConditions.content.termsOfUse.paragraph1":
     "E-Bills reproduce the legal and practical features of handwritten bills of exchange in digital form. They include all required elements and use electronic signatures instead of handwritten ones.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph2": "The rightful holder of an E-Bill can always be verified through cryptographic proof.",
+  "ui.termsAndConditions.content.termsOfUse.paragraph2":
+    "The rightful holder of an E-Bill can always be verified through cryptographic proof.",
   "ui.termsAndConditions.content.termsOfUse.paragraph3":
     "By signing or transacting with an E-Bill, you agree that electronic signatures are legally binding.",
   "ui.termsAndConditions.content.termsOfUse.paragraph4":
@@ -102,12 +103,15 @@ function formatTemplate(template: string, params?: UiTranslationValues) {
     return template;
   }
 
-  const withPlurals = template.replace(/\{(\w+),\s*plural,\s*one\s*\{([^}]*)\}\s*other\s*\{([^}]*)\}\s*\}/g, (_, token, oneCase, otherCase) => {
-    const rawValue = params[token];
-    const count = typeof rawValue === "number" ? rawValue : Number(rawValue);
-    const selectedCase = count === 1 ? oneCase : otherCase;
-    return selectedCase.replace(/#/g, String(Number.isNaN(count) ? rawValue ?? "" : count));
-  });
+  const withPlurals = template.replace(
+    /\{(\w+),\s*plural,\s*one\s*\{([^}]*)\}\s*other\s*\{([^}]*)\}\s*\}/g,
+    (_, token, oneCase, otherCase) => {
+      const rawValue = params[token];
+      const count = typeof rawValue === "number" ? rawValue : Number(rawValue);
+      const selectedCase = count === 1 ? oneCase : otherCase;
+      return selectedCase.replace(/#/g, String(Number.isNaN(count) ? (rawValue ?? "") : count));
+    }
+  );
 
   return withPlurals.replace(/\{(\w+)\}/g, (_, token: string) => {
     const value = params[token];

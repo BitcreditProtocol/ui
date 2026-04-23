@@ -1,5 +1,5 @@
 import { BanknoteIcon } from "lucide-react";
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import MenuOption from "../MenuOption";

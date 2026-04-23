@@ -1,9 +1,9 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button, type ButtonProps } from "@/components/ui/button";
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
 import { toast } from "@/hooks/use-toast.ts";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 

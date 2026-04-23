@@ -1,6 +1,6 @@
 import { MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
 
-import { useUiText } from "@/components/context/i18n/UiI18nProvider";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { useTheme } from "@/hooks/use-theme";
