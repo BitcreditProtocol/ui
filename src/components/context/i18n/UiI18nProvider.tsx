@@ -1,4 +1,4 @@
-import { createContext } from "react";
+import { createContext, type ReactNode } from "react";
 
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 
@@ -16,7 +16,7 @@ export function UiI18nProvider({
   messages,
   t,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   devMissingMarker?: boolean;
   messages?: UiMessages;
   t?: UiT;
