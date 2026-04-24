@@ -138,8 +138,10 @@ export function TermsAndConditions({ mode = "drawer", className, hidePageHeading
 }
 
 function TermsAndConditionsPage({ className, hidePageHeading = false }: { className?: string; hidePageHeading?: boolean }) {
+  const Container = hidePageHeading ? "div" : "section";
+
   return (
-    <section className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
+    <Container className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
       {!hidePageHeading ? (
         <Heading as="h1" variant="sub">
           <FormattedMessage
@@ -152,6 +154,6 @@ function TermsAndConditionsPage({ className, hidePageHeading = false }: { classN
       <div className="flex flex-col gap-6">
         <TermsContent />
       </div>
-    </section>
+    </Container>
   );
 }
