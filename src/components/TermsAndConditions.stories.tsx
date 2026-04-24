@@ -22,6 +22,9 @@ const meta = {
       options: ["drawer", "page"],
       control: { type: "radio" },
     },
+    hidePageHeading: {
+      control: { type: "boolean" },
+    },
   },
 } satisfies Meta<typeof TermsAndConditions>;
 
@@ -38,5 +41,12 @@ export const DrawerMode: Story = {
 export const PageMode: Story = {
   args: {
     mode: "page",
+  },
+};
+
+export const PageModeWithoutHeading: Story = {
+  args: {
+    mode: "page",
+    hidePageHeading: true,
   },
 };
