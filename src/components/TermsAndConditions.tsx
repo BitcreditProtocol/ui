@@ -96,11 +96,12 @@ function TermsContent() {
 interface TermsAndConditionsProps {
   mode?: "drawer" | "page";
   className?: string;
+  hidePageHeading?: boolean;
 }
 
-export function TermsAndConditions({ mode = "drawer", className }: TermsAndConditionsProps) {
+export function TermsAndConditions({ mode = "drawer", className, hidePageHeading = false }: TermsAndConditionsProps) {
   if (mode === "page") {
-    return <TermsAndConditionsPage className={className} />;
+    return <TermsAndConditionsPage className={className} hidePageHeading={hidePageHeading} />;
   } else {
     return (
       <Drawer>
@@ -136,16 +137,18 @@ export function TermsAndConditions({ mode = "drawer", className }: TermsAndCondi
   }
 }
 
-function TermsAndConditionsPage({ className }: { className?: string }) {
+function TermsAndConditionsPage({ className, hidePageHeading = false }: { className?: string; hidePageHeading?: boolean }) {
   return (
     <section className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
-      <Heading as="h1" variant="sub">
-        <FormattedMessage
-          id="termsAndConditions.page.title"
-          defaultMessage="Terms and Conditions"
-          description="Title for the Terms and Conditions page"
-        />
-      </Heading>
+      {!hidePageHeading ? (
+        <Heading as="h1" variant="sub">
+          <FormattedMessage
+            id="termsAndConditions.page.title"
+            defaultMessage="Terms and Conditions"
+            description="Title for the Terms and Conditions page"
+          />
+        </Heading>
+      ) : null}
       <div className="flex flex-col gap-6">
         <TermsContent />
       </div>
