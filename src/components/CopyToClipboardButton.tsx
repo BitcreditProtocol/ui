@@ -6,6 +6,7 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { Button, type ButtonProps } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast.ts";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
+import { cn } from "@/lib/utils";
 
 async function copyToClipboard(value: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
@@ -67,7 +68,7 @@ export function CopyToClipboardButton({
         messages,
         t,
       })}
-      className={className}
+      className={cn("!bg-transparent", className)}
       size={size}
       type={type}
       variant={variant}

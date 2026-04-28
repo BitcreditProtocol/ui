@@ -67,6 +67,7 @@ type FormattedParts = {
   numberStr: string;
   symbolStr: string | null;
   symbolBefore: boolean;
+  hasSpaceBetween: boolean;
 };
 
 const getFormattedParts = (
@@ -76,17 +77,27 @@ const getFormattedParts = (
   currencyDisplay: FormatNumberOptions["currencyDisplay"] | "none"
 ): FormattedParts => {
   if (code === "btc") {
-    return { numberStr: formatPlain(locale, abs, 8, 8), symbolStr: currencyDisplay !== "none" ? "BTC" : null, symbolBefore: false };
+    return {
+      numberStr: formatPlain(locale, abs, 8, 8),
+      symbolStr: currencyDisplay !== "none" ? "BTC" : null,
+      symbolBefore: false,
+      hasSpaceBetween: currencyDisplay !== "none",
+    };
   }
   if (code === "sat") {
-    return { numberStr: formatPlain(locale, abs, 0, 0), symbolStr: currencyDisplay !== "none" ? "sat" : null, symbolBefore: false };
+    return {
+      numberStr: formatPlain(locale, abs, 0, 0),
+      symbolStr: currencyDisplay !== "none" ? "sat" : null,
+      symbolBefore: false,
+      hasSpaceBetween: currencyDisplay !== "none",
+    };
   }
 
   // Derive correct fraction digits for the currency (e.g. 0 for JPY, 2 for USD/EUR)
   const { minFrac, maxFrac } = getFiatFractionDigits(locale, code);
 
   if (currencyDisplay === "none") {
-    return { numberStr: formatPlain(locale, abs, minFrac, maxFrac), symbolStr: null, symbolBefore: false };
+    return { numberStr: formatPlain(locale, abs, minFrac, maxFrac), symbolStr: null, symbolBefore: false, hasSpaceBetween: false };
   }
 
   const smallestUnit = Math.pow(10, -maxFrac);
@@ -104,6 +115,7 @@ const getFormattedParts = (
   const integerIdx = parts.findIndex((p) => p.type === "integer");
   const symbolBefore = currencyIdx !== -1 && integerIdx !== -1 && currencyIdx < integerIdx;
   const symbolStr = parts.find((p) => p.type === "currency")?.value ?? null;
+  const hasSpaceBetween = symbolStr !== null;
 
   // Remove the currency part and its adjacent whitespace-only separators.
   // Whitespace-only check (/^\s+$/) preserves bidi control characters (U+200E, U+200F, U+061C)
@@ -127,6 +139,7 @@ const getFormattedParts = (
     numberStr: isSubUnit ? `<${numberStr}` : numberStr,
     symbolStr,
     symbolBefore,
+    hasSpaceBetween,
   };
 };
 
@@ -235,7 +248,9 @@ function CurrencyBase({
         {withSign(
           <>
             {parts.symbolBefore ? symbolNode : null}
+            {parts.symbolBefore && parts.hasSpaceBetween ? " " : null}
             {numberNode}
+            {!parts.symbolBefore && parts.hasSpaceBetween ? " " : null}
             {!parts.symbolBefore ? symbolNode : null}
           </>,
           value,
@@ -330,7 +345,7 @@ function CurrencyWithConversion({
         srHidden={true}
       />
       {showSecondaryDisplay && secondaryValue !== null && secondaryFormatted !== null ? (
-        <span aria-hidden="true" className={cn("inline-flex items-baseline gap-1 text-sm text-muted-foreground", secondaryClassName)}>
+        <span className={cn("inline-flex items-baseline gap-1 text-sm text-muted-foreground", secondaryClassName)}>
           <span>{withSign(<HighlightText text={secondaryFormatted} highlight={highlightQuery ?? ""} />, secondaryValue, signDisplay)}</span>
           {secondarySymbol ? <span className={cn(symbolClass, currencyClassName)}>{secondarySymbol}</span> : null}
         </span>

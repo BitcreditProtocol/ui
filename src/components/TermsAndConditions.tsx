@@ -191,7 +191,7 @@ function TermsAndConditionsPage({
   const uiText = useUiText();
 
   return (
-    <Container className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
+    <Container className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl p-5", className)}>
       {!hidePageHeading ? (
         <Heading as="h1" variant="sub">
           {labels?.pageTitle ??
