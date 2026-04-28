@@ -1,55 +1,45 @@
 import { MoonIcon, SettingsIcon, SunIcon } from "lucide-react";
-import { FormattedMessage, useIntl } from "react-intl";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { useTheme } from "@/hooks/use-theme";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 import MenuOption from "../MenuOption";
 
-export default function Theme() {
-  const intl = useIntl();
+type ThemeProps = {
+  messages?: UiMessages;
+  t?: UiT;
+};
+
+export default function Theme({ messages, t }: ThemeProps) {
+  const uiText = useUiText();
   const { setTheme, theme } = useTheme();
   const themeLabel =
     theme === "system"
-      ? intl.formatMessage({
-          id: "settings.theme.system",
-          defaultMessage: "System",
-        })
+      ? uiText({ key: "ui.theme.system", legacyKey: "settings.theme.system", messages, t })
       : theme === "light"
-        ? intl.formatMessage({
-            id: "settings.theme.light",
-            defaultMessage: "Light",
-          })
-        : intl.formatMessage({
-            id: "settings.theme.dark",
-            defaultMessage: "Dark",
-          });
+        ? uiText({ key: "ui.theme.light", legacyKey: "settings.theme.light", messages, t })
+        : uiText({ key: "ui.theme.dark", legacyKey: "settings.theme.dark", messages, t });
 
   return (
     <Drawer>
       <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">
         <MenuOption
           icon={<AppIcon icon={SunIcon} className="text-text-300" size="lg" />}
-          label={intl.formatMessage({
-            id: "settings.theme",
-            defaultMessage: "Theme",
-          })}
+          label={uiText({ key: "ui.theme.menuLabel", legacyKey: "settings.theme", messages, t })}
           defaultValue={themeLabel}
         />
       </DrawerTrigger>
 
       <DrawerContent className="gap-3 max-w-[430px] py-4 px-5 bg-elevation-50 mx-auto">
         <DrawerTitle className="text-text-300 text-lg font-medium leading-[28px]">
-          <FormattedMessage id="settings.theme.title" defaultMessage="Theme" description="Theme settings title" />
+          {uiText({ key: "ui.theme.title", legacyKey: "settings.theme.title", messages, t })}
         </DrawerTitle>
         <DrawerDescription className="sr-only">
-          <FormattedMessage
-            id="settings.theme.description"
-            defaultMessage="Select your preferred theme mode"
-            description="Theme settings description for screen readers"
-          />
+          {uiText({ key: "ui.theme.description", legacyKey: "settings.theme.description", messages, t })}
         </DrawerDescription>
 
         <div className="flex items-center gap-3 max-w-[300px]">
@@ -79,7 +69,7 @@ export default function Theme() {
                 "text-black": theme === "system" && window.matchMedia("(prefers-color-scheme: dark)").matches,
               })}
             >
-              <FormattedMessage id="settings.theme.system" defaultMessage="System" description="System theme" />
+              {uiText({ key: "ui.theme.system", legacyKey: "settings.theme.system", messages, t })}
             </span>
           </div>
 
@@ -103,7 +93,7 @@ export default function Theme() {
                 "text-white": theme === "light",
               })}
             >
-              <FormattedMessage id="settings.theme.light" defaultMessage="Light" description="Light theme" />
+              {uiText({ key: "ui.theme.light", legacyKey: "settings.theme.light", messages, t })}
             </span>
           </div>
 
@@ -127,7 +117,7 @@ export default function Theme() {
                 "text-black": theme === "dark",
               })}
             >
-              <FormattedMessage id="settings.theme.dark" defaultMessage="Dark" description="Dark theme" />
+              {uiText({ key: "ui.theme.dark", legacyKey: "settings.theme.dark", messages, t })}
             </span>
           </div>
         </div>

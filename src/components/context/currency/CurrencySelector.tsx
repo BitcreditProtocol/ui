@@ -1,11 +1,12 @@
 import { CheckIcon, DollarSignIcon, EuroIcon } from "lucide-react";
 import React, { type PropsWithChildren, useMemo, useRef, useState } from "react";
-import { FormattedMessage, useIntl } from "react-intl";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 function BitcoinBadge() {
@@ -23,18 +24,26 @@ function Description({ children }: { children: React.ReactNode }) {
 type CurrencySelectorProps = PropsWithChildren<{
   value: string;
   onChange: (value: string) => void;
+  messages?: UiMessages;
+  t?: UiT;
 }>;
 
 type CurrencyDef = {
   code: string;
-  label: string;
+  labelKey:
+    | "ui.currencySelector.option.usd"
+    | "ui.currencySelector.option.eur"
+    | "ui.currencySelector.option.btc"
+    | "ui.currencySelector.option.sat";
+  legacyLabel: string;
   icon?: React.ReactNode;
 };
 
 const ALL_CURRENCIES: CurrencyDef[] = [
   {
     code: "usd",
-    label: "US Dollar",
+    labelKey: "ui.currencySelector.option.usd",
+    legacyLabel: "US Dollar",
     icon: (
       <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#118200] rounded-full">
         <AppIcon icon={DollarSignIcon} className="text-white" />
@@ -43,7 +52,8 @@ const ALL_CURRENCIES: CurrencyDef[] = [
   },
   {
     code: "eur",
-    label: "Euro",
+    labelKey: "ui.currencySelector.option.eur",
+    legacyLabel: "Euro",
     icon: (
       <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#003398] rounded-full">
         <AppIcon icon={EuroIcon} className="text-white" />
@@ -52,12 +62,14 @@ const ALL_CURRENCIES: CurrencyDef[] = [
   },
   {
     code: "btc",
-    label: "Bitcoin (BTC)",
+    labelKey: "ui.currencySelector.option.btc",
+    legacyLabel: "Bitcoin (BTC)",
     icon: <BitcoinBadge />,
   },
   {
     code: "sat",
-    label: "Bitcoin (sat)",
+    labelKey: "ui.currencySelector.option.sat",
+    legacyLabel: "Bitcoin (sat)",
     icon: <BitcoinBadge />,
   },
 ];
@@ -67,12 +79,17 @@ function CurrencyOption({
   isActive,
   onSelect,
   tabIndex,
+  messages,
+  t,
 }: {
   def: CurrencyDef;
   isActive: boolean;
   onSelect: (code: string) => void;
   tabIndex: number;
+  messages?: UiMessages;
+  t?: UiT;
 }) {
+  const uiText = useUiText();
   return (
     <div
       role="radio"
@@ -94,7 +111,7 @@ function CurrencyOption({
       <div className="flex min-w-0 items-center gap-4">
         {def.icon}
         <div className="flex flex-col gap-0.5">
-          <Label>{def.label}</Label>
+          <Label>{uiText({ key: def.labelKey, messages, t })}</Label>
           <Description>{def.code === "sat" ? "sat" : def.code.toUpperCase()}</Description>
         </div>
       </div>
@@ -105,8 +122,8 @@ function CurrencyOption({
   );
 }
 
-export function CurrencySelector({ children, onChange, value }: CurrencySelectorProps) {
-  const { formatMessage: f } = useIntl();
+export function CurrencySelector({ children, onChange, value, messages, t }: CurrencySelectorProps) {
+  const uiText = useUiText();
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const listRef = useRef<HTMLDivElement>(null);
@@ -116,9 +133,12 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
   const available = useMemo(() => {
     if (!normalizedSearch) return ALL_CURRENCIES;
     return ALL_CURRENCIES.filter(
-      (c) => c.label.toLowerCase().includes(normalizedSearch) || c.code.toLowerCase().includes(normalizedSearch)
+      (c) =>
+        c.legacyLabel.toLowerCase().includes(normalizedSearch) ||
+        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) ||
+        c.code.toLowerCase().includes(normalizedSearch)
     );
-  }, [normalizedSearch]);
+  }, [messages, normalizedSearch, t, uiText]);
 
   const hasNoResults = normalizedSearch.length > 0 && available.length === 0;
 
@@ -155,17 +175,17 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
 
       <DrawerContent className="max-w-[430px] py-4 px-5 bg-elevation-50 mx-auto">
         <DrawerTitle className="text-text-300 text-lg font-medium leading-[28px] mb-3">
-          <FormattedMessage id="settings.displayCurrency.title" defaultMessage="Display currency" description="Display currency title" />
+          {uiText({ key: "ui.currencySelector.title", legacyKey: "settings.displayCurrency.title", messages, t })}
         </DrawerTitle>
         <DrawerDescription className="sr-only">
-          <FormattedMessage
-            id="settings.displayCurrency.description"
-            defaultMessage="Select your preferred display currency"
-            description="Display currency description for screen readers"
-          />
+          {uiText({ key: "ui.currencySelector.description", legacyKey: "settings.displayCurrency.description", messages, t })}
         </DrawerDescription>
 
-        <div className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1" role="group" aria-label="Currency selection area">
+        <div
+          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+          role="group"
+          aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}
+        >
           <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 pb-2">
             <Search
               className={cn(
@@ -173,11 +193,7 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
                 "dark:bg-elevation-250 dark:hover:bg-elevation-50 dark:focus:bg-elevation-50"
               )}
               value={searchTerm}
-              placeholder={f({
-                id: "currency.search.placeholder",
-                defaultMessage: "Search...",
-                description: "Search placeholder for currency selector",
-              })}
+              placeholder={uiText({ key: "ui.currencySelector.searchPlaceholder", legacyKey: "currency.search.placeholder", messages, t })}
               onChange={(val) => {
                 setSearchTerm(val);
               }}
@@ -188,15 +204,15 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
             />
 
             <div aria-live="polite" className="sr-only">
-              {hasNoResults ? (
-                <FormattedMessage id="currency.search.no.results" defaultMessage="No currencies found" />
-              ) : (
-                <FormattedMessage
-                  id="currency.search.results.count"
-                  defaultMessage="{count, plural, one {# currency} other {# currencies}}"
-                  values={{ count: available.length }}
-                />
-              )}
+              {hasNoResults
+                ? uiText({ key: "ui.currencySelector.noResults", legacyKey: "currency.search.no.results", messages, t })
+                : uiText({
+                    key: "ui.currencySelector.resultsCount",
+                    legacyKey: "currency.search.results.count",
+                    params: { count: available.length },
+                    messages,
+                    t,
+                  })}
             </div>
           </div>
 
@@ -204,7 +220,7 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
             ref={listRef}
             role="radiogroup"
             tabIndex={0}
-            aria-label="Select display currency"
+            aria-label={uiText({ key: "ui.currencySelector.ariaLabel", messages, t })}
             onKeyDown={handleKeyDownGroup}
             className="flex flex-col gap-3 pb-2"
           >
@@ -214,6 +230,8 @@ export function CurrencySelector({ children, onChange, value }: CurrencySelector
                   def={def}
                   isActive={value.toLowerCase() === def.code}
                   onSelect={_onChange}
+                  messages={messages}
+                  t={t}
                   tabIndex={value.toLowerCase() === def.code ? 0 : idx === 0 ? 0 : -1}
                 />
                 {idx < available.length - 1 && <Separator className="bg-divider-75" />}

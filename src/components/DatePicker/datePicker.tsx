@@ -1,11 +1,12 @@
 import { ArrowRight, CalendarIcon } from "lucide-react";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { FormattedMessage } from "react-intl";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { Calendar, type CalendarSelectHandler } from "@/components/DatePicker/calendar";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 import {
   addDays,
@@ -38,6 +39,8 @@ interface DatePickerProps {
   order?: "asc" | "desc";
   dateFilterType?: "issue" | "maturity";
   onDateFilterTypeChange?: (type: "issue" | "maturity") => void;
+  messages?: UiMessages;
+  t?: UiT;
 }
 
 const isSameOrBothMissing = (a?: Date, b?: Date) => {
@@ -76,7 +79,10 @@ export function DatePicker({
   order = "asc",
   dateFilterType = "issue",
   onDateFilterTypeChange,
+  messages,
+  t,
 }: DatePickerProps) {
+  const uiText = useUiText();
   const lang = useLanguage();
   const [showCalendar, setShowCalendar] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -378,11 +384,7 @@ export function DatePicker({
             {allowRangeSelection ? (
               <>
                 <div className="text-xs text-text-200">
-                  <FormattedMessage
-                    id="bills.list.filter.by"
-                    defaultMessage="Filter by"
-                    description="Header label for picking which date should be filtered by in datepicker form"
-                  />
+                  {uiText({ key: "ui.datePicker.filterBy", legacyKey: "bills.list.filter.by", messages, t })}
                 </div>
 
                 <Tabs
@@ -396,29 +398,23 @@ export function DatePicker({
                 >
                   <TabsList className="gap-0.5 w-full p-0 border-divider-50 bg-elevation-200">
                     <TabsTrigger value="issue" className="flex items-center gap-1 py-2 bg-elevation-200">
-                      <FormattedMessage id="bills.list.filter.date.issue" defaultMessage="Issue date" description="Filter by issue date" />
+                      {uiText({ key: "ui.datePicker.issueDate", legacyKey: "bills.list.filter.date.issue", messages, t })}
                     </TabsTrigger>
                     <TabsTrigger value="maturity" className="flex items-center gap-1 py-2 bg-elevation-200">
-                      <FormattedMessage
-                        id="bills.list.filter.date.maturity"
-                        defaultMessage="Maturity date"
-                        description="Filter by maturity date"
-                      />
+                      {uiText({ key: "ui.datePicker.maturityDate", legacyKey: "bills.list.filter.date.maturity", messages, t })}
                     </TabsTrigger>
                   </TabsList>
                 </Tabs>
 
                 <div className="text-xs text-text-200">
-                  <FormattedMessage
-                    id="datePicker.range.selectRange"
-                    defaultMessage="Select date range"
-                    description="Header label for picking date range in datepicker form"
-                  />
+                  {uiText({ key: "ui.datePicker.range.selectLabel", legacyKey: "datePicker.range.selectRange", messages, t })}
                 </div>
 
                 <DateRangeDropdown
                   value={selectedRange}
                   onRangeChange={setSelectedRange}
+                  messages={messages}
+                  t={t}
                   onClear={() => {
                     clearSelection();
                   }}
@@ -439,7 +435,7 @@ export function DatePicker({
                       {draft.from && formatDisplayDate(draft.from, lang.locale)}
                       {!draft.from && (
                         <span className="text-text-200">
-                          <FormattedMessage id="datePicker.range.start" defaultMessage="Start" />
+                          {uiText({ key: "ui.datePicker.range.start", legacyKey: "datePicker.range.start", messages, t })}
                         </span>
                       )}
                     </button>
@@ -463,7 +459,7 @@ export function DatePicker({
                       {draft.to && formatDisplayDate(draft.to, lang.locale)}
                       {!draft.to && (
                         <span className="text-text-200">
-                          <FormattedMessage id="datePicker.range.end" defaultMessage="End" />
+                          {uiText({ key: "ui.datePicker.range.end", legacyKey: "datePicker.range.end", messages, t })}
                         </span>
                       )}
                     </button>
@@ -474,11 +470,7 @@ export function DatePicker({
               <div className="flex flex-col gap-1">
                 <div className="flex items-center justify-between">
                   <div className="text-xs text-text-200">
-                    <FormattedMessage
-                      id="datePicker.single.selectedDate"
-                      defaultMessage="Selected date"
-                      description="Header label for picking single date in datepicker form"
-                    />
+                    {uiText({ key: "ui.datePicker.single.selectedDate", legacyKey: "datePicker.single.selectedDate", messages, t })}
                   </div>
                   {shouldDisplayIncrementButtons && (
                     <div className="flex items-center gap-0.5">
@@ -580,11 +572,7 @@ export function DatePicker({
                 handleCancel();
               }}
             >
-              <FormattedMessage
-                id="datePicker.actions.cancel"
-                defaultMessage="Cancel"
-                description="Cancel button text in datepicker form"
-              />
+              {uiText({ key: "ui.datePicker.actions.cancel", legacyKey: "datePicker.actions.cancel", messages, t })}
             </Button>
             <Button
               className="w-full"
@@ -602,11 +590,7 @@ export function DatePicker({
                 handleConfirm();
               }}
             >
-              <FormattedMessage
-                id="datePicker.actions.confirm"
-                defaultMessage="Confirm"
-                description="Confirm button text in datepicker form"
-              />
+              {uiText({ key: "ui.datePicker.actions.confirm", legacyKey: "datePicker.actions.confirm", messages, t })}
             </Button>
           </div>
         </div>

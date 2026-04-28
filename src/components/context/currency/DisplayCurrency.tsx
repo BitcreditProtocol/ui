@@ -1,12 +1,18 @@
 import { BanknoteIcon } from "lucide-react";
-import { useIntl } from "react-intl";
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import MenuOption from "../MenuOption";
 import { usePreferences } from "../preferences/PreferencesContext";
 import { CurrencySelector } from "./CurrencySelector";
 
-export default function DisplayCurrency() {
-  const intl = useIntl();
+type DisplayCurrencyProps = {
+  messages?: UiMessages;
+  t?: UiT;
+};
+
+export default function DisplayCurrency({ messages, t }: DisplayCurrencyProps) {
+  const uiText = useUiText();
   const { currency, setCurrency } = usePreferences();
   const displayValue = currency === "sat" ? "sat" : currency.toUpperCase();
 
@@ -18,14 +24,10 @@ export default function DisplayCurrency() {
   };
 
   return (
-    <CurrencySelector value={currency} onChange={handleChange}>
+    <CurrencySelector value={currency} onChange={handleChange} messages={messages} t={t}>
       <MenuOption
         icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
-        label={intl.formatMessage({
-          id: "settings.displayCurrency",
-          defaultMessage: "Display currency",
-          description: "Display currency menu item",
-        })}
+        label={uiText({ key: "ui.currencySelector.menuLabel", legacyKey: "settings.displayCurrency", messages, t })}
         defaultValue={displayValue}
       />
     </CurrencySelector>

@@ -1,6 +1,5 @@
 import { CircleX } from "lucide-react";
-import { useIntl } from "react-intl";
-
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,15 +11,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 
 interface DateRangeDropdownProps {
   value?: number;
   onRangeChange: (range: number) => void;
   onClear?: () => void;
+  t?: UiT;
+  messages?: UiMessages;
+  clearPresetRangeLabel?: string;
 }
 
-export function DateRangeDropdown({ value, onRangeChange, onClear }: DateRangeDropdownProps) {
-  const intl = useIntl();
+export function DateRangeDropdown({ value, onRangeChange, onClear, t, messages, clearPresetRangeLabel }: DateRangeDropdownProps) {
+  const uiText = useUiText();
 
   const handleRangeChanged = (value: string) => {
     const range = Number(value);
@@ -32,22 +35,34 @@ export function DateRangeDropdown({ value, onRangeChange, onClear }: DateRangeDr
       case 30:
       case 60:
       case 90:
-        return intl.formatMessage({ id: "displayRange.days", defaultMessage: "{value} Days" }, { value });
+        return uiText({
+          key: "ui.dateRangeDropdown.option.days",
+          legacyKey: "displayRange.days",
+          params: { value },
+          messages,
+          t,
+        });
       case 180:
-        return intl.formatMessage({
-          id: "displayRange.sixMonths",
-          defaultMessage: "6 Months",
+        return uiText({
+          key: "ui.dateRangeDropdown.option.sixMonths",
+          legacyKey: "displayRange.sixMonths",
+          messages,
+          t,
         });
       case 365:
-        return intl.formatMessage({
-          id: "displayRange.oneYear",
-          defaultMessage: "1 Year",
+        return uiText({
+          key: "ui.dateRangeDropdown.option.oneYear",
+          legacyKey: "displayRange.oneYear",
+          messages,
+          t,
         });
       case undefined:
       default:
-        return intl.formatMessage({
-          id: "displayRange.selectRange",
-          defaultMessage: "Select range",
+        return uiText({
+          key: "ui.dateRangeDropdown.option.selectRange",
+          legacyKey: "displayRange.selectRange",
+          messages,
+          t,
         });
     }
   };
@@ -61,7 +76,14 @@ export function DateRangeDropdown({ value, onRangeChange, onClear }: DateRangeDr
             <div
               role="button"
               tabIndex={0}
-              aria-label="Clear preset range"
+              aria-label={
+                clearPresetRangeLabel ??
+                uiText({
+                  key: "ui.dateRangeDropdown.clearPresetRange",
+                  messages,
+                  t,
+                })
+              }
               aria-pressed="false"
               onPointerDown={(e) => {
                 e.preventDefault();
@@ -88,37 +110,56 @@ export function DateRangeDropdown({ value, onRangeChange, onClear }: DateRangeDr
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-64 bg-elevation-200">
-        <DropdownMenuLabel>Select Range</DropdownMenuLabel>
+        <DropdownMenuLabel>
+          {uiText({
+            key: "ui.dateRangeDropdown.title",
+            messages,
+            t,
+          })}
+        </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={String(value)} onValueChange={handleRangeChanged}>
           <DropdownMenuRadioItem value="30">
-            {intl.formatMessage({
-              id: "dropdown.option.30days",
-              defaultMessage: "30 Days",
+            {uiText({
+              key: "ui.dateRangeDropdown.option.days",
+              legacyKey: "dropdown.option.30days",
+              params: { value: 30 },
+              messages,
+              t,
             })}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="60">
-            {intl.formatMessage({
-              id: "dropdown.option.60days",
-              defaultMessage: "60 Days",
+            {uiText({
+              key: "ui.dateRangeDropdown.option.days",
+              legacyKey: "dropdown.option.60days",
+              params: { value: 60 },
+              messages,
+              t,
             })}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="90">
-            {intl.formatMessage({
-              id: "dropdown.option.90days",
-              defaultMessage: "90 Days",
+            {uiText({
+              key: "ui.dateRangeDropdown.option.days",
+              legacyKey: "dropdown.option.90days",
+              params: { value: 90 },
+              messages,
+              t,
             })}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="180">
-            {intl.formatMessage({
-              id: "dropdown.option.6months",
-              defaultMessage: "6 Months",
+            {uiText({
+              key: "ui.dateRangeDropdown.option.sixMonths",
+              legacyKey: "dropdown.option.6months",
+              messages,
+              t,
             })}
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value="365">
-            {intl.formatMessage({
-              id: "dropdown.option.1year",
-              defaultMessage: "1 Year",
+            {uiText({
+              key: "ui.dateRangeDropdown.option.oneYear",
+              legacyKey: "dropdown.option.1year",
+              messages,
+              t,
             })}
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>

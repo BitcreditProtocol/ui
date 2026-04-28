@@ -84,7 +84,57 @@ Use the providers you actually need:
 
 - `PreferencesProvider` for theme, currency, and decimal preferences
 - `LanguageProvider` for `react-intl`-based localization helpers
+- `UiI18nProvider` for framework-agnostic shared UI message injection
 - `Toaster` when using toast UI from `useToast`
+
+## Translation Strategy
+
+For shared UI text, prefer app-owned translations with library-owned keys and fallbacks.
+
+The library now exports:
+
+- `UiTranslationKey`
+- `defaultUiMessages`
+- `UiI18nProvider`
+- `getUiText`
+
+Minimal example:
+
+```tsx
+import "@bitcredit/ui-library/style.css";
+import {
+  Button,
+  UiI18nProvider,
+  defaultUiMessages,
+  type UiTranslationKey,
+} from "@bitcredit/ui-library";
+
+const appMessages: Partial<Record<UiTranslationKey, string>> = {
+  "ui.upload.label": "Datei hochladen",
+};
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <UiI18nProvider messages={appMessages}>{children}</UiI18nProvider>;
+}
+```
+
+You can also provide a translation function instead of a message map:
+
+```tsx
+import { UiI18nProvider, type UiT } from "@bitcredit/ui-library";
+
+const t: UiT = (key, params) => myI18n.translate(key, params);
+
+export function AppProviders({ children }: { children: React.ReactNode }) {
+  return <UiI18nProvider t={t}>{children}</UiI18nProvider>;
+}
+```
+
+Current migration note:
+
+- generic UI components can consume `UiI18nProvider`
+- existing `react-intl` consumers continue to work
+- domain and app copy should stay in consuming apps
 
 ## Example Imports
 
