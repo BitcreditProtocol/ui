@@ -22,6 +22,9 @@ const meta = {
       options: ["drawer", "page"],
       control: { type: "radio" },
     },
+    hidePageHeading: {
+      control: { type: "boolean" },
+    },
   },
 } satisfies Meta<typeof TermsAndConditions>;
 
@@ -59,5 +62,12 @@ export const CustomContent: Story = {
         <p>The app can provide its own wording, legal copy, and structure here.</p>
       </div>
     ),
+  },
+};
+
+export const PageModeWithoutHeading: Story = {
+  args: {
+    mode: "page",
+    hidePageHeading: true,
   },
 };
