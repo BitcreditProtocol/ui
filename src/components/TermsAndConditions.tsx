@@ -118,12 +118,29 @@ function TermsContent({ messages, t }: { messages?: UiMessages; t?: UiT }) {
   );
 }
 
-export function TermsAndConditions({ mode = "drawer", className, hidePageHeading = false, messages, t, content, labels }: TermsAndConditionsProps) {
+export function TermsAndConditions({
+  mode = "drawer",
+  className,
+  hidePageHeading = false,
+  messages,
+  t,
+  content,
+  labels,
+}: TermsAndConditionsProps) {
   const uiText = useUiText();
   const resolvedContent = content ?? <TermsContent messages={messages} t={t} />;
 
   if (mode === "page") {
-    return <TermsAndConditionsPage className={className} hidePageHeading={hidePageHeading} messages={messages} t={t} content={resolvedContent} labels={labels} />;
+    return (
+      <TermsAndConditionsPage
+        className={className}
+        hidePageHeading={hidePageHeading}
+        messages={messages}
+        t={t}
+        content={resolvedContent}
+        labels={labels}
+      />
+    );
   } else {
     return (
       <Drawer>
@@ -177,7 +194,8 @@ function TermsAndConditionsPage({
     <Container className={cn("mx-auto flex w-full max-w-[430px] flex-col gap-6 rounded-2xl bg-elevation-50 p-5", className)}>
       {!hidePageHeading ? (
         <Heading as="h1" variant="sub">
-          {labels?.pageTitle ?? uiText({ key: "ui.termsAndConditions.page.title", legacyKey: "termsAndConditions.page.title", messages, t })}
+          {labels?.pageTitle ??
+            uiText({ key: "ui.termsAndConditions.page.title", legacyKey: "termsAndConditions.page.title", messages, t })}
         </Heading>
       ) : null}
       <div className="flex flex-col gap-6">{content}</div>
