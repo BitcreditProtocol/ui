@@ -101,7 +101,7 @@ export function TruncatedTextPopover({
               ref={triggerRef as React.Ref<HTMLButtonElement>}
               type="button"
               className={cn(
-                "block w-full min-w-0 max-w-full overflow-hidden align-top hover:underline focus:outline-none bg-transparent",
+                "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
                 className
               )}
               title={title ?? flatLabel}
@@ -115,7 +115,7 @@ export function TruncatedTextPopover({
               role="button"
               tabIndex={0}
               className={cn(
-                "block w-full min-w-0 max-w-full overflow-hidden align-top hover:underline focus:outline-none bg-transparent",
+                "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
                 className
               )}
               title={title ?? flatLabel}
