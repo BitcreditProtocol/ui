@@ -136,13 +136,30 @@ export type TruncatedTextState = {
   visibleLines: string[];
 };
 
-export function getTruncatedTextState(text: React.ReactNode, maxLength?: number): TruncatedTextState {
+export type TruncationMode = "auto" | "end" | "middle";
+
+export function getTruncatedTextState(
+  text: React.ReactNode,
+  maxLength?: number,
+  truncationMode: TruncationMode = "auto"
+): TruncatedTextState {
   const effectiveMaxLength = maxLength ?? 24;
   const hasExplicitMaxLength = maxLength !== undefined;
   const textStr = extractTextFromNode(text);
   const rawLines = textStr.split(/\r?\n/);
   const lines = rawLines.map((line) => line.trimEnd());
   const computedVisibleLines = lines.map((line) => {
+    if (truncationMode === "middle") {
+      if (line.length <= effectiveMaxLength && visualWidth(line) <= effectiveMaxLength) return line;
+      return truncateWithSafeguard(line, effectiveMaxLength, "middle");
+    }
+
+    if (truncationMode === "end") {
+      if (line.length <= effectiveMaxLength && visualWidth(line) <= effectiveMaxLength) return line;
+      return truncateWithSafeguard(line, effectiveMaxLength, "end");
+    }
+
+    // auto: use heuristics
     if (isLikelyNodeId(line)) {
       return truncateWithSafeguard(line, effectiveMaxLength, "middle");
     }
@@ -159,20 +176,24 @@ export function getTruncatedTextState(text: React.ReactNode, maxLength?: number)
     return line;
   });
   const hasComputedTruncation = computedVisibleLines.some((line, index) => line !== lines[index]);
-  const hasLengthFallbackOverflow = lines.some((line) => {
-    if (isLikelyNodeId(line)) {
-      return false;
-    }
+  // Explicit modes always compute truncation deterministically — no CSS fallback needed.
+  const hasLengthFallbackOverflow =
+    truncationMode !== "auto"
+      ? false
+      : lines.some((line) => {
+          if (isLikelyNodeId(line)) {
+            return false;
+          }
 
-    if (hasExplicitMaxLength) {
-      const hasExceededLimit = line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
-      const canUseExplicitEndTruncation = !containsRtl(line) && visualWidth(line) === line.length;
+          if (hasExplicitMaxLength) {
+            const hasExceededLimit = line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
+            const canUseExplicitEndTruncation = !containsRtl(line) && visualWidth(line) === line.length;
 
-      return hasExceededLimit && !canUseExplicitEndTruncation;
-    }
+            return hasExceededLimit && !canUseExplicitEndTruncation;
+          }
 
-    return line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
-  });
+          return line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
+        });
 
   return {
     flatLabel: lines.join(", "),

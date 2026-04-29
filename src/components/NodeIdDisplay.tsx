@@ -12,14 +12,15 @@ type NodeIdDisplayProps = {
 
 export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName, copyButtonClassName }: NodeIdDisplayProps) {
   return (
-    <div className={cn("flex items-center", className)}>
+    <div className={cn("flex items-center gap-1", className)}>
       <TruncatedTextPopover
         text={nodeId}
         maxLength={maxLength}
         as="button"
+        truncationMode="middle"
         className={cn("text-text-200 text-xs font-normal leading-[18px] !bg-transparent !p-0 !text-text-200", textClassName)}
       />
-      <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0", copyButtonClassName)} />
+      <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0 text-text-200", copyButtonClassName)} />
     </div>
   );
 }
