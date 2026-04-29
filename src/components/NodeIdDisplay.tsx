@@ -17,9 +17,10 @@ export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName
         text={nodeId}
         maxLength={maxLength}
         as="button"
+        truncationMode="middle"
         className={cn("text-text-200 text-xs font-normal leading-[18px] !bg-transparent !p-0 !text-text-200", textClassName)}
       />
-      <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0", copyButtonClassName)} />
+      <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0 text-text-200", copyButtonClassName)} />
     </div>
   );
 }

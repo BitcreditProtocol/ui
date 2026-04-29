@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
-import { extractTextFromNode, getTruncatedTextState } from "@/components/TruncatedText/truncated-text.ts";
+import { extractTextFromNode, getTruncatedTextState, type TruncationMode } from "@/components/TruncatedText/truncated-text.ts";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 
@@ -13,6 +13,7 @@ type TruncatedTextPopoverProps = {
   title?: string;
   as?: "button" | "span";
   showCopyButton?: boolean;
+  truncationMode?: TruncationMode;
 };
 
 export function TruncatedTextPopover({
@@ -23,11 +24,12 @@ export function TruncatedTextPopover({
   title,
   as = "span",
   showCopyButton = false,
+  truncationMode = "auto",
 }: TruncatedTextPopoverProps) {
   const triggerRef = React.useRef<HTMLElement | null>(null);
   const [hasWidthOverflow, setHasWidthOverflow] = React.useState(false);
   const textStr = extractTextFromNode(text);
-  const { flatLabel, hasComputedTruncation, hasLengthFallbackOverflow, visibleLines } = getTruncatedTextState(text, maxLength);
+  const { flatLabel, hasComputedTruncation, hasLengthFallbackOverflow, visibleLines } = getTruncatedTextState(text, maxLength, truncationMode);
 
   React.useLayoutEffect(() => {
     if (typeof window === "undefined" || hasComputedTruncation) {
