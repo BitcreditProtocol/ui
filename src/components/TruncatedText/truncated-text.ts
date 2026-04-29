@@ -138,7 +138,11 @@ export type TruncatedTextState = {
 
 export type TruncationMode = "auto" | "end" | "middle";
 
-export function getTruncatedTextState(text: React.ReactNode, maxLength?: number, truncationMode: TruncationMode = "auto"): TruncatedTextState {
+export function getTruncatedTextState(
+  text: React.ReactNode,
+  maxLength?: number,
+  truncationMode: TruncationMode = "auto"
+): TruncatedTextState {
   const effectiveMaxLength = maxLength ?? 24;
   const hasExplicitMaxLength = maxLength !== undefined;
   const textStr = extractTextFromNode(text);
@@ -173,20 +177,23 @@ export function getTruncatedTextState(text: React.ReactNode, maxLength?: number,
   });
   const hasComputedTruncation = computedVisibleLines.some((line, index) => line !== lines[index]);
   // Explicit modes always compute truncation deterministically — no CSS fallback needed.
-  const hasLengthFallbackOverflow = truncationMode !== "auto" ? false : lines.some((line) => {
-    if (isLikelyNodeId(line)) {
-      return false;
-    }
+  const hasLengthFallbackOverflow =
+    truncationMode !== "auto"
+      ? false
+      : lines.some((line) => {
+          if (isLikelyNodeId(line)) {
+            return false;
+          }
 
-    if (hasExplicitMaxLength) {
-      const hasExceededLimit = line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
-      const canUseExplicitEndTruncation = !containsRtl(line) && visualWidth(line) === line.length;
+          if (hasExplicitMaxLength) {
+            const hasExceededLimit = line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
+            const canUseExplicitEndTruncation = !containsRtl(line) && visualWidth(line) === line.length;
 
-      return hasExceededLimit && !canUseExplicitEndTruncation;
-    }
+            return hasExceededLimit && !canUseExplicitEndTruncation;
+          }
 
-    return line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
-  });
+          return line.length > effectiveMaxLength || visualWidth(line) > effectiveMaxLength;
+        });
 
   return {
     flatLabel: lines.join(", "),

@@ -29,7 +29,11 @@ export function TruncatedTextPopover({
   const triggerRef = React.useRef<HTMLElement | null>(null);
   const [hasWidthOverflow, setHasWidthOverflow] = React.useState(false);
   const textStr = extractTextFromNode(text);
-  const { flatLabel, hasComputedTruncation, hasLengthFallbackOverflow, visibleLines } = getTruncatedTextState(text, maxLength, truncationMode);
+  const { flatLabel, hasComputedTruncation, hasLengthFallbackOverflow, visibleLines } = getTruncatedTextState(
+    text,
+    maxLength,
+    truncationMode
+  );
 
   React.useLayoutEffect(() => {
     if (typeof window === "undefined" || hasComputedTruncation) {
