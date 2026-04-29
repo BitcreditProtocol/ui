@@ -12,7 +12,7 @@ type NodeIdDisplayProps = {
 
 export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName, copyButtonClassName }: NodeIdDisplayProps) {
   return (
-    <div className={cn("flex items-center", className)}>
+    <div className={cn("flex items-center gap-1", className)}>
       <TruncatedTextPopover
         text={nodeId}
         maxLength={maxLength}
