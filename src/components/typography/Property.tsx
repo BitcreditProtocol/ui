@@ -1,5 +1,6 @@
 import React from "react";
 
+import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
 import { cn } from "@/lib/utils";
 
 import { Text } from "./Text";
@@ -15,18 +16,6 @@ type PropertyProps = {
   placeholder?: React.ReactNode;
   placeholderClassName?: string;
   valueIgnoreTest?: boolean;
-};
-
-const truncateText = (value: React.ReactNode | string, maxLength?: number) => {
-  if (typeof value !== "string") {
-    return value;
-  }
-
-  if (!maxLength || value.length <= maxLength) {
-    return value;
-  }
-
-  return `${value.slice(0, maxLength)}...`;
 };
 
 export function Property({
@@ -52,15 +41,22 @@ export function Property({
         <Text variant="body" as="span" className={cn("text-text-300 pl-[0.5px]", placeholderClassName)}>
           {placeholder}
         </Text>
+      ) : shouldTruncate ? (
+        <div data-ignore-test={isValueIgnoreTest || undefined} className="w-full min-w-0">
+          <TruncatedTextPopover
+            text={value as React.ReactNode}
+            maxLength={maxLength}
+            className={cn("text-text-300 text-base font-medium leading-normal pl-[0.5px]", valueClassName)}
+          />
+        </div>
       ) : (
         <Text
           variant="titleSm"
           as="span"
           data-ignore-test={isValueIgnoreTest}
           className={cn("block w-full min-w-0 pl-[0.5px]", valueClassName)}
-          title={shouldTruncate && typeof value === "string" ? value : undefined}
         >
-          {shouldTruncate ? truncateText(value, maxLength) : value}
+          {value}
         </Text>
       )}
     </div>
