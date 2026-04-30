@@ -11,7 +11,14 @@ type NodeIdDisplayProps = {
   hideCopyButton?: boolean;
 };
 
-export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName, copyButtonClassName, hideCopyButton = false }: NodeIdDisplayProps) {
+export function NodeIdDisplay({
+  nodeId,
+  maxLength = 22,
+  className,
+  textClassName,
+  copyButtonClassName,
+  hideCopyButton = false,
+}: NodeIdDisplayProps) {
   return (
     <div className={cn("flex items-center gap-1", className)}>
       <TruncatedTextPopover

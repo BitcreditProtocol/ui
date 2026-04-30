@@ -85,7 +85,12 @@ export function Calendar({
   };
 
   return (
-    <div className={cn("flex flex-col gap-3", className)} style={{ touchAction: "pan-y" }} onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
+    <div
+      className={cn("flex flex-col gap-3", className)}
+      style={{ touchAction: "pan-y" }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex items-center justify-between">
         <button type="button" className="bg-transparent p-0" onClick={() => handleMonthShift(-1)} aria-label="Previous month">
           <AppIcon icon={ChevronLeft} />
