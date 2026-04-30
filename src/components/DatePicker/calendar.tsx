@@ -143,7 +143,7 @@ export function Calendar({
                 onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
               }}
               className={cn(
-                "h-10 rounded-full border text-sm transition-colors",
+                "w-10 h-10 rounded-xl border text-sm bg-elevation-200",
                 "disabled:pointer-events-none disabled:opacity-40",
                 isOutsideMonth ? "text-text-200/70" : "text-text-300",
                 isToday && "border-divider-100 bg-elevation-200",

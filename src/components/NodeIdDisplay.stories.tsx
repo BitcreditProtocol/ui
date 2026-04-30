@@ -37,3 +37,9 @@ export const NarrowLayout: Story = {
     </div>
   ),
 };
+
+export const WithoutCopyButton: Story = {
+  args: {
+    hideCopyButton: true,
+  },
+};
