@@ -8,9 +8,17 @@ type NodeIdDisplayProps = {
   className?: string;
   textClassName?: string;
   copyButtonClassName?: string;
+  hideCopyButton?: boolean;
 };
 
-export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName, copyButtonClassName }: NodeIdDisplayProps) {
+export function NodeIdDisplay({
+  nodeId,
+  maxLength = 22,
+  className,
+  textClassName,
+  copyButtonClassName,
+  hideCopyButton = false,
+}: NodeIdDisplayProps) {
   return (
     <div className={cn("flex items-center gap-1", className)}>
       <TruncatedTextPopover
@@ -20,7 +28,7 @@ export function NodeIdDisplay({ nodeId, maxLength = 22, className, textClassName
         truncationMode="middle"
         className={cn("text-text-200 text-xs font-normal leading-[18px] !bg-transparent !p-0 !text-text-200", textClassName)}
       />
-      <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0 text-text-200", copyButtonClassName)} />
+      {!hideCopyButton && <CopyToClipboardButton value={nodeId} className={cn("shrink-0 !p-0 text-text-200", copyButtonClassName)} />}
     </div>
   );
 }

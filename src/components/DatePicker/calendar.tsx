@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
@@ -67,8 +67,30 @@ export function Calendar({
     setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1));
   };
 
+  const touchStartXRef = useRef<number | null>(null);
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartXRef.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartXRef.current === null) return;
+    const diffX = e.changedTouches[0].clientX - touchStartXRef.current;
+
+    if (diffX > 50) {
+      handleMonthShift(-1);
+    } else if (diffX < -50) {
+      handleMonthShift(1);
+    }
+
+    touchStartXRef.current = null;
+  };
+
   return (
-    <div className={cn("flex flex-col gap-3", className)} style={{ touchAction: "manipulation" }}>
+    <div
+      className={cn("flex flex-col gap-3", className)}
+      style={{ touchAction: "pan-y" }}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
+    >
       <div className="flex items-center justify-between">
         <button type="button" className="bg-transparent p-0" onClick={() => handleMonthShift(-1)} aria-label="Previous month">
           <AppIcon icon={ChevronLeft} />
@@ -126,7 +148,7 @@ export function Calendar({
                 onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
               }}
               className={cn(
-                "h-10 rounded-full border text-sm transition-colors",
+                "w-10 h-10 rounded-xl border text-sm bg-elevation-200",
                 "disabled:pointer-events-none disabled:opacity-40",
                 isOutsideMonth ? "text-text-200/70" : "text-text-300",
                 isToday && "border-divider-100 bg-elevation-200",
