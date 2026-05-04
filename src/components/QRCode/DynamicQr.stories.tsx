@@ -3,9 +3,9 @@ import * as React from "react";
 
 import { useQRCode } from "@/hooks/useQRCode";
 import {
-  type DynamicQrLoopController,
-  DynamicQrAssembler,
   createDynamicQrFrameLoop,
+  DynamicQrAssembler,
+  type DynamicQrLoopController,
   getDynamicQrFrameIndex,
   parseDynamicQrChunk,
   splitIntoDynamicQrFrames,

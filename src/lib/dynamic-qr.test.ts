@@ -1,12 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  createDynamicQrFrameLoop,
   DEFAULT_DYNAMIC_QR_CHUNK_SIZE,
   DEFAULT_DYNAMIC_QR_INTERVAL_MS,
   DYNAMIC_QR_MIN_LENGTH,
   DynamicQrAssembler,
   DynamicQrChunk,
-  createDynamicQrFrameLoop,
   getDynamicQrFrameIndex,
   isDynamicQrChunk,
   parseDynamicQrChunk,
