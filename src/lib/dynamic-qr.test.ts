@@ -61,12 +61,18 @@ describe("dynamic-qr", () => {
   });
 
   it("throws when shouldUseDynamicQr receives an invalid chunk size", () => {
-    expect(() => shouldUseDynamicQr("ABC", 0)).toThrow("chunkSize must be a positive integer");
-    expect(() => shouldUseDynamicQr("ABC", 2.5)).toThrow("chunkSize must be a positive integer");
+    expect(() => shouldUseDynamicQr("ABC", 0)).toThrow(
+      "chunkSize must be a positive integer"
+    );
+    expect(() => shouldUseDynamicQr("ABC", 2.5)).toThrow(
+      "chunkSize must be a positive integer"
+    );
   });
 
   it("assembles parsed chunks into the original value", () => {
-    const frames = splitIntoDynamicQrFrames("abcdefghijklmnopqrstuvwxyz", { chunkSize: 5 });
+    const frames = splitIntoDynamicQrFrames("abcdefghijklmnopqrstuvwxyz", {
+      chunkSize: 5,
+    });
     const assembler = new DynamicQrAssembler();
     const chunks = [...frames].reverse().map((frame) => parseDynamicQrChunk(frame));
 
@@ -205,7 +211,9 @@ describe("dynamic-qr with custom config", () => {
     const frames = splitIntoDynamicQrFrames("ABC", { chunkSize: 2, prefix: customPrefix });
 
     expect(frames).toEqual([`${customPrefix}:2:0:AB`, `${customPrefix}:2:1:C`]);
-    frames.forEach((frame) => expect(isDynamicQrChunk(frame, { prefix: customPrefix })).toBe(true));
+    frames.forEach((frame) => {
+      expect(isDynamicQrChunk(frame, { prefix: customPrefix })).toBe(true);
+    });
   });
 
   it("maintains backward compatibility with default prefix", () => {

@@ -1,7 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { DynamicQrProgress } from "@/components/QRCode/DynamicQrProgress";
 import { useQRCode } from "@/hooks/useQRCode";
 import {
   type DynamicQrLoopController,
@@ -12,6 +11,8 @@ import {
   splitIntoDynamicQrFrames,
 } from "@/lib/dynamic-qr";
 
+import { DynamicQrProgress } from "./DynamicQrProgress";
+
 interface DynamicQrStoryDemoProps {
   value: string;
   chunkSize: number;
@@ -19,12 +20,23 @@ interface DynamicQrStoryDemoProps {
   autoStart: boolean;
 }
 
-const demoPayload = Array.from({ length: 48 }, (_, index) => `bitcredit:token:${String(index).padStart(2, "0")}:demo-payload`)
+const demoPayload = Array.from(
+  { length: 48 },
+  (_, index) => `bitcredit:token:${String(index).padStart(2, "0")}:demo-payload`
+)
   .join("|")
   .repeat(2);
 
-function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: DynamicQrStoryDemoProps) {
-  const frames = React.useMemo(() => splitIntoDynamicQrFrames(value, { chunkSize }), [value, chunkSize]);
+function DynamicQrStoryDemoContent({
+  value,
+  chunkSize,
+  intervalMs,
+  autoStart,
+}: DynamicQrStoryDemoProps) {
+  const frames = React.useMemo(
+    () => splitIntoDynamicQrFrames(value, { chunkSize }),
+    [value, chunkSize]
+  );
   const [currentIndex, setCurrentIndex] = React.useState(0);
   const controllerRef = React.useRef<DynamicQrLoopController | null>(null);
   const visibleFrameIndex = getDynamicQrFrameIndex(frames.length, currentIndex);
@@ -94,13 +106,19 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
               className="h-[220px] w-[220px] rounded-lg bg-white p-2"
             />
           ) : (
-            <div className="flex h-[220px] w-[220px] items-center justify-center rounded-lg border border-dashed border-divider-100 bg-elevation-100 text-sm text-text-200">
+            <div
+              className="flex h-[220px] w-[220px] items-center justify-center rounded-lg border border-dashed border-divider-100 bg-elevation-100 text-sm text-text-200"
+            >
               Unable to render QR frame
             </div>
           )}
 
           <div className="w-full space-y-2">
-            <DynamicQrProgress currentFrameIndex={visibleFrameIndex} totalFrames={frames.length} className="mx-auto" />
+            <DynamicQrProgress
+              currentFrameIndex={visibleFrameIndex}
+              totalFrames={frames.length}
+              className="mx-auto"
+            />
             <div className="text-center text-xs text-text-200">Scanning progress</div>
           </div>
 
@@ -135,7 +153,9 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
         <div className="space-y-4">
           <div className="rounded-xl border border-divider-50 bg-elevation-200 p-4">
             <div className="mb-2 text-sm font-medium">Current frame payload</div>
-            <pre className="overflow-x-auto whitespace-pre-wrap break-all rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200">
+            <pre
+              className="overflow-x-auto whitespace-pre-wrap break-all rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200"
+            >
               {currentFrame}
             </pre>
           </div>
@@ -152,8 +172,13 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
             <div className="mb-3 text-sm font-medium">All generated frames</div>
             <div className="space-y-2">
               {frames.map((frame, index) => (
-                <div key={`${String(index)}-${frame}`} className="rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200">
-                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-text-300">Frame {index + 1}</div>
+                <div
+                  key={`${String(index)}-${frame}`}
+                  className="rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200"
+                >
+                  <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-text-300">
+                    Frame {index + 1}
+                  </div>
                   <code className="whitespace-pre-wrap break-all">{frame}</code>
                 </div>
               ))}

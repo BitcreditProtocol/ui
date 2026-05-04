@@ -6,8 +6,13 @@ export interface DynamicQrProgressProps {
   className?: string;
 }
 
-export function DynamicQrProgress({ currentFrameIndex, totalFrames, className = "" }: DynamicQrProgressProps) {
-  const currentFrame = totalFrames > 0 ? Math.min(Math.max(currentFrameIndex + 1, 0), totalFrames) : 0;
+export function DynamicQrProgress({
+  currentFrameIndex,
+  totalFrames,
+  className = "",
+}: DynamicQrProgressProps) {
+  const currentFrame =
+    totalFrames > 0 ? Math.min(Math.max(currentFrameIndex + 1, 0), totalFrames) : 0;
   const progress = totalFrames > 0 ? (currentFrame / totalFrames) * 100 : 0;
 
   return (
