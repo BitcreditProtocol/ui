@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { QRCodeShareButton } from "./QRCodeShareButton";
+import { QRCodeShareButton } from "./QRCodeShareButton.tsx";
 
 const meta = {
   title: "Components/QRCodeShareButton",
