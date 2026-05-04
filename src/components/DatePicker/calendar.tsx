@@ -123,7 +123,7 @@ export function Calendar({
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 gap-1 place-items-center">
         {monthDays.map((day) => {
           const isOutsideMonth = day.getMonth() !== visibleMonth.getMonth();
           const isDisabled = dateMatchModifiers(day, disabled);
