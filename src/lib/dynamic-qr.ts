@@ -12,9 +12,6 @@ export interface DynamicQrConfig {
 
 export interface SplitDynamicQrFramesOptions {
   chunkSize: number;
-}
-
-export interface SplitDynamicQrFramesOptionsWithConfig extends SplitDynamicQrFramesOptions {
   prefix?: string;
 }
 
@@ -139,8 +136,7 @@ export class DynamicQrAssembler {
 }
 
 export function splitIntoDynamicQrFrames(value: string, options: SplitDynamicQrFramesOptions): string[] {
-  const { chunkSize } = options;
-  const prefix = (options as SplitDynamicQrFramesOptionsWithConfig).prefix ?? DYNAMIC_QR_PREFIX;
+  const { chunkSize, prefix = DYNAMIC_QR_PREFIX } = options;
 
   if (!Number.isInteger(chunkSize) || chunkSize <= 0) {
     throw new Error("chunkSize must be a positive integer");
