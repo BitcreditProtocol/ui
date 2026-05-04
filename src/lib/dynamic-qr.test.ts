@@ -37,11 +37,7 @@ describe("dynamic-qr", () => {
   });
 
   it("splits values into dynamic QR frames", () => {
-    expect(splitIntoDynamicQrFrames("ABCDEFGHIJ", { chunkSize: 4 })).toEqual([
-      "BCQR:3:0:ABCD",
-      "BCQR:3:1:EFGH",
-      "BCQR:3:2:IJ",
-    ]);
+    expect(splitIntoDynamicQrFrames("ABCDEFGHIJ", { chunkSize: 4 })).toEqual(["BCQR:3:0:ABCD", "BCQR:3:1:EFGH", "BCQR:3:2:IJ"]);
   });
 
   it("creates a single empty frame for empty values", () => {
@@ -49,12 +45,8 @@ describe("dynamic-qr", () => {
   });
 
   it("throws for invalid chunk sizes", () => {
-    expect(() => splitIntoDynamicQrFrames("ABC", { chunkSize: 0 })).toThrow(
-      "chunkSize must be a positive integer"
-    );
-    expect(() => splitIntoDynamicQrFrames("ABC", { chunkSize: 2.5 })).toThrow(
-      "chunkSize must be a positive integer"
-    );
+    expect(() => splitIntoDynamicQrFrames("ABC", { chunkSize: 0 })).toThrow("chunkSize must be a positive integer");
+    expect(() => splitIntoDynamicQrFrames("ABC", { chunkSize: 2.5 })).toThrow("chunkSize must be a positive integer");
   });
 
   it("uses the default min-length constant as the default chunk-size threshold", () => {
@@ -62,23 +54,15 @@ describe("dynamic-qr", () => {
   });
 
   it("determines whether a payload should use dynamic QR based on chunk size", () => {
-    expect(
-      shouldUseDynamicQr("A".repeat(DEFAULT_DYNAMIC_QR_CHUNK_SIZE), DEFAULT_DYNAMIC_QR_CHUNK_SIZE)
-    ).toBe(false);
-    expect(
-      shouldUseDynamicQr("A".repeat(DEFAULT_DYNAMIC_QR_CHUNK_SIZE + 1), DEFAULT_DYNAMIC_QR_CHUNK_SIZE)
-    ).toBe(true);
+    expect(shouldUseDynamicQr("A".repeat(DEFAULT_DYNAMIC_QR_CHUNK_SIZE), DEFAULT_DYNAMIC_QR_CHUNK_SIZE)).toBe(false);
+    expect(shouldUseDynamicQr("A".repeat(DEFAULT_DYNAMIC_QR_CHUNK_SIZE + 1), DEFAULT_DYNAMIC_QR_CHUNK_SIZE)).toBe(true);
     expect(shouldUseDynamicQr("A".repeat(180), 180)).toBe(false);
     expect(shouldUseDynamicQr("A".repeat(181), 180)).toBe(true);
   });
 
   it("throws when shouldUseDynamicQr receives an invalid chunk size", () => {
-    expect(() => shouldUseDynamicQr("ABC", 0)).toThrow(
-      "chunkSize must be a positive integer"
-    );
-    expect(() => shouldUseDynamicQr("ABC", 2.5)).toThrow(
-      "chunkSize must be a positive integer"
-    );
+    expect(() => shouldUseDynamicQr("ABC", 0)).toThrow("chunkSize must be a positive integer");
+    expect(() => shouldUseDynamicQr("ABC", 2.5)).toThrow("chunkSize must be a positive integer");
   });
 
   it("assembles parsed chunks into the original value", () => {
@@ -189,12 +173,8 @@ describe("dynamic-qr", () => {
 
   it("throws for invalid loop input", () => {
     expect(() => createDynamicQrFrameLoop([], vi.fn())).toThrow("frames must not be empty");
-    expect(() => createDynamicQrFrameLoop(["frame"], vi.fn(), { intervalMs: 0 })).toThrow(
-      "intervalMs must be a positive integer"
-    );
-    expect(() => createDynamicQrFrameLoop(["frame"], vi.fn(), { intervalMs: 1.5 })).toThrow(
-      "intervalMs must be a positive integer"
-    );
+    expect(() => createDynamicQrFrameLoop(["frame"], vi.fn(), { intervalMs: 0 })).toThrow("intervalMs must be a positive integer");
+    expect(() => createDynamicQrFrameLoop(["frame"], vi.fn(), { intervalMs: 1.5 })).toThrow("intervalMs must be a positive integer");
   });
 });
 

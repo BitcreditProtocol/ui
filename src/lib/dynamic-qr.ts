@@ -36,12 +36,7 @@ export class DynamicQrChunk {
   readonly payload: string;
   readonly prefix: string;
 
-  constructor(
-    totalChunks: number,
-    index: number,
-    payload: string,
-    prefix: string = DYNAMIC_QR_PREFIX
-  ) {
+  constructor(totalChunks: number, index: number, payload: string, prefix: string = DYNAMIC_QR_PREFIX) {
     this.totalChunks = totalChunks;
     this.index = index;
     this.payload = payload;
@@ -150,13 +145,9 @@ export function splitIntoDynamicQrFrames(value: string, options: SplitDynamicQrF
   const payloadChunks =
     value.length === 0
       ? [""]
-      : Array.from({ length: Math.ceil(value.length / chunkSize) }, (_, index) =>
-          value.slice(index * chunkSize, (index + 1) * chunkSize)
-        );
+      : Array.from({ length: Math.ceil(value.length / chunkSize) }, (_, index) => value.slice(index * chunkSize, (index + 1) * chunkSize));
 
-  return payloadChunks.map((payload, index) =>
-    new DynamicQrChunk(payloadChunks.length, index, payload, prefix).toFrame()
-  );
+  return payloadChunks.map((payload, index) => new DynamicQrChunk(payloadChunks.length, index, payload, prefix).toFrame());
 }
 
 export function shouldUseDynamicQr(value: string, chunkSize: number): boolean {
