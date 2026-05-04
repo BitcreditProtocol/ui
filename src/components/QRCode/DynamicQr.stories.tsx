@@ -1,17 +1,16 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { DynamicQrProgress } from "@/components/QRCode/DynamicQrProgress.tsx";
-import { useQRCode } from "@/hooks/useQRCode.ts";
+import { DynamicQrProgress } from "@/components/QRCode/DynamicQrProgress";
+import { useQRCode } from "@/hooks/useQRCode";
 import {
-  DYNAMIC_QR_MIN_LENGTH,
   type DynamicQrLoopController,
   DynamicQrAssembler,
   createDynamicQrFrameLoop,
   getDynamicQrFrameIndex,
   parseDynamicQrChunk,
   splitIntoDynamicQrFrames,
-} from "@/lib/dynamic-qr.ts";
+} from "@/lib/dynamic-qr";
 
 interface DynamicQrStoryDemoProps {
   value: string;
@@ -70,24 +69,30 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
     margin: 1,
   });
 
-  const isMultiFrame = value.length >= DYNAMIC_QR_MIN_LENGTH;
+  const isMultiFrame = frames.length > 1;
 
   return (
     <div className="max-w-4xl space-y-4 rounded-xl border border-divider-50 bg-elevation-100 p-5 text-text-300">
       <div className="space-y-1">
         <h2 className="text-lg font-semibold">Dynamic QR preview</h2>
         <p className="text-sm text-text-200">
-          Payload length: <span className="font-medium text-text-300">{value.length}</span> characters · Frames: <span className="font-medium text-text-300">{frames.length}</span>
+          Payload length: <span className="font-medium text-text-300">{value.length}</span> characters · Frames:{" "}
+          <span className="font-medium text-text-300">{frames.length}</span>
         </p>
         <p className="text-sm text-text-200">
-          Recommended dynamic threshold: <span className="font-medium text-text-300">{DYNAMIC_QR_MIN_LENGTH}</span> characters · Status: <span className="font-medium text-text-300">{isMultiFrame ? "multi-frame" : "single-frame"}</span>
+          Active chunk size: <span className="font-medium text-text-300">{chunkSize}</span> characters · Status:{" "}
+          <span className="font-medium text-text-300">{isMultiFrame ? "multi-frame" : "single-frame"}</span>
         </p>
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[240px_minmax(0,1fr)]">
         <div className="flex flex-col items-center gap-3 rounded-xl border border-divider-50 bg-elevation-200 p-4">
           {qrImageUrl && !qrGenerationFailed ? (
-            <img src={qrImageUrl} alt={`Dynamic QR frame ${visibleFrameIndex + 1}`} className="h-[220px] w-[220px] rounded-lg bg-white p-2" />
+            <img
+              src={qrImageUrl}
+              alt={`Dynamic QR frame ${visibleFrameIndex + 1}`}
+              className="h-[220px] w-[220px] rounded-lg bg-white p-2"
+            />
           ) : (
             <div className="flex h-[220px] w-[220px] items-center justify-center rounded-lg border border-dashed border-divider-100 bg-elevation-100 text-sm text-text-200">
               Unable to render QR frame
@@ -138,7 +143,8 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
           <div className="rounded-xl border border-divider-50 bg-elevation-200 p-4">
             <div className="mb-2 text-sm font-medium">Reassembly check</div>
             <div className="text-sm text-text-200">
-              Successfully reconstructed original payload: <span className="font-medium text-text-300">{assembledValue === value ? "yes" : "no"}</span>
+              Successfully reconstructed original payload:{" "}
+              <span className="font-medium text-text-300">{assembledValue === value ? "yes" : "no"}</span>
             </div>
           </div>
 
@@ -146,7 +152,7 @@ function DynamicQrStoryDemoContent({ value, chunkSize, intervalMs, autoStart }: 
             <div className="mb-3 text-sm font-medium">All generated frames</div>
             <div className="space-y-2">
               {frames.map((frame, index) => (
-                <div key={frame} className="rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200">
+                <div key={`${String(index)}-${frame}`} className="rounded-md bg-elevation-100 p-3 text-xs leading-5 text-text-200">
                   <div className="mb-1 text-[11px] font-semibold uppercase tracking-wide text-text-300">Frame {index + 1}</div>
                   <code className="whitespace-pre-wrap break-all">{frame}</code>
                 </div>

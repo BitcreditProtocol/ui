@@ -3,8 +3,19 @@ export const DEFAULT_DYNAMIC_QR_CHUNK_SIZE = 500;
 export const DYNAMIC_QR_MIN_LENGTH = DEFAULT_DYNAMIC_QR_CHUNK_SIZE;
 export const DEFAULT_DYNAMIC_QR_INTERVAL_MS = 400;
 
+export interface DynamicQrConfig {
+  prefix?: string;
+  defaultChunkSize?: number;
+  minLength?: number;
+  defaultIntervalMs?: number;
+}
+
 export interface SplitDynamicQrFramesOptions {
   chunkSize: number;
+}
+
+export interface SplitDynamicQrFramesOptionsWithConfig extends SplitDynamicQrFramesOptions {
+  prefix?: string;
 }
 
 export interface CreateDynamicQrLoopOptions {
@@ -26,22 +37,29 @@ export class DynamicQrChunk {
   readonly totalChunks: number;
   readonly index: number;
   readonly payload: string;
+  readonly prefix: string;
 
-  constructor(totalChunks: number, index: number, payload: string) {
+  constructor(totalChunks: number, index: number, payload: string, prefix: string = DYNAMIC_QR_PREFIX) {
     this.totalChunks = totalChunks;
     this.index = index;
     this.payload = payload;
+    this.prefix = prefix;
   }
 
   toFrame(): string {
-    return `${DYNAMIC_QR_PREFIX}:${String(this.totalChunks)}:${String(this.index)}:${this.payload}`;
+    return `${this.prefix}:${String(this.totalChunks)}:${String(this.index)}:${this.payload}`;
   }
 }
 
-export const isDynamicQrChunk = (value: string): boolean => value.startsWith(`${DYNAMIC_QR_PREFIX}:`);
+export const isDynamicQrChunk = (value: string, config?: DynamicQrConfig): boolean => {
+  const prefix = config?.prefix ?? DYNAMIC_QR_PREFIX;
+  return value.startsWith(`${prefix}:`);
+};
 
-export function parseDynamicQrChunk(value: string): DynamicQrChunk | null {
-  if (!isDynamicQrChunk(value)) {
+export function parseDynamicQrChunk(value: string, config?: DynamicQrConfig): DynamicQrChunk | null {
+  const prefix = config?.prefix ?? DYNAMIC_QR_PREFIX;
+
+  if (!isDynamicQrChunk(value, config)) {
     return null;
   }
 
@@ -66,7 +84,7 @@ export function parseDynamicQrChunk(value: string): DynamicQrChunk | null {
 
   const payload = value.substring(thirdColon + 1);
 
-  return new DynamicQrChunk(totalChunks, index, payload);
+  return new DynamicQrChunk(totalChunks, index, payload, prefix);
 }
 
 export class DynamicQrAssembler {
@@ -122,6 +140,7 @@ export class DynamicQrAssembler {
 
 export function splitIntoDynamicQrFrames(value: string, options: SplitDynamicQrFramesOptions): string[] {
   const { chunkSize } = options;
+  const prefix = (options as SplitDynamicQrFramesOptionsWithConfig).prefix ?? DYNAMIC_QR_PREFIX;
 
   if (!Number.isInteger(chunkSize) || chunkSize <= 0) {
     throw new Error("chunkSize must be a positive integer");
@@ -132,7 +151,15 @@ export function splitIntoDynamicQrFrames(value: string, options: SplitDynamicQrF
       ? [""]
       : Array.from({ length: Math.ceil(value.length / chunkSize) }, (_, index) => value.slice(index * chunkSize, (index + 1) * chunkSize));
 
-  return payloadChunks.map((payload, index) => new DynamicQrChunk(payloadChunks.length, index, payload).toFrame());
+  return payloadChunks.map((payload, index) => new DynamicQrChunk(payloadChunks.length, index, payload, prefix).toFrame());
+}
+
+export function shouldUseDynamicQr(value: string, chunkSize: number): boolean {
+  if (!Number.isInteger(chunkSize) || chunkSize <= 0) {
+    throw new Error("chunkSize must be a positive integer");
+  }
+
+  return value.length > chunkSize;
 }
 
 export function getDynamicQrFrameIndex(totalFrames: number, frameIndex: number): number {

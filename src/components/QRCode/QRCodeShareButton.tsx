@@ -2,7 +2,7 @@ import { ShareIcon } from "lucide-react";
 import { toCanvas } from "qrcode";
 import React from "react";
 
-import { AppIcon } from "@/components/ui/app-icon.tsx";
+import { AppIcon } from "@/components/ui/app-icon";
 
 export interface QRCodeShareButtonProps {
   value: string;
