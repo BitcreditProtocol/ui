@@ -203,7 +203,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
                 onMouseDown={stopContainerFocus}
                 onTouchStart={stopContainerFocus}
                 onClick={clearField}
-                className="absolute right-4"
+                className="absolute right-4 bg-transparent"
               >
                 <AppIcon icon={XIcon} className="text-text-300" size="md" />
               </button>
