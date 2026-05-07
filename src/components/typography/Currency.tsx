@@ -4,7 +4,7 @@ import { type FormatNumberOptions, useIntl } from "react-intl";
 import { usePreferences } from "@/components/context/preferences/PreferencesContext";
 import { HighlightText } from "@/components/ui/highlight-text";
 import { useRates } from "@/hooks/useRates";
-import { type CurrencyCode, convert, formatAmountNumber, getLocaleForFormat } from "@/lib/currency";
+import { type CurrencyCode, convert, formatAmountNumber, getLocaleForFormat, isCurrencyCode } from "@/lib/currency";
 import { cn } from "@/lib/utils";
 
 export type FormattedCurrencyProps = {
@@ -19,6 +19,19 @@ export type FormattedCurrencyProps = {
   currencyDisplay?: FormatNumberOptions["currencyDisplay"] | "none";
   sourceCurrency?: CurrencyCode;
   showSecondary?: boolean;
+  /**
+   * Controls which currency is shown as the primary (large) value when
+   * `sourceCurrency` is provided.
+   *
+   * - `"display"` (default) — convert the amount and show the display/preferred
+   *   currency as the primary value. The source currency is not shown.
+   *   Use this for eBill-style display where you want "€43.50" from a SAT amount.
+   *
+   * - `"source"` — show the source currency as the primary value (original
+   *   behaviour) and the converted amount as a smaller secondary label.
+   *   Use this for dashboard-style display where you want "114,943 sat  €43.50".
+   */
+  primaryCurrency?: "source" | "display";
   highlightQuery?: string;
 } & Pick<FormatNumberOptions, "signDisplay">;
 
@@ -275,6 +288,7 @@ function CurrencyWithConversion({
   signDisplay = "exceptZero",
   highlightQuery,
   currencyDisplay = "symbol",
+  primaryCurrency = "display",
   ...rest
 }: FormattedCurrencyProps & { sourceCurrency: CurrencyCode }) {
   const { currency: preferred, decimalFormat } = usePreferences();
@@ -282,10 +296,12 @@ function CurrencyWithConversion({
   const locale = getLocaleForFormat(intl.locale, decimalFormat);
   const { data: rates } = useRates();
 
-  const displayCurrency = (currency ?? preferred) as CurrencyCode;
+  const rawDisplayCurrency = (currency ?? preferred).toLowerCase();
+  const displayCurrency: CurrencyCode | null = isCurrencyCode(rawDisplayCurrency) ? rawDisplayCurrency : null;
 
-  const secondaryValue = useMemo(() => {
-    if (!rates || displayCurrency === sourceCurrency) return null;
+  // The converted value (source → display currency).
+  const convertedValue = useMemo(() => {
+    if (!rates || displayCurrency === null || displayCurrency === sourceCurrency) return null;
     try {
       return convert(value, sourceCurrency, displayCurrency, rates);
     } catch {
@@ -293,14 +309,27 @@ function CurrencyWithConversion({
     }
   }, [rates, value, sourceCurrency, displayCurrency]);
 
+  // "display" mode: show converted currency as primary, no secondary.
+  // "source" mode: show source currency as primary, converted as smaller secondary.
+  const isDisplayPrimary = primaryCurrency === "display";
+
+  const primaryValue = isDisplayPrimary ? (convertedValue ?? value) : value;
+  const primaryCode = isDisplayPrimary
+    ? convertedValue !== null && displayCurrency !== null
+      ? displayCurrency
+      : sourceCurrency
+    : sourceCurrency;
+
+  const secondaryValue = isDisplayPrimary ? null : convertedValue;
+
   const secondaryFormatted = useMemo(() => {
-    if (secondaryValue === null) return null;
+    if (secondaryValue === null || displayCurrency === null) return null;
     return formatAmountNumber(Math.abs(secondaryValue), displayCurrency, locale);
   }, [secondaryValue, displayCurrency, locale]);
 
   // Respect currencyDisplay="none" for the secondary symbol as well
   const secondarySymbol =
-    currencyDisplay !== "none"
+    currencyDisplay !== "none" && displayCurrency !== null
       ? displayCurrency === "btc"
         ? "BTC"
         : displayCurrency === "sat"
@@ -313,12 +342,12 @@ function CurrencyWithConversion({
   // Combine primary + secondary into a single accessible label on the outer wrapper.
   // Both child spans are aria-hidden so SR reads only this label, not fragmented pieces.
   const primaryAriaLabel = useMemo(
-    () => computeAriaLabel(locale, value, sourceCurrency, currencyDisplay, signDisplay),
-    [locale, value, sourceCurrency, currencyDisplay, signDisplay]
+    () => computeAriaLabel(locale, primaryValue, primaryCode, currencyDisplay, signDisplay),
+    [locale, primaryValue, primaryCode, currencyDisplay, signDisplay]
   );
   const secondaryAriaLabel = useMemo(
     () =>
-      secondaryValue !== null && showSecondaryDisplay
+      secondaryValue !== null && showSecondaryDisplay && displayCurrency !== null
         ? computeAriaLabel(locale, secondaryValue, displayCurrency, currencyDisplay, signDisplay)
         : null,
     [locale, secondaryValue, showSecondaryDisplay, displayCurrency, currencyDisplay, signDisplay]
@@ -333,8 +362,8 @@ function CurrencyWithConversion({
       })}
     >
       <CurrencyBase
-        value={value}
-        currency={sourceCurrency}
+        value={primaryValue}
+        currency={primaryCode}
         color="none"
         type="auto"
         signDisplay={signDisplay}
@@ -355,12 +384,14 @@ function CurrencyWithConversion({
   );
 }
 
-// Skip CurrencyWithConversion (and its useRates() call) when secondary display is disabled
+// Always use CurrencyWithConversion when sourceCurrency is provided so that
+// conversion (needed for primaryCurrency="display") is available regardless
+// of showSecondary.
 const Currency = (props: FormattedCurrencyProps) => {
-  if (props.sourceCurrency !== undefined && props.showSecondary !== false) {
+  if (props.sourceCurrency !== undefined) {
     return <CurrencyWithConversion {...props} sourceCurrency={props.sourceCurrency} />;
   }
-  return <CurrencyBase {...props} currency={props.sourceCurrency ?? props.currency} />;
+  return <CurrencyBase {...props} />;
 };
 
 Currency.displayName = "Currency";

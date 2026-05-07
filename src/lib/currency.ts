@@ -4,6 +4,12 @@ export type FiatCurrencyCode = "usd" | "eur";
 export type CryptoCurrencyCode = "btc" | "sat";
 export type CurrencyCode = FiatCurrencyCode | CryptoCurrencyCode;
 
+export const SUPPORTED_CURRENCY_CODES = new Set<CurrencyCode>(["usd", "eur", "btc", "sat"]);
+
+export function isCurrencyCode(code: string): code is CurrencyCode {
+  return SUPPORTED_CURRENCY_CODES.has(code.toLowerCase() as CurrencyCode);
+}
+
 export type Rates = {
   usdPerBtc: number;
   eurPerUsd: number;

@@ -79,9 +79,42 @@ export const WithSecondary: Story = {
   ],
   render: () => (
     <div className="flex flex-col gap-4">
-      <Currency value={100000} sourceCurrency="sat" />
-      <Currency value={0.001} sourceCurrency="btc" />
-      <Currency value={50} sourceCurrency="usd" />
+      <Currency value={100000} sourceCurrency="sat" primaryCurrency="source" />
+      <Currency value={0.001} sourceCurrency="btc" primaryCurrency="source" />
+      <Currency value={50} sourceCurrency="usd" primaryCurrency="source" />
+    </div>
+  ),
+};
+
+export const PrimaryCurrencyModes: Story = {
+  args: { value: 0 },
+  decorators: [
+    (Story) => (
+      <QueryClientProvider client={makeQueryClient(mockRates)}>
+        <Story />
+      </QueryClientProvider>
+    ),
+  ],
+  render: () => (
+    <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          primaryCurrency="display" (default) — eBill style
+        </span>
+        <span className="text-xs text-muted-foreground">Shows converted preferred currency only</span>
+        <Currency value={100000} sourceCurrency="sat" />
+        <Currency value={0.001} sourceCurrency="btc" />
+        <Currency value={50} sourceCurrency="usd" />
+      </div>
+      <div className="flex flex-col gap-2">
+        <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+          primaryCurrency="source" — Dashboard style
+        </span>
+        <span className="text-xs text-muted-foreground">Shows source currency as primary, converted as smaller secondary</span>
+        <Currency value={100000} sourceCurrency="sat" primaryCurrency="source" />
+        <Currency value={0.001} sourceCurrency="btc" primaryCurrency="source" />
+        <Currency value={50} sourceCurrency="usd" primaryCurrency="source" />
+      </div>
     </div>
   ),
 };
