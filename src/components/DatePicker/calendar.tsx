@@ -59,6 +59,7 @@ export function Calendar({
   useEffect(() => {
     if (month) {
       const next = startOfMonth(month);
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisibleMonth((prev) => (prev.getTime() === next.getTime() ? prev : next));
     }
   }, [month]);
