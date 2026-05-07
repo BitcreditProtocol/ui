@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
@@ -29,6 +29,7 @@ export type CalendarProps = {
   selected: DateRange;
   onSelect: CalendarSelectHandler;
   onCaptionLabelClicked: () => void;
+  onMonthChange?: (month: Date) => void;
   disabled?: Matcher | Matcher[];
   isFutureNavigationDisabled?: boolean;
   rangeFocus?: "from" | "to";
@@ -44,6 +45,7 @@ export function Calendar({
   selected,
   onSelect,
   onCaptionLabelClicked,
+  onMonthChange,
   disabled,
   isFutureNavigationDisabled = false,
   rangeFocus = "from",
@@ -53,6 +55,13 @@ export function Calendar({
 }: CalendarProps) {
   const { locale } = useLanguage();
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(month ?? selected.from ?? new Date()));
+
+  useEffect(() => {
+    if (month) {
+      const next = startOfMonth(month);
+      setVisibleMonth((prev) => (prev.getTime() === next.getTime() ? prev : next));
+    }
+  }, [month]);
 
   const weekdayLabels = useMemo(() => getWeekdayLabels(locale, ISOWeek), [ISOWeek, locale]);
   const monthDays = useMemo(() => getMonthDays(visibleMonth, ISOWeek), [ISOWeek, visibleMonth]);
@@ -64,7 +73,11 @@ export function Calendar({
       return;
     }
 
-    setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + offset, 1));
+    setVisibleMonth((current) => {
+      const next = new Date(current.getFullYear(), current.getMonth() + offset, 1);
+      onMonthChange?.(next);
+      return next;
+    });
   };
 
   const touchStartXRef = useRef<number | null>(null);

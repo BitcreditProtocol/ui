@@ -70,7 +70,7 @@ function SingleDateStory() {
     from: new Date(2026, 3, 16),
   });
 
-  return <DatePicker mode="single" value={value} onChange={setValue} label="Choose a date" />;
+  return <DatePicker mode="single" value={value} onChange={setValue} label="Choose a date" shouldDisplayIncrementButtons />;
 }
 
 function RangeDateStory() {
