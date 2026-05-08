@@ -11,6 +11,7 @@ type TruncatedTextPopoverProps = {
   className?: string;
   contentClassName?: string;
   title?: string;
+  asParent?: "div" | "span";
   as?: "button" | "span";
   showCopyButton?: boolean;
   truncationMode?: TruncationMode;
@@ -22,6 +23,7 @@ export function TruncatedTextPopover({
   className,
   contentClassName,
   title,
+  asParent = "div",
   as = "span",
   showCopyButton = false,
   truncationMode = "auto",
@@ -83,6 +85,58 @@ export function TruncatedTextPopover({
     </span>
   ));
 
+  function renderPopoverContent() {
+    return (
+      <>
+        <Popover>
+          <PopoverTrigger asChild>
+            {as === "button" ? (
+              <button
+                ref={triggerRef as React.Ref<HTMLButtonElement>}
+                type="button"
+                className={cn(
+                  "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
+                  className
+                )}
+                title={title ?? flatLabel}
+                aria-label={title ?? flatLabel}
+              >
+                {visibleTextNode}
+              </button>
+            ) : (
+              <span
+                ref={triggerRef as React.Ref<HTMLSpanElement>}
+                role="button"
+                tabIndex={0}
+                className={cn(
+                  "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
+                  className
+                )}
+                title={title ?? flatLabel}
+                aria-label={title ?? flatLabel}
+              >
+                {visibleTextNode}
+              </span>
+            )}
+          </PopoverTrigger>
+
+          <PopoverContent
+            align="center"
+            sideOffset={6}
+            collisionPadding={16}
+            className={cn(
+              "z-50 max-h-64 w-(--radix-popover-trigger-width) overflow-y-auto overflow-x-hidden break-all rounded-lg border border-[#1B0F004D] bg-elevation-50 p-4 text-center shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+              contentClassName
+            )}
+          >
+            <span className="min-w-0 w-full text-sm whitespace-pre-line break-all">{textStr}</span>
+          </PopoverContent>
+        </Popover>
+        {showCopyButton ? <CopyToClipboardButton value={textStr} className="shrink-0" /> : null}
+      </>
+    );
+  }
+
   if (!shouldShowPopover) {
     return (
       <div className="flex min-w-0 items-center gap-2">
@@ -98,53 +152,9 @@ export function TruncatedTextPopover({
     );
   }
 
-  return (
-    <div className="flex min-w-0 items-center gap-2">
-      <Popover>
-        <PopoverTrigger asChild>
-          {as === "button" ? (
-            <button
-              ref={triggerRef as React.Ref<HTMLButtonElement>}
-              type="button"
-              className={cn(
-                "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
-                className
-              )}
-              title={title ?? flatLabel}
-              aria-label={title ?? flatLabel}
-            >
-              {visibleTextNode}
-            </button>
-          ) : (
-            <span
-              ref={triggerRef as React.Ref<HTMLSpanElement>}
-              role="button"
-              tabIndex={0}
-              className={cn(
-                "block w-full min-w-0 max-w-full overflow-hidden align-top cursor-pointer hover:underline focus:outline-none bg-transparent",
-                className
-              )}
-              title={title ?? flatLabel}
-              aria-label={title ?? flatLabel}
-            >
-              {visibleTextNode}
-            </span>
-          )}
-        </PopoverTrigger>
-
-        <PopoverContent
-          align="center"
-          sideOffset={6}
-          collisionPadding={16}
-          className={cn(
-            "z-50 max-h-64 w-(--radix-popover-trigger-width) overflow-y-auto overflow-x-hidden break-all rounded-lg border border-[#1B0F004D] bg-elevation-50 p-4 text-center shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
-            contentClassName
-          )}
-        >
-          <span className="min-w-0 w-full text-sm whitespace-pre-line break-all">{textStr}</span>
-        </PopoverContent>
-      </Popover>
-      {showCopyButton ? <CopyToClipboardButton value={textStr} className="shrink-0" /> : null}
-    </div>
+  return asParent === "div" ? (
+    <div className="flex min-w-0 items-center gap-2">{renderPopoverContent()}</div>
+  ) : (
+    <span className="flex min-w-0 items-center gap-2">{renderPopoverContent()}</span>
   );
 }
