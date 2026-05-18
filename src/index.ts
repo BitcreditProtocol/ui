@@ -67,6 +67,7 @@ export * from "./components/ui/toaster";
 export * from "./components/ui/tooltip";
 export * from "./components/ui/upload";
 export * from "./components/ui/visually-hidden";
+export * from "./constants/currencies";
 export * from "./constants/dateFormats";
 export * from "./hooks/use-format-date";
 export * from "./hooks/use-modal";

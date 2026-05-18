@@ -1,19 +1,29 @@
 import type { DecimalFormat } from "@/components/context/preferences/PreferencesContext";
 
-export type FiatCurrencyCode = "usd" | "eur";
+export type { FiatCurrencyCode } from "@/constants/currencies";
+export { FIAT_CURRENCY_CODES, FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
+
+import type { FiatCurrencyCode } from "@/constants/currencies";
+import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
+
 export type CryptoCurrencyCode = "btc" | "sat";
 export type CurrencyCode = FiatCurrencyCode | CryptoCurrencyCode;
 
-export const SUPPORTED_CURRENCY_CODES = new Set<CurrencyCode>(["usd", "eur", "btc", "sat"]);
+export const SUPPORTED_CURRENCY_CODES = new Set<CurrencyCode>([...FIAT_CURRENCY_CODES_SET, "btc", "sat"]);
 
 export function isCurrencyCode(code: string): code is CurrencyCode {
   return SUPPORTED_CURRENCY_CODES.has(code.toLowerCase() as CurrencyCode);
 }
 
-export type Rates = {
-  usdPerBtc: number;
-  eurPerUsd: number;
-};
+/**
+ * Map of lowercase FiatCurrencyCode → units of that currency per 1 BTC,
+ * as returned by the Coinbase exchange-rates API.
+ *
+ * - Keys are always lowercase FiatCurrencyCode values (enforced by useRates).
+ * - Not all codes are guaranteed to be present — Coinbase may omit some.
+ *   Conversion helpers throw when a required rate is missing.
+ */
+export type Rates = Partial<Record<FiatCurrencyCode, number>>;
 
 export const SATS_PER_BTC = 100_000_000 as const;
 
@@ -36,9 +46,12 @@ export function getLocaleForFormat(baseLocale: string, format: DecimalFormat): s
   }
 }
 
-/** Derived rate: how many EUR one BTC is worth. */
 export function getEurPerBtc(rates: Rates): number {
-  return rates.usdPerBtc * rates.eurPerUsd;
+  const rate = rates["eur"];
+  if (rate === undefined || !isFinite(rate) || rate <= 0) {
+    throw new Error("No rate available for currency: eur");
+  }
+  return rate;
 }
 
 export function satToBtc(sat: number): number {
@@ -50,68 +63,34 @@ export function btcToSat(btc: number): number {
 }
 
 function btcToFiat(btc: number, currency: FiatCurrencyCode, rates: Rates): number {
-  switch (currency) {
-    case "usd":
-      return btc * rates.usdPerBtc;
-    case "eur":
-      return btc * getEurPerBtc(rates);
-    default: {
-      const _exhaustive: never = currency;
-      throw new Error(`Unsupported fiat currency: ${String(_exhaustive)}`);
-    }
+  const rate = rates[currency];
+  if (rate === undefined || !isFinite(rate) || rate <= 0) {
+    throw new Error(`No rate available for currency: ${currency}`);
   }
+  return btc * rate;
 }
 
 function fiatToBtc(amount: number, currency: FiatCurrencyCode, rates: Rates): number {
-  switch (currency) {
-    case "usd":
-      return amount / rates.usdPerBtc;
-    case "eur":
-      return amount / getEurPerBtc(rates);
-    default: {
-      const _exhaustive: never = currency;
-      throw new Error(`Unsupported fiat currency: ${String(_exhaustive)}`);
-    }
+  const rate = rates[currency];
+  if (rate === undefined || !isFinite(rate) || rate <= 0) {
+    throw new Error(`No rate available for currency: ${currency}`);
   }
+  return amount / rate;
 }
 
 /** Convert a source currency amount to satoshis. */
 export function convertToSat(amount: number, source: CurrencyCode, rates: Rates): number {
-  switch (source) {
-    case "sat":
-      return Math.round(amount);
-    case "btc":
-      return btcToSat(amount);
-    case "usd":
-    case "eur": {
-      const btc = fiatToBtc(amount, source, rates);
-      return btcToSat(btc);
-    }
-    default: {
-      const _exhaustive: never = source;
-      throw new Error(`Unsupported currency: ${String(_exhaustive)}`);
-    }
-  }
+  if (source === "sat") return Math.round(amount);
+  if (source === "btc") return btcToSat(amount);
+  return btcToSat(fiatToBtc(amount, source, rates));
 }
 
 /** Convert from satoshis to a target currency. */
 export function convertFromSat(sat: number, target: CurrencyCode, rates: Rates): number {
+  if (target === "sat") return Math.round(sat);
   const btc = satToBtc(sat);
-
-  switch (target) {
-    case "sat":
-      return Math.round(sat);
-    case "btc":
-      return btc;
-    case "usd":
-      return btc * rates.usdPerBtc;
-    case "eur":
-      return btcToFiat(btc, target, rates);
-    default: {
-      const _exhaustive: never = target;
-      throw new Error(`Unsupported currency: ${String(_exhaustive)}`);
-    }
-  }
+  if (target === "btc") return btc;
+  return btcToFiat(btc, target, rates);
 }
 
 /** Fully generic converter: any CurrencyCode → any CurrencyCode. */
@@ -125,23 +104,21 @@ export function convert(amount: number, source: CurrencyCode, target: CurrencyCo
  * Returns a plain string suitable for aria-labels or plain-text contexts.
  */
 export function formatAmount(value: number, currency: CurrencyCode, locale = "en-US"): string {
-  switch (currency) {
-    case "usd":
-    case "eur":
-      return new Intl.NumberFormat(locale, {
-        style: "currency",
-        currency: currency.toUpperCase(),
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-      }).format(value);
-    case "btc":
-      return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(value)} BTC`;
-    case "sat":
-      return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value)} sat`;
-    default: {
-      const _exhaustive: never = currency;
-      throw new Error(`Unsupported currency: ${String(_exhaustive)}`);
-    }
+  if (currency === "sat") {
+    return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(value)} sat`;
+  }
+  if (currency === "btc") {
+    return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(value)} BTC`;
+  }
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: "currency",
+      currency: currency.toUpperCase(),
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value);
+  } catch {
+    return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value)} ${currency.toUpperCase()}`;
   }
 }
 
@@ -151,17 +128,15 @@ export function formatAmount(value: number, currency: CurrencyCode, locale = "en
  * Used for split-symbol rendering in the Currency component.
  */
 export function formatAmountNumber(abs: number, currency: CurrencyCode, locale: string): string {
-  switch (currency) {
-    case "sat":
-      return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(abs);
-    case "btc":
-      return new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(abs);
-    default: {
-      if (abs > 0 && abs < 0.005) {
-        const cents = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.01);
-        return `<${cents}`;
-      }
-      return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(abs);
-    }
+  if (currency === "sat") {
+    return new Intl.NumberFormat(locale, { minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(abs);
   }
+  if (currency === "btc") {
+    return new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(abs);
+  }
+  if (abs > 0 && abs < 0.005) {
+    const cents = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.01);
+    return `<${cents}`;
+  }
+  return new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(abs);
 }

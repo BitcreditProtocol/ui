@@ -1,7 +1,9 @@
 import { createContext, useContext } from "react";
 
+import type { CurrencyCode } from "@/lib/currency";
+
 export type Theme = "system" | "light" | "dark";
-export type Currency = "usd" | "eur" | "btc" | "sat";
+export type Currency = CurrencyCode;
 export type DecimalFormat = "point" | "comma" | "space";
 
 type PreferencesContext = {

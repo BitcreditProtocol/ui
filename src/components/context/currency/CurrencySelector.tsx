@@ -6,11 +6,21 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
-import type { UiMessages, UiT } from "@/lib/ui-i18n";
+import type { FiatCurrencyCode } from "@/constants/currencies";
+import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
+import type { UiMessages, UiT, UiTranslationKey } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 function BitcoinBadge() {
   return <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7931A] text-xs font-semibold text-white">B</div>;
+}
+
+function FiatBadge({ code }: { code: string }) {
+  return (
+    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-semibold uppercase text-muted-foreground">
+      {code.slice(0, 3).toUpperCase()}
+    </div>
+  );
 }
 
 function Label({ children }: { children: React.ReactNode }) {
@@ -30,48 +40,42 @@ type CurrencySelectorProps = PropsWithChildren<{
 
 type CurrencyDef = {
   code: string;
-  labelKey:
-    | "ui.currencySelector.option.usd"
-    | "ui.currencySelector.option.eur"
-    | "ui.currencySelector.option.btc"
-    | "ui.currencySelector.option.sat";
-  legacyLabel: string;
-  icon?: React.ReactNode;
+  labelKey: UiTranslationKey;
+  icon: React.ReactNode;
 };
 
+const PINNED_SET = new Set<FiatCurrencyCode>(PINNED_FIAT_CURRENCY_CODES);
+
+const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
+  usd: (
+    <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#118200] rounded-full">
+      <AppIcon icon={DollarSignIcon} className="text-white" />
+    </div>
+  ),
+  eur: (
+    <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#003398] rounded-full">
+      <AppIcon icon={EuroIcon} className="text-white" />
+    </div>
+  ),
+};
+
+function makeFiatDef(code: FiatCurrencyCode): CurrencyDef {
+  return {
+    code,
+    labelKey: `ui.currencySelector.option.${code}` satisfies UiTranslationKey,
+    icon: CUSTOM_ICONS[code] ?? <FiatBadge code={code} />,
+  };
+}
+
+const CRYPTO_DEFS: CurrencyDef[] = [
+  { code: "btc", labelKey: "ui.currencySelector.option.btc", icon: <BitcoinBadge /> },
+  { code: "sat", labelKey: "ui.currencySelector.option.sat", icon: <BitcoinBadge /> },
+];
+
 const ALL_CURRENCIES: CurrencyDef[] = [
-  {
-    code: "usd",
-    labelKey: "ui.currencySelector.option.usd",
-    legacyLabel: "US Dollar",
-    icon: (
-      <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#118200] rounded-full">
-        <AppIcon icon={DollarSignIcon} className="text-white" />
-      </div>
-    ),
-  },
-  {
-    code: "eur",
-    labelKey: "ui.currencySelector.option.eur",
-    legacyLabel: "Euro",
-    icon: (
-      <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#003398] rounded-full">
-        <AppIcon icon={EuroIcon} className="text-white" />
-      </div>
-    ),
-  },
-  {
-    code: "btc",
-    labelKey: "ui.currencySelector.option.btc",
-    legacyLabel: "Bitcoin (BTC)",
-    icon: <BitcoinBadge />,
-  },
-  {
-    code: "sat",
-    labelKey: "ui.currencySelector.option.sat",
-    legacyLabel: "Bitcoin (sat)",
-    icon: <BitcoinBadge />,
-  },
+  ...PINNED_FIAT_CURRENCY_CODES.map(makeFiatDef),
+  ...CRYPTO_DEFS,
+  ...FIAT_CURRENCY_CODES.filter((code) => !PINNED_SET.has(code)).map(makeFiatDef),
 ];
 
 function CurrencyOption({
@@ -90,6 +94,8 @@ function CurrencyOption({
   t?: UiT;
 }) {
   const uiText = useUiText();
+  const label = uiText({ key: def.labelKey, messages, t });
+
   return (
     <div
       role="radio"
@@ -111,7 +117,7 @@ function CurrencyOption({
       <div className="flex min-w-0 items-center gap-4">
         {def.icon}
         <div className="flex flex-col gap-0.5">
-          <Label>{uiText({ key: def.labelKey, messages, t })}</Label>
+          <Label>{label}</Label>
           <Description>{def.code === "sat" ? "sat" : def.code.toUpperCase()}</Description>
         </div>
       </div>
@@ -134,11 +140,9 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
     if (!normalizedSearch) return ALL_CURRENCIES;
     return ALL_CURRENCIES.filter(
       (c) =>
-        c.legacyLabel.toLowerCase().includes(normalizedSearch) ||
-        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) ||
-        c.code.toLowerCase().includes(normalizedSearch)
+        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) || c.code.toLowerCase().includes(normalizedSearch)
     );
-  }, [messages, normalizedSearch, t, uiText]);
+  }, [normalizedSearch, messages, t, uiText]);
 
   const hasNoResults = normalizedSearch.length > 0 && available.length === 0;
 
@@ -153,9 +157,7 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
     const items = Array.from(listRef.current.querySelectorAll('[role="radio"]'));
     const currentIndex = items.findIndex((el) => el.getAttribute("aria-checked") === "true");
     const focusElement = (el: Element | undefined) => {
-      if (el && el instanceof HTMLElement) {
-        el.focus();
-      }
+      if (el && el instanceof HTMLElement) el.focus();
     };
 
     if ((e.key === "ArrowDown" || e.key === "ArrowRight") && items.length) {
