@@ -6,7 +6,7 @@
  * Codes are lowercase to match the internal convention used throughout the app.
  */
 
-// ─── Americas ───────────────────────────────────────────────────────────────
+/** Americas */
 const AMERICAS = [
   "ars",
   "arsmep",
@@ -46,7 +46,7 @@ const AMERICAS = [
   "xcd",
 ] as const;
 
-// ─── Europe ──────────────────────────────────────────────────────────────────
+/** Europe */
 const EUROPE = [
   "all",
   "azn",
@@ -82,7 +82,7 @@ const EUROPE = [
   "uah",
 ] as const;
 
-// ─── Middle East & North Africa ──────────────────────────────────────────────
+/** Middle East & North Africa */
 const MENA = [
   "aed",
   "bhd",
@@ -104,7 +104,7 @@ const MENA = [
   "yer",
 ] as const;
 
-// ─── Africa ──────────────────────────────────────────────────────────────────
+/** Africa */
 const AFRICA = [
   "aoa",
   "bif",
@@ -146,7 +146,7 @@ const AFRICA = [
   "zwd",
 ] as const;
 
-// ─── Asia & Pacific ──────────────────────────────────────────────────────────
+/** Asia & Pacific */
 const ASIA_PACIFIC = [
   "afn",
   "amd",
@@ -193,7 +193,7 @@ const ASIA_PACIFIC = [
   "xpf",
 ] as const;
 
-// ─── Commodities & Special Drawing Rights ────────────────────────────────────
+/** Commodities & Special Drawing Rights */
 const COMMODITIES = [
   "xag",
   "xau",
@@ -201,8 +201,6 @@ const COMMODITIES = [
   "xpd",
   "xpt",
 ] as const;
-
-// ─── Derived union & runtime set ─────────────────────────────────────────────
 
 export const FIAT_CURRENCY_CODES = [
   ...AMERICAS,
@@ -213,17 +211,10 @@ export const FIAT_CURRENCY_CODES = [
   ...COMMODITIES,
 ] as const;
 
-/** Union type of every supported fiat currency code (derived — never edit manually). */
 export type FiatCurrencyCode = (typeof FIAT_CURRENCY_CODES)[number];
 
-/** Runtime set for O(1) membership checks. */
 export const FIAT_CURRENCY_CODES_SET = new Set<FiatCurrencyCode>(FIAT_CURRENCY_CODES);
 
-/**
- * Human-readable names for every fiat currency code.
- * Consumed by the UI layer (CurrencySelector) — kept here so names and codes
- * are always co-located.
- */
 export const FIAT_CURRENCY_NAMES: Record<FiatCurrencyCode, string> = {
   // Americas
   ars: "Argentine Peso",
