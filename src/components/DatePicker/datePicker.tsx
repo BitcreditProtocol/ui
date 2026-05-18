@@ -115,6 +115,27 @@ export function DatePicker({
   const calendarMonth = useMemo(() => draft.from || current.from || new Date(), [draft.from, current.from]);
   const displayedSingleDate = useMemo(() => draft.from || current.from, [draft.from, current.from]);
 
+  const handleCalendarMonthChange = useCallback(
+    (newMonth: Date) => {
+      setDraft((prev) => {
+        const keepDayInMonth = (date: Date | undefined): Date => {
+          const day = date ? date.getDate() : 1;
+          const lastDay = new Date(newMonth.getFullYear(), newMonth.getMonth() + 1, 0).getDate();
+          return new Date(newMonth.getFullYear(), newMonth.getMonth(), Math.min(day, lastDay));
+        };
+
+        if (mode === "single") {
+          return { ...prev, from: keepDayInMonth(prev.from) };
+        }
+        if (rangeFocus === "from") {
+          return { ...prev, from: keepDayInMonth(prev.from) };
+        }
+        return { ...prev, to: keepDayInMonth(prev.to) };
+      });
+    },
+    [mode, rangeFocus]
+  );
+
   useEffect(() => {
     if (showCalendar || showYearPicker || showMonthPicker) {
       return;
@@ -546,6 +567,7 @@ export function DatePicker({
                 month={calendarMonth}
                 onCaptionLabelClicked={openYearPicker}
                 onSelect={handleCalendarSelect}
+                onMonthChange={handleCalendarMonthChange}
                 disabled={disabled}
                 isFutureNavigationDisabled={isFutureNavigationDisabled}
                 modifiers={calendarModifiers}
