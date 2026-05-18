@@ -6,8 +6,8 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
-import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
 import type { FiatCurrencyCode } from "@/constants/currencies";
+import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
 import type { UiMessages, UiT, UiTranslationKey } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 

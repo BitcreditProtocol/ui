@@ -1,8 +1,7 @@
 import type { QueryFunctionContext } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
-
-import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
 import type { FiatCurrencyCode } from "@/constants/currencies";
+import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
 import type { Rates } from "@/lib/currency";
 
 type CoinbaseResponse = {

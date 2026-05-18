@@ -3,8 +3,8 @@ import type { DecimalFormat } from "@/components/context/preferences/Preferences
 export type { FiatCurrencyCode } from "@/constants/currencies";
 export { FIAT_CURRENCY_CODES, FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
 
-import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
 import type { FiatCurrencyCode } from "@/constants/currencies";
+import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
 
 export type CryptoCurrencyCode = "btc" | "sat";
 export type CurrencyCode = FiatCurrencyCode | CryptoCurrencyCode;
