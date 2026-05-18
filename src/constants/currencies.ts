@@ -200,13 +200,14 @@ const ASIA_PACIFIC = [
 /** Commodities & Special Drawing Rights */
 const COMMODITIES = ["xag", "xau", "xdr", "xpd", "xpt"] as const;
 
+// biome-ignore format: one entry per region for readability
 export const FIAT_CURRENCY_CODES = [
   ...AMERICAS,
   ...EUROPE,
   ...MENA,
   ...AFRICA,
   ...ASIA_PACIFIC,
-  ...COMMODITIES
+  ...COMMODITIES,
 ] as const;
 
 export type FiatCurrencyCode = (typeof FIAT_CURRENCY_CODES)[number];
