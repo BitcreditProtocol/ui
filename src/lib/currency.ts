@@ -9,21 +9,21 @@ import type { FiatCurrencyCode } from "@/constants/currencies";
 export type CryptoCurrencyCode = "btc" | "sat";
 export type CurrencyCode = FiatCurrencyCode | CryptoCurrencyCode;
 
-export const SUPPORTED_CURRENCY_CODES = new Set<CurrencyCode>([
-  ...FIAT_CURRENCY_CODES_SET,
-  "btc",
-  "sat",
-]);
+export const SUPPORTED_CURRENCY_CODES = new Set<CurrencyCode>([...FIAT_CURRENCY_CODES_SET, "btc", "sat"]);
 
 export function isCurrencyCode(code: string): code is CurrencyCode {
   return SUPPORTED_CURRENCY_CODES.has(code.toLowerCase() as CurrencyCode);
 }
 
 /**
- * Map of lowercase currency code → units of that currency per 1 BTC.
- * E.g. rates["usd"] = 95000 means 1 BTC = 95,000 USD.
+ * Map of lowercase FiatCurrencyCode → units of that currency per 1 BTC,
+ * as returned by the Coinbase exchange-rates API.
+ *
+ * - Keys are always lowercase FiatCurrencyCode values (enforced by useRates).
+ * - Not all codes are guaranteed to be present — Coinbase may omit some.
+ *   Conversion helpers throw when a required rate is missing.
  */
-export type Rates = Record<string, number>;
+export type Rates = Partial<Record<FiatCurrencyCode, number>>;
 
 export const SATS_PER_BTC = 100_000_000 as const;
 
@@ -46,9 +46,8 @@ export function getLocaleForFormat(baseLocale: string, format: DecimalFormat): s
   }
 }
 
-/** Derived rate: how many EUR one BTC is worth. */
 export function getEurPerBtc(rates: Rates): number {
-  return rates["eur"] ?? 0;
+  return rates.eur ?? 0;
 }
 
 export function satToBtc(sat: number): number {
@@ -79,7 +78,6 @@ function fiatToBtc(amount: number, currency: FiatCurrencyCode, rates: Rates): nu
 export function convertToSat(amount: number, source: CurrencyCode, rates: Rates): number {
   if (source === "sat") return Math.round(amount);
   if (source === "btc") return btcToSat(amount);
-  // Fiat: convert via BTC
   return btcToSat(fiatToBtc(amount, source, rates));
 }
 
@@ -88,7 +86,6 @@ export function convertFromSat(sat: number, target: CurrencyCode, rates: Rates):
   if (target === "sat") return Math.round(sat);
   const btc = satToBtc(sat);
   if (target === "btc") return btc;
-  // Fiat: convert via BTC
   return btcToFiat(btc, target, rates);
 }
 
@@ -109,7 +106,6 @@ export function formatAmount(value: number, currency: CurrencyCode, locale = "en
   if (currency === "btc") {
     return `${new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(value)} BTC`;
   }
-  // Fiat currency — use Intl with try/catch for codes not in the browser's ISO 4217 table.
   try {
     return new Intl.NumberFormat(locale, {
       style: "currency",
@@ -134,7 +130,6 @@ export function formatAmountNumber(abs: number, currency: CurrencyCode, locale: 
   if (currency === "btc") {
     return new Intl.NumberFormat(locale, { minimumFractionDigits: 8, maximumFractionDigits: 8 }).format(abs);
   }
-  // Fiat currency
   if (abs > 0 && abs < 0.005) {
     const cents = new Intl.NumberFormat(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(0.01);
     return `<${cents}`;

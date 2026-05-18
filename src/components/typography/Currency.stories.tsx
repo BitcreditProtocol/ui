@@ -7,7 +7,7 @@ import type { Rates } from "@/lib/currency";
 
 import { Currency } from "./Currency";
 
-const mockRates: Rates = { usdPerBtc: 65_000, eurPerUsd: 0.92 };
+const mockRates: Rates = { usd: 65_000, eur: 59_800, gbp: 51_000, cny: 471_000, jpy: 9_880_000 };
 
 function makeQueryClient(rates?: Rates) {
   const client = new QueryClient({ defaultOptions: { queries: { retry: false } } });

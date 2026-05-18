@@ -1,6 +1,8 @@
 import type { QueryFunctionContext } from "@tanstack/react-query";
 import { useQuery } from "@tanstack/react-query";
 
+import { FIAT_CURRENCY_CODES_SET } from "@/constants/currencies";
+import type { FiatCurrencyCode } from "@/constants/currencies";
 import type { Rates } from "@/lib/currency";
 
 type CoinbaseResponse = {
@@ -32,13 +34,14 @@ async function fetchCoinbaseRates(signal?: AbortSignal): Promise<Rates> {
 
   const rates: Rates = {};
   for (const [key, value] of Object.entries(rawRates)) {
+    const code = key.toLowerCase();
     const num = parseFloat(value);
-    if (isFinite(num) && num > 0) {
-      rates[key.toLowerCase()] = num;
+    if (FIAT_CURRENCY_CODES_SET.has(code as FiatCurrencyCode) && isFinite(num) && num > 0) {
+      rates[code as FiatCurrencyCode] = num;
     }
   }
 
-  if (!rates["usd"] || !rates["eur"]) {
+  if (!rates.usd || !rates.eur) {
     throw new Error("Unexpected Coinbase payload: missing rates.USD or rates.EUR");
   }
 
