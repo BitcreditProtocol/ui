@@ -7,6 +7,7 @@ import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } 
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
+import type { FiatCurrencyCode } from "@/constants/currencies";
 import type { UiMessages, UiT, UiTranslationKey } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
@@ -43,7 +44,7 @@ type CurrencyDef = {
   icon: React.ReactNode;
 };
 
-const PINNED_SET = new Set<string>(PINNED_FIAT_CURRENCY_CODES);
+const PINNED_SET = new Set<FiatCurrencyCode>(PINNED_FIAT_CURRENCY_CODES);
 
 const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
   usd: (
@@ -58,10 +59,10 @@ const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
   ),
 };
 
-function makeFiatDef(code: string): CurrencyDef {
+function makeFiatDef(code: FiatCurrencyCode): CurrencyDef {
   return {
     code,
-    labelKey: `ui.currencySelector.option.${code}` as UiTranslationKey,
+    labelKey: `ui.currencySelector.option.${code}` satisfies UiTranslationKey,
     icon: CUSTOM_ICONS[code] ?? <FiatBadge code={code} />,
   };
 }
@@ -71,14 +72,10 @@ const CRYPTO_DEFS: CurrencyDef[] = [
   { code: "sat", labelKey: "ui.currencySelector.option.sat", icon: <BitcoinBadge /> },
 ];
 
-const pinnedSet = PINNED_SET;
 const ALL_CURRENCIES: CurrencyDef[] = [
-  // Pinned fiat currencies first (in declared order)
   ...PINNED_FIAT_CURRENCY_CODES.map(makeFiatDef),
-  // Bitcoin & sats
   ...CRYPTO_DEFS,
-  // Remaining fiat currencies (preserve regional order from constants)
-  ...FIAT_CURRENCY_CODES.filter((code) => !pinnedSet.has(code)).map(makeFiatDef),
+  ...FIAT_CURRENCY_CODES.filter((code) => !PINNED_SET.has(code)).map(makeFiatDef),
 ];
 
 function CurrencyOption({
@@ -143,8 +140,7 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
     if (!normalizedSearch) return ALL_CURRENCIES;
     return ALL_CURRENCIES.filter(
       (c) =>
-        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) ||
-        c.code.toLowerCase().includes(normalizedSearch)
+        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) || c.code.toLowerCase().includes(normalizedSearch)
     );
   }, [normalizedSearch, messages, t, uiText]);
 

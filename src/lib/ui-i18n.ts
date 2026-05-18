@@ -1,5 +1,7 @@
 import type { IntlShape } from "react-intl";
 
+import type { FiatCurrencyCode } from "@/constants/currencies";
+
 export type UiTranslationValues = Record<string, string | number | boolean | null | undefined>;
 
 export const defaultUiMessages = {
@@ -256,6 +258,18 @@ export const defaultUiMessages = {
 } as const;
 
 export type UiTranslationKey = keyof typeof defaultUiMessages;
+
+/**
+ * Compile-time guard: every FiatCurrencyCode must have a corresponding
+ * `ui.currencySelector.option.*` entry in defaultUiMessages.
+ * Adding a code to FIAT_CURRENCY_CODES without a matching message key
+ * will produce a type error here.
+ */
+type _FiatLabelKey = `ui.currencySelector.option.${FiatCurrencyCode}`;
+type _FiatLabelKeysExhaustive = _FiatLabelKey extends UiTranslationKey ? true : never;
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+declare const _fiatLabelKeysCheck: _FiatLabelKeysExhaustive;
+
 export type UiMessages = Partial<Record<UiTranslationKey, string>>;
 export type UiT = (key: UiTranslationKey, params?: UiTranslationValues) => string | undefined;
 
