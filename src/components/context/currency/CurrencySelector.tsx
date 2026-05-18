@@ -6,8 +6,8 @@ import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
-import { FIAT_CURRENCY_CODES, FIAT_CURRENCY_NAMES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
-import type { UiMessages, UiT } from "@/lib/ui-i18n";
+import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
+import type { UiMessages, UiT, UiTranslationKey } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 function BitcoinBadge() {
@@ -39,12 +39,7 @@ type CurrencySelectorProps = PropsWithChildren<{
 
 type CurrencyDef = {
   code: string;
-  label: string;
-  labelKey?:
-    | "ui.currencySelector.option.usd"
-    | "ui.currencySelector.option.eur"
-    | "ui.currencySelector.option.btc"
-    | "ui.currencySelector.option.sat";
+  labelKey: UiTranslationKey;
   icon: React.ReactNode;
 };
 
@@ -63,25 +58,17 @@ const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
   ),
 };
 
-const I18N_LABEL_KEYS = {
-  usd: "ui.currencySelector.option.usd",
-  eur: "ui.currencySelector.option.eur",
-  btc: "ui.currencySelector.option.btc",
-  sat: "ui.currencySelector.option.sat",
-} as const satisfies Partial<Record<string, CurrencyDef["labelKey"]>>;
-
 function makeFiatDef(code: string): CurrencyDef {
   return {
     code,
-    label: FIAT_CURRENCY_NAMES[code as keyof typeof FIAT_CURRENCY_NAMES] ?? code.toUpperCase(),
-    labelKey: I18N_LABEL_KEYS[code as keyof typeof I18N_LABEL_KEYS],
+    labelKey: `ui.currencySelector.option.${code}` as UiTranslationKey,
     icon: CUSTOM_ICONS[code] ?? <FiatBadge code={code} />,
   };
 }
 
 const CRYPTO_DEFS: CurrencyDef[] = [
-  { code: "btc", label: "Bitcoin (BTC)", labelKey: "ui.currencySelector.option.btc", icon: <BitcoinBadge /> },
-  { code: "sat", label: "Bitcoin (sat)", labelKey: "ui.currencySelector.option.sat", icon: <BitcoinBadge /> },
+  { code: "btc", labelKey: "ui.currencySelector.option.btc", icon: <BitcoinBadge /> },
+  { code: "sat", labelKey: "ui.currencySelector.option.sat", icon: <BitcoinBadge /> },
 ];
 
 const pinnedSet = PINNED_SET;
@@ -110,7 +97,7 @@ function CurrencyOption({
   t?: UiT;
 }) {
   const uiText = useUiText();
-  const label = def.labelKey ? uiText({ key: def.labelKey, messages, t }) : def.label;
+  const label = uiText({ key: def.labelKey, messages, t });
 
   return (
     <div
@@ -156,10 +143,10 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
     if (!normalizedSearch) return ALL_CURRENCIES;
     return ALL_CURRENCIES.filter(
       (c) =>
-        c.label.toLowerCase().includes(normalizedSearch) ||
+        uiText({ key: c.labelKey, messages, t }).toLowerCase().includes(normalizedSearch) ||
         c.code.toLowerCase().includes(normalizedSearch)
     );
-  }, [normalizedSearch]);
+  }, [normalizedSearch, messages, t, uiText]);
 
   const hasNoResults = normalizedSearch.length > 0 && available.length === 0;
 
