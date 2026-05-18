@@ -46,6 +46,14 @@ export function getLocaleForFormat(baseLocale: string, format: DecimalFormat): s
   }
 }
 
+export function getEurPerBtc(rates: Rates): number {
+  const rate = rates["eur"];
+  if (rate === undefined || !isFinite(rate) || rate <= 0) {
+    throw new Error("No rate available for currency: eur");
+  }
+  return rate;
+}
+
 export function satToBtc(sat: number): number {
   return sat / SATS_PER_BTC;
 }
