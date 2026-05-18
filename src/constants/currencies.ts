@@ -1,7 +1,11 @@
 /**
- * All fiat (and commodity) currencies supported by the Coinbase /v2/currencies API.
- * The array is the single source of truth — the union type FiatCurrencyCode is
- * derived from it so the two can never diverge.
+ * All fiat (and commodity) currencies whose rates are fetched from the
+ * Coinbase /v2/exchange-rates?currency=BTC endpoint (see src/hooks/useRates.ts).
+ *
+ * The list was sourced from the Coinbase /v2/currencies endpoint, which
+ * returns the set of fiat currencies for which Coinbase publishes rates.
+ * If Coinbase adds or removes currencies, both this file and ui-i18n.ts
+ * (the translation keys) should be updated together.
  *
  * Codes are lowercase to match the internal convention used throughout the app.
  */
@@ -194,13 +198,7 @@ const ASIA_PACIFIC = [
 ] as const;
 
 /** Commodities & Special Drawing Rights */
-const COMMODITIES = [
-  "xag",
-  "xau",
-  "xdr",
-  "xpd",
-  "xpt",
-] as const;
+const COMMODITIES = ["xag", "xau", "xdr", "xpd", "xpt"] as const;
 
 export const FIAT_CURRENCY_CODES = [
   ...AMERICAS,
@@ -208,7 +206,7 @@ export const FIAT_CURRENCY_CODES = [
   ...MENA,
   ...AFRICA,
   ...ASIA_PACIFIC,
-  ...COMMODITIES,
+  ...COMMODITIES
 ] as const;
 
 export type FiatCurrencyCode = (typeof FIAT_CURRENCY_CODES)[number];

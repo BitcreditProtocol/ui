@@ -46,10 +46,6 @@ export function getLocaleForFormat(baseLocale: string, format: DecimalFormat): s
   }
 }
 
-export function getEurPerBtc(rates: Rates): number {
-  return rates.eur ?? 0;
-}
-
 export function satToBtc(sat: number): number {
   return sat / SATS_PER_BTC;
 }
