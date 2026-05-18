@@ -42,3 +42,43 @@ export const Default: Story = {
     );
   },
 };
+
+export const PreselectedExotic: Story = {
+  args: {
+    value: "jpy",
+    onChange: () => {},
+  },
+  render: () => {
+    const [value, setValue] = React.useState("jpy");
+
+    return (
+      <CurrencySelector value={value} onChange={setValue}>
+        <MenuOption
+          icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
+          label="Display currency"
+          defaultValue={value.toUpperCase()}
+        />
+      </CurrencySelector>
+    );
+  },
+};
+
+export const PreselectedBitcoin: Story = {
+  args: {
+    value: "sat",
+    onChange: () => {},
+  },
+  render: () => {
+    const [value, setValue] = React.useState("sat");
+
+    return (
+      <CurrencySelector value={value} onChange={setValue}>
+        <MenuOption
+          icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
+          label="Display currency"
+          defaultValue={value === "sat" ? "sat" : value.toUpperCase()}
+        />
+      </CurrencySelector>
+    );
+  },
+};
