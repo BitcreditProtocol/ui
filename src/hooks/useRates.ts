@@ -6,10 +6,7 @@ import type { Rates } from "@/lib/currency";
 type CoinbaseResponse = {
   data?: {
     currency?: string;
-    rates?: {
-      USD?: string;
-      EUR?: string;
-    };
+    rates?: Record<string, string>;
   };
 };
 
@@ -27,27 +24,25 @@ async function fetchCoinbaseRates(signal?: AbortSignal): Promise<Rates> {
   }
 
   const response = (await res.json()) as CoinbaseResponse;
-  const usdRate = response.data?.rates?.USD;
-  const eurRate = response.data?.rates?.EUR;
+  const rawRates = response.data?.rates;
 
-  if (typeof usdRate !== "string" || typeof eurRate !== "string") {
+  if (!rawRates || typeof rawRates !== "object") {
+    throw new Error("Unexpected Coinbase payload: missing rates");
+  }
+
+  const rates: Rates = {};
+  for (const [key, value] of Object.entries(rawRates)) {
+    const num = parseFloat(value);
+    if (isFinite(num) && num > 0) {
+      rates[key.toLowerCase()] = num;
+    }
+  }
+
+  if (!rates["usd"] || !rates["eur"]) {
     throw new Error("Unexpected Coinbase payload: missing rates.USD or rates.EUR");
   }
 
-  const usdPerBtc = parseFloat(usdRate);
-  const eurPerBtc = parseFloat(eurRate);
-
-  if (!isFinite(usdPerBtc) || usdPerBtc <= 0 || !isFinite(eurPerBtc) || eurPerBtc <= 0) {
-    throw new Error("Invalid rates from Coinbase API");
-  }
-
-  const eurPerUsd = eurPerBtc / usdPerBtc;
-
-  if (!isFinite(eurPerUsd) || eurPerUsd <= 0) {
-    throw new Error("Invalid rate computed: eurPerUsd");
-  }
-
-  return { usdPerBtc, eurPerUsd };
+  return rates;
 }
 
 export function useRates() {
