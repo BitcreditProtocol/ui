@@ -1,4 +1,4 @@
-import { CheckIcon, DollarSignIcon, EuroIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
@@ -47,7 +47,8 @@ type CurrencyDef = {
 const PINNED_SET = new Set<FiatCurrencyCode>(PINNED_FIAT_CURRENCY_CODES);
 
 const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
-  usd: (
+  /** examples:
+   *  usd: (
     <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#118200] rounded-full">
       <AppIcon icon={DollarSignIcon} className="text-white" />
     </div>
@@ -56,7 +57,7 @@ const CUSTOM_ICONS: Partial<Record<string, React.ReactNode>> = {
     <div className="flex items-center justify-center h-8 w-8 p-2 bg-[#003398] rounded-full">
       <AppIcon icon={EuroIcon} className="text-white" />
     </div>
-  ),
+  ), */
 };
 
 function makeFiatDef(code: FiatCurrencyCode): CurrencyDef {
@@ -73,8 +74,8 @@ const CRYPTO_DEFS: CurrencyDef[] = [
 ];
 
 const ALL_CURRENCIES: CurrencyDef[] = [
-  ...PINNED_FIAT_CURRENCY_CODES.map(makeFiatDef),
   ...CRYPTO_DEFS,
+  ...PINNED_FIAT_CURRENCY_CODES.map(makeFiatDef),
   ...FIAT_CURRENCY_CODES.filter((code) => !PINNED_SET.has(code)).map(makeFiatDef),
 ];
 
