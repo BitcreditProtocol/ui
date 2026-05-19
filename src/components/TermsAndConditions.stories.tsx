@@ -32,6 +32,24 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const longTermsContent = (
+  <div className="text-text-200 text-xs leading-normal whitespace-pre-wrap break-words">
+    <p className="font-medium mb-2">Long Form Terms</p>
+    <p className="mt-4 mb-2">Summary:</p>
+    <p>
+      This story intentionally contains long content to verify drawer behavior with overflow, including max-height handling and bottom gradient
+      fade while additional content remains below the fold.
+    </p>
+    <p className="mt-4 mb-2">Terms:</p>
+    {Array.from({ length: 20 }, (_, idx) => (
+      <p key={`term-${idx + 1}`} className="mt-2">
+        {idx + 1}. This is test paragraph {idx + 1} used to simulate extended legal copy for scrolling behavior inside the drawer content
+        area.
+      </p>
+    ))}
+  </div>
+);
+
 export const DrawerMode: Story = {
   args: {
     mode: "drawer",
@@ -62,6 +80,19 @@ export const CustomContent: Story = {
         <p>The app can provide its own wording, legal copy, and structure here.</p>
       </div>
     ),
+  },
+};
+
+export const DrawerModeLongContent: Story = {
+  args: {
+    mode: "drawer",
+    labels: {
+      trigger: "Review Long Terms",
+      drawerTitle: "Long Terms",
+      drawerDescription: "Long terms content used to validate drawer overflow behavior",
+      pageTitle: "Long Terms",
+    },
+    content: longTermsContent,
   },
 };
 

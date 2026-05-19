@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Heading } from "@/components/typography/Heading";
@@ -129,6 +129,50 @@ export function TermsAndConditions({
 }: TermsAndConditionsProps) {
   const uiText = useUiText();
   const resolvedContent = content ?? <TermsContent messages={messages} t={t} />;
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [showBottomFade, setShowBottomFade] = useState(false);
+
+  const updateBottomFade = useCallback(() => {
+    const el = scrollContainerRef.current;
+    if (!el) {
+      setShowBottomFade(false);
+      return;
+    }
+
+    const hasOverflow = el.scrollHeight - el.clientHeight > 1;
+    const isAtBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - 1;
+    setShowBottomFade(hasOverflow && !isAtBottom);
+  }, []);
+
+  useEffect(() => {
+    updateBottomFade();
+
+    const el = scrollContainerRef.current;
+    if (!el) return;
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateBottomFade);
+      return () => {
+        window.removeEventListener("resize", updateBottomFade);
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateBottomFade();
+    });
+
+    resizeObserver.observe(el);
+    if (el.firstElementChild) {
+      resizeObserver.observe(el.firstElementChild);
+    }
+
+    window.addEventListener("resize", updateBottomFade);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateBottomFade);
+    };
+  }, [resolvedContent, updateBottomFade]);
 
   if (mode === "page") {
     return (
@@ -150,7 +194,7 @@ export function TermsAndConditions({
               uiText({ key: "ui.termsAndConditions.review.terms", legacyKey: "termsAndConditions.review.terms", messages, t })}
           </span>
         </DrawerTrigger>
-        <DrawerContent className="flex flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto">
+        <DrawerContent className="flex max-h-[80vh] flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto">
           <DrawerTitle className="text-text-300 text-base font-medium leading-normal text-center">
             {labels?.drawerTitle ??
               uiText({ key: "ui.termsAndConditions.review.title", legacyKey: "termsAndConditions.review.title", messages, t })}
@@ -165,7 +209,21 @@ export function TermsAndConditions({
               })}
           </DrawerDescription>
 
-          {resolvedContent}
+          <div className="relative">
+            <div
+              ref={scrollContainerRef}
+              onScroll={updateBottomFade}
+              className="max-h-[calc(80vh-9rem)] overflow-y-auto pr-1"
+            >
+              {resolvedContent}
+            </div>
+            {showBottomFade ? (
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-elevation-50 to-transparent dark:from-elevation-250"
+              />
+            ) : null}
+          </div>
         </DrawerContent>
       </Drawer>
     );
