@@ -37,8 +37,8 @@ const longTermsContent = (
     <p className="font-medium mb-2">Long Form Terms</p>
     <p className="mt-4 mb-2">Summary:</p>
     <p>
-      This story intentionally contains long content to verify drawer behavior with overflow, including max-height handling and bottom gradient
-      fade while additional content remains below the fold.
+      This story intentionally contains long content to verify drawer behavior with overflow, including max-height handling and bottom
+      gradient fade while additional content remains below the fold.
     </p>
     <p className="mt-4 mb-2">Terms:</p>
     {Array.from({ length: 20 }, (_, idx) => (

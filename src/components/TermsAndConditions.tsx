@@ -210,11 +210,7 @@ export function TermsAndConditions({
           </DrawerDescription>
 
           <div className="relative">
-            <div
-              ref={scrollContainerRef}
-              onScroll={updateBottomFade}
-              className="max-h-[calc(80vh-9rem)] overflow-y-auto pr-1"
-            >
+            <div ref={scrollContainerRef} onScroll={updateBottomFade} className="max-h-[calc(80vh-9rem)] overflow-y-auto pr-1">
               {resolvedContent}
             </div>
             {showBottomFade ? (
