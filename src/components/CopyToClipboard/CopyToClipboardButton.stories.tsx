@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { IntlProvider } from "react-intl";
 
-import { CopyToClipboardButton } from "./CopyToClipboardButton";
+import { CopyToClipboardButton } from "./CopyToClipboardButton.tsx";
 
 const messages = {
   "action.copyToClipboard.ariaLabel": "Copy to clipboard",

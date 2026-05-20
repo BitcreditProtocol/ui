@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
+import { CopyToClipboardButton } from "@/components/CopyToClipboard/CopyToClipboardButton.tsx";
 import { extractTextFromNode, getTruncatedTextState } from "@/components/TruncatedText/truncated-text.ts";
 import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";

@@ -14,7 +14,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   inputSize?: "sm" | "md" | "lg";
   disabled?: boolean;
   success?: boolean;
-  error?: boolean;
+  error?: boolean | string;
   onClear?: () => void;
   enterKeyHint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send";
   suffixIcon?: React.ReactNode;
@@ -261,7 +261,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
         {hint ? (
           <div
-            className={cn("text-xs text-text-200 mt-[2px]", {
+            className={cn("ml-4 mt-[2px] text-xs text-text-200", {
               "text-signal-success": isSuccess,
               "text-signal-error": hasError,
             })}
@@ -269,7 +269,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {hint}
           </div>
         ) : (
-          hasError && <p className="text-xs text-signal-error mt-[2px]">{hasError}</p>
+          hasError && <p className="ml-4 mt-[2px] text-xs text-signal-error">{hasError}</p>
         )}
       </div>
     );
