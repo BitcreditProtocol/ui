@@ -31,7 +31,6 @@ export function useCountrySelectorPosition({
   const [triggerWidth, setTriggerWidth] = useState<number | null>(null);
   const [contentSide, setContentSide] = useState<"top" | "bottom">("bottom");
   const [contentMaxHeight, setContentMaxHeight] = useState(360);
-  const timeoutRefs = useRef<number[]>([]);
   const hasOpenedOnce = useRef(false);
   const wasOpenRef = useRef(false);
 
@@ -75,16 +74,8 @@ export function useCountrySelectorPosition({
     [bottomClearance, isIOSStandalone, topClearance, triggerRef]
   );
 
-  const clearAllTimeouts = useCallback(() => {
-    timeoutRefs.current.forEach((id) => {
-      window.clearTimeout(id);
-    });
-    timeoutRefs.current = [];
-  }, []);
-
   useEffect(() => {
     if (!isOpen) {
-      clearAllTimeouts();
       hasOpenedOnce.current = false;
       return;
     }
@@ -97,14 +88,9 @@ export function useCountrySelectorPosition({
 
       return () => {
         window.cancelAnimationFrame(frameId);
-        clearAllTimeouts();
       };
     }
-
-    return () => {
-      clearAllTimeouts();
-    };
-  }, [clearAllTimeouts, isOpen, recomputePosition]);
+  }, [isOpen, recomputePosition]);
 
   useEffect(() => {
     if (!triggerRef.current) {

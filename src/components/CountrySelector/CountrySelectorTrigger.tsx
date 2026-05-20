@@ -21,7 +21,7 @@ const CountrySelectorTrigger = React.forwardRef<HTMLButtonElement, Props>(functi
   ref
 ) {
   return (
-    <div className="rounded-lg border" style={{ borderColor: hasError ? "var(--color-signal-error)" : "var(--color-divider-50)" }}>
+    <div className="rounded-lg border relative" style={{ borderColor: hasError ? "var(--color-signal-error)" : "var(--color-divider-50)" }}>
       <Button
         ref={ref}
         type="button"
@@ -53,29 +53,13 @@ const CountrySelectorTrigger = React.forwardRef<HTMLButtonElement, Props>(functi
               </span>
             )}
           </label>
-          {hasValue && <div className="text-text-300 font-sm font-medium">{selectedName}</div>}
+          {hasValue && <div className="text-text-300 text-sm font-medium">{selectedName}</div>}
         </div>
 
         <div className="flex items-center justify-center h-full">
           {hasValue && (
-            <div
-              role="button"
-              tabIndex={0}
-              aria-label={clearAriaLabel}
-              className="mr-2 flex items-center justify-center rounded-sm bg-transparent text-text-300"
-              onClick={(e) => {
-                e.stopPropagation();
-                onClear();
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
-                  e.stopPropagation();
-                  e.preventDefault();
-                  onClear();
-                }
-              }}
-            >
-              <AppIcon icon={XIcon} className="text-text-300" />
+            <div aria-hidden="true" className="pointer-events-none mr-2 flex items-center justify-center rounded-sm text-text-300">
+              <AppIcon icon={XIcon} className="opacity-0" />
             </div>
           )}
           {isOpen ? (
@@ -85,6 +69,27 @@ const CountrySelectorTrigger = React.forwardRef<HTMLButtonElement, Props>(functi
           )}
         </div>
       </Button>
+
+      {hasValue && (
+        <button
+          type="button"
+          aria-label={clearAriaLabel}
+          className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center justify-center rounded-sm bg-transparent text-text-300"
+          onClick={(e) => {
+            e.stopPropagation();
+            onClear();
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.stopPropagation();
+              e.preventDefault();
+              onClear();
+            }
+          }}
+        >
+          <AppIcon icon={XIcon} className="text-text-300" />
+        </button>
+      )}
     </div>
   );
 });

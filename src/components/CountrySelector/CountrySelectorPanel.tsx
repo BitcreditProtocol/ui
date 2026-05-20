@@ -11,6 +11,7 @@ import type { CountryOption } from "./types";
 type Props = {
   search: string;
   searchPlaceholder: string;
+  clearSearchAriaLabel: string;
   noResultsLabel: string;
   value?: string;
   filteredCountries: CountryOption[];
@@ -25,6 +26,7 @@ type Props = {
 function CountrySelectorPanel({
   search,
   searchPlaceholder,
+  clearSearchAriaLabel,
   noResultsLabel,
   value,
   filteredCountries,
@@ -59,6 +61,7 @@ function CountrySelectorPanel({
           {search && (
             <button
               type="button"
+              aria-label={clearSearchAriaLabel}
               className="absolute right-4 top-1/2 -translate-y-1/2 p-1 bg-elevation-50 dark:bg-elevation-200 rounded transition-colors"
               onClick={(e) => {
                 e.stopPropagation();
@@ -78,7 +81,7 @@ function CountrySelectorPanel({
               {filteredCountries.map(({ code, name }) => (
                 <CommandItem
                   key={code}
-                  ref={value === code ? selectedItemRef : undefined}
+                  ref={value?.toUpperCase() === code ? selectedItemRef : undefined}
                   value={name}
                   keywords={[code]}
                   onSelect={() => {
@@ -86,7 +89,7 @@ function CountrySelectorPanel({
                   }}
                   className="relative mb-1 flex w-full cursor-default select-none items-center rounded-md px-2 py-2.5 text-sm font-medium text-text-300 outline-hidden transition-colors data-[selected=true]:bg-elevation-250 data-[selected=true]:text-inherit data-highlighted:bg-elevation-250 data-highlighted:text-inherit dark:data-[selected=true]:bg-elevation-250 dark:data-highlighted:bg-elevation-250 data-[state=checked]:bg-elevation-250 dark:data-[state=checked]:bg-elevation-250"
                 >
-                  <AppIcon icon={CheckIcon} className={cn("text-[#006F29] mr-2 h-4 w-4", value === code ? "opacity-100" : "opacity-0")} />
+                  <AppIcon icon={CheckIcon} className={cn("text-[#006F29] mr-2 h-4 w-4", value?.toUpperCase() === code ? "opacity-100" : "opacity-0")} />
                   {name}
                 </CommandItem>
               ))}

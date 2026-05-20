@@ -148,11 +148,15 @@ const CountrySelector = React.forwardRef<HTMLButtonElement, CountrySelectorProps
         id: "countrySelector.search",
         defaultMessage: "Search for a country...",
       })}
+      clearSearchAriaLabel={formatMessage({
+        id: "countrySelector.clearSearch",
+        defaultMessage: "Clear search",
+      })}
       noResultsLabel={formatMessage({
         id: "countrySelector.noResults",
         defaultMessage: "No country found.",
       })}
-      value={value}
+      value={selectedCode}
       filteredCountries={filteredCountries}
       searchInputRef={searchInputRef}
       selectedItemRef={selectedItemRef}
@@ -198,6 +202,7 @@ const CountrySelector = React.forwardRef<HTMLButtonElement, CountrySelectorProps
         {isOpen && (
           <div
             role="dialog"
+            aria-label={label}
             className={cn(
               "absolute left-0 z-50 rounded-lg border border-[#1B0F004D] bg-elevation-50 p-0 shadow-md",
               contentSide === "top" ? "bottom-[calc(100%+6px)]" : "top-[calc(100%+6px)]"

@@ -49,7 +49,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       inputSize,
       disabled: isDisabled,
       success: isSuccess,
-      error: hasError,
+      error,
       onClear,
       onChange,
       onBlur,
@@ -75,6 +75,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const isControlled = value !== undefined;
     const hasValue = isControlled ? (typeof value === "string" ? value.length > 0 : !!value) : hasUncontrolledValue;
+    const hasError = !!error;
+    const errorMessage = typeof error === "string" ? error : undefined;
 
     useEffect(() => {
       const input = inputRef.current;
@@ -269,7 +271,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {hint}
           </div>
         ) : (
-          hasError && <p className="ml-4 mt-[2px] text-xs text-signal-error">{hasError}</p>
+          errorMessage && <p className="ml-4 mt-[2px] text-xs text-signal-error">{errorMessage}</p>
         )}
       </div>
     );

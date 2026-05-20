@@ -2,7 +2,7 @@ import "./index.css";
 
 export * from "./components/AnonymousUserIcon";
 export * from "./components/Attachment/Attachment";
-export * from "./components/CopyToClipboard/CopyToClipboardButton.tsx";
+export * from "./components/CopyToClipboard/CopyToClipboardButton";
 export * from "./components/CountrySelector/CountrySelector";
 export * from "./components/context/currency/CurrencySelector";
 export { default as DisplayCurrency } from "./components/context/currency/DisplayCurrency";

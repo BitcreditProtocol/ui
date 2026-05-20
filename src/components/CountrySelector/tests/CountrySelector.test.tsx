@@ -326,8 +326,8 @@ describe("CountrySelector", () => {
     });
 
     await user.click(trigger);
-    const clearIcon = trigger.querySelectorAll("svg")[1];
-    fireEvent.click(clearIcon as SVGElement);
+    const clearButton = screen.getByRole("button", { name: "Clear country" });
+    await user.click(clearButton);
 
     expect(callback).toHaveBeenCalledWith(undefined);
     expect(onChange).toHaveBeenCalledWith({
@@ -346,11 +346,7 @@ describe("CountrySelector", () => {
     await user.click(trigger);
     await user.type(screen.getByPlaceholderText("Search for a country..."), "alb");
 
-    const clearSearchButton = screen.getAllByRole("button").find((button) => button.className.includes("absolute right-4"));
-
-    if (!clearSearchButton) {
-      throw new Error("Search clear button not found");
-    }
+    const clearSearchButton = screen.getByRole("button", { name: "Clear search" });
 
     await user.click(clearSearchButton);
 

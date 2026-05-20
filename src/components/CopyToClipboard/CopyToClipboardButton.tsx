@@ -1,12 +1,12 @@
 import { CheckIcon, CopyIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
-import { useUiText } from "@/components/context/i18n/useUiText.ts";
-import { AppIcon } from "@/components/ui/app-icon.tsx";
-import { Button, type ButtonProps } from "@/components/ui/button.tsx";
-import { toast } from "@/hooks/use-toast.ts";
-import type { UiMessages, UiT } from "@/lib/ui-i18n.ts";
-import { cn } from "@/lib/utils.ts";
+import { useUiText } from "@/components/context/i18n/useUiText";
+import { AppIcon } from "@/components/ui/app-icon";
+import { Button, type ButtonProps } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
+import { cn } from "@/lib/utils";
 
 async function copyToClipboard(value: string) {
   if (typeof navigator !== "undefined" && navigator.clipboard?.writeText) {
