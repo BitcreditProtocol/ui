@@ -49,10 +49,10 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        success: "bg-elevation-200 text-foreground border border-signal-success",
-        info: "bg-elevation-200 text-foreground",
-        warning: "bg-elevation-200 text-foreground border border-signal-warning",
-        error: "bg-elevation-200 text-foreground border-2 border-signal-error",
+        success: "bg-elevation-200 text-foreground border border-border",
+        info: "bg-elevation-200 text-foreground border border-border",
+        warning: "bg-elevation-200 text-foreground border border-border",
+        error: "bg-elevation-200 text-foreground border border-border",
       },
     },
     defaultVariants: {

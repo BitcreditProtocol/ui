@@ -1,4 +1,4 @@
-import { CircleCheckIcon, InfoIcon, OctagonXIcon, TriangleAlertIcon } from "lucide-react";
+import { CircleCheckIcon, CircleXIcon, InfoIcon, TriangleAlertIcon } from "lucide-react";
 
 import { AppIcon } from "@/components/ui/app-icon";
 import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast";
@@ -11,7 +11,7 @@ export function Toaster() {
     success: <AppIcon icon={CircleCheckIcon} className="text-signal-success" size="md" />,
     info: <AppIcon icon={InfoIcon} className="text-text-300" size="md" />,
     warning: <AppIcon icon={TriangleAlertIcon} className="text-signal-alert" size="md" />,
-    error: <AppIcon icon={OctagonXIcon} className="text-signal-error" size="md" />,
+    error: <AppIcon icon={CircleXIcon} className="text-signal-error" size="md" />,
   };
 
   return (
