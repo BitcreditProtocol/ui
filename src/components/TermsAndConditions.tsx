@@ -194,7 +194,7 @@ export function TermsAndConditions({
               uiText({ key: "ui.termsAndConditions.review.terms", legacyKey: "termsAndConditions.review.terms", messages, t })}
           </span>
         </DrawerTrigger>
-        <DrawerContent className="flex max-h-[80vh] flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto pt-6">
+        <DrawerContent className="flex max-h-[80vh] flex-col gap-6 pb-8 px-5 max-w-[430px] bg-elevation-50 mx-auto">
           <DrawerTitle className="text-text-300 text-base font-medium leading-normal text-center">
             {labels?.drawerTitle ??
               uiText({ key: "ui.termsAndConditions.review.title", legacyKey: "termsAndConditions.review.title", messages, t })}
