@@ -1,6 +1,7 @@
 import { BanknoteIcon } from "lucide-react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
+import { isCurrencyCode } from "@/lib/currency";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import MenuOption from "../MenuOption";
 import { usePreferences } from "../preferences/PreferencesContext";
@@ -18,8 +19,8 @@ export default function DisplayCurrency({ messages, t }: DisplayCurrencyProps) {
 
   const handleChange = (value: string) => {
     const normalized = value.toLowerCase();
-    if (normalized === "usd" || normalized === "eur" || normalized === "btc" || normalized === "sat") {
-      setCurrency(normalized as typeof currency);
+    if (isCurrencyCode(normalized)) {
+      setCurrency(normalized);
     }
   };
 
