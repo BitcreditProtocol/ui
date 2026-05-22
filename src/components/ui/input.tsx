@@ -14,7 +14,7 @@ export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> 
   inputSize?: "sm" | "md" | "lg";
   disabled?: boolean;
   success?: boolean;
-  error?: boolean;
+  error?: boolean | string;
   onClear?: () => void;
   enterKeyHint?: "enter" | "done" | "go" | "next" | "previous" | "search" | "send";
   suffixIcon?: React.ReactNode;
@@ -49,7 +49,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       inputSize,
       disabled: isDisabled,
       success: isSuccess,
-      error: hasError,
+      error,
       onClear,
       onChange,
       onBlur,
@@ -75,6 +75,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
 
     const isControlled = value !== undefined;
     const hasValue = isControlled ? (typeof value === "string" ? value.length > 0 : !!value) : hasUncontrolledValue;
+    const hasError = !!error;
+    const errorMessage = typeof error === "string" ? error : undefined;
 
     useEffect(() => {
       const input = inputRef.current;
@@ -261,7 +263,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
         </div>
         {hint ? (
           <div
-            className={cn("text-xs text-text-200 mt-[2px]", {
+            className={cn("ml-4 mt-[2px] text-xs text-text-200", {
               "text-signal-success": isSuccess,
               "text-signal-error": hasError,
             })}
@@ -269,7 +271,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {hint}
           </div>
         ) : (
-          hasError && <p className="text-xs text-signal-error mt-[2px]">{hasError}</p>
+          errorMessage && <p className="ml-4 mt-[2px] text-xs text-signal-error">{errorMessage}</p>
         )}
       </div>
     );

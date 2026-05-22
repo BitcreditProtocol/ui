@@ -141,7 +141,7 @@ const SelectTrigger = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
                 </span>
               )}
             </label>
-            <div className="text-text-300 font-sm font-medium">
+            <div className="text-text-300 text-sm font-medium">
               <SelectPrimitive.Value />
             </div>
           </div>

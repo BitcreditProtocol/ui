@@ -1,4 +1,4 @@
-import { CopyToClipboardButton } from "@/components/CopyToClipboardButton";
+import { CopyToClipboardButton } from "@/components/CopyToClipboard/CopyToClipboardButton";
 import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
 import { cn } from "@/lib/utils";
 

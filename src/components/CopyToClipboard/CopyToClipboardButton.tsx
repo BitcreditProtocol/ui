@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button, type ButtonProps } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast.ts";
+import { toast } from "@/hooks/use-toast";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 

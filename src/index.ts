@@ -2,7 +2,8 @@ import "./index.css";
 
 export * from "./components/AnonymousUserIcon";
 export * from "./components/Attachment/Attachment";
-export * from "./components/CopyToClipboardButton";
+export * from "./components/CopyToClipboard/CopyToClipboardButton";
+export * from "./components/CountrySelector/CountrySelector";
 export * from "./components/context/currency/CurrencySelector";
 export { default as DisplayCurrency } from "./components/context/currency/DisplayCurrency";
 export { default as DecimalSeparator } from "./components/context/decimals/DecimalSeparator";
@@ -67,6 +68,7 @@ export * from "./components/ui/toaster";
 export * from "./components/ui/tooltip";
 export * from "./components/ui/upload";
 export * from "./components/ui/visually-hidden";
+export * from "./constants/countries";
 export * from "./constants/currencies";
 export * from "./constants/dateFormats";
 export * from "./hooks/use-format-date";
