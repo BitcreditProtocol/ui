@@ -22,8 +22,7 @@ export const Playground: Story = {
         <Button
           onClick={() =>
             toast({
-              title: "Success",
-              description: "The invoice was sent successfully.",
+              title: "The invoice was sent successfully.",
               variant: "success",
             })
           }
@@ -34,13 +33,34 @@ export const Playground: Story = {
           variant="outline"
           onClick={() =>
             toast({
-              title: "Warning",
-              description: "Some fields still need attention.",
+              title: "Some fields still need attention.",
               variant: "warning",
             })
           }
         >
           Warning toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast({
+              title: "Your session has been updated.",
+              variant: "info",
+            })
+          }
+        >
+          Info toast
+        </Button>
+        <Button
+          variant="outline"
+          onClick={() =>
+            toast({
+              title: "We could not complete that request.",
+              variant: "error",
+            })
+          }
+        >
+          Error toast
         </Button>
       </div>
       <Toaster />

@@ -54,8 +54,8 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ComponentRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content>
->(({ className, children, onOpenAutoFocus, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & { showHandle?: boolean }
+>(({ className, children, onOpenAutoFocus, showHandle = false, ...props }, ref) => {
   const handleOpenAutoFocus = React.useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -85,7 +85,7 @@ const DrawerContent = React.forwardRef<
         onOpenAutoFocus={handleOpenAutoFocus}
         {...props}
       >
-        <div className="mx-auto mt-4 h-2 w-[70px] rounded-full bg-elevation-300" />
+        {showHandle && <div className="mx-auto mt-4 h-2 w-[70px] rounded-full bg-elevation-300" />}
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>

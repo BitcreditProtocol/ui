@@ -49,10 +49,10 @@ const toastVariants = cva(
   {
     variants: {
       variant: {
-        success: "bg-elevation-200 text-foreground border border-signal-success",
-        info: "bg-elevation-200 text-foreground",
-        warning: "bg-elevation-200 text-foreground border border-signal-warning",
-        error: "bg-elevation-200 text-foreground border-2 border-signal-error",
+        success: "bg-elevation-200 text-foreground border border-border",
+        info: "bg-elevation-200 text-foreground border border-border",
+        warning: "bg-elevation-200 text-foreground border border-border",
+        error: "bg-elevation-200 text-foreground border border-border",
       },
     },
     defaultVariants: {
@@ -106,7 +106,7 @@ const ToastTitle = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Title>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Title>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Title ref={ref} className={cn("text-sm text-text-200 font-medium", className)} {...props} />
+  <ToastPrimitives.Title ref={ref} className={cn("text-sm text-text-300 font-medium", className)} {...props} />
 ));
 ToastTitle.displayName = ToastPrimitives.Title.displayName;
 
@@ -114,7 +114,7 @@ const ToastDescription = React.forwardRef<
   React.ComponentRef<typeof ToastPrimitives.Description>,
   React.ComponentPropsWithoutRef<typeof ToastPrimitives.Description>
 >(({ className, ...props }, ref) => (
-  <ToastPrimitives.Description ref={ref} className={cn("text-xs text-text-200", className)} {...props} />
+  <ToastPrimitives.Description ref={ref} className={cn("text-xs text-text-300", className)} {...props} />
 ));
 ToastDescription.displayName = ToastPrimitives.Description.displayName;
 
