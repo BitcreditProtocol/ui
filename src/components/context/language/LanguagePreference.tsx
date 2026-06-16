@@ -11,7 +11,7 @@ import UsFlag from "@/components/assets/flags/US.svg";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
@@ -176,8 +176,9 @@ export default function LanguagePreference({ children, onChange, value, values, 
           {uiText({ key: "ui.languagePreference.title", legacyKey: "settings.languagePreference.title", messages, t })}
         </DrawerTitle>
 
-        <div
-          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+        <DrawerScrollArea
+          className="flex-1"
+          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}
         >
@@ -240,7 +241,7 @@ export default function LanguagePreference({ children, onChange, value, values, 
               );
             })}
           </div>
-        </div>
+        </DrawerScrollArea>
       </DrawerContent>
     </Drawer>
   );
