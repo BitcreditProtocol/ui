@@ -1,5 +1,5 @@
-import { type ReactNode, useCallback } from "react";
 import { DownloadIcon, XIcon } from "lucide-react";
+import { type ReactNode, useCallback } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Heading } from "@/components/typography/Heading";

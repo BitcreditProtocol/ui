@@ -1,5 +1,5 @@
-import * as React from "react";
 import { ChevronDown } from "lucide-react";
+import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
 import { AppIcon } from "@/components/ui/app-icon";
