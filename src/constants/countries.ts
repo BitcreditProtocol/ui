@@ -83,6 +83,7 @@ export const COUNTRIES = {
   GY: "Guyana",
   HT: "Haiti",
   HN: "Honduras",
+  HK: "Hong Kong",
   HU: "Hungary",
   IS: "Iceland",
   IN: "India",
@@ -533,6 +534,10 @@ export const COUNTRY_MESSAGES: Record<CountryCode, MessageDescriptor> = defineMe
   HN: {
     id: "country.HN",
     defaultMessage: "Honduras",
+  },
+  HK: {
+    id: "country.HK",
+      defaultMessage: "Hong Kong",
   },
   HU: {
     id: "country.HU",
