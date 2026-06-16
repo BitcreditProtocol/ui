@@ -537,7 +537,7 @@ export const COUNTRY_MESSAGES: Record<CountryCode, MessageDescriptor> = defineMe
   },
   HK: {
     id: "country.HK",
-      defaultMessage: "Hong Kong",
+    defaultMessage: "Hong Kong",
   },
   HU: {
     id: "country.HU",
