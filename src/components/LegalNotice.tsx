@@ -33,54 +33,53 @@ type LegalNoticeProps = {
   };
 };
 
-const legalNoticeContentSections = [
-  {
-    headingKey: "ui.legalNotice.content.summary.heading" as const,
-    legacyHeadingKey: "legalNotice.content.summary.heading",
-    paragraphKeys: [{ key: "ui.legalNotice.content.summary.text" as const, legacyKey: "legalNotice.content.summary.text" }],
-  },
-  {
-    headingKey: "ui.legalNotice.content.termsOfUse.heading" as const,
-    legacyHeadingKey: "legalNotice.content.termsOfUse.heading",
-    paragraphKeys: [
-      { key: "ui.legalNotice.content.termsOfUse.paragraph1" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph1" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph2" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph2" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph3" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph3" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph4" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph4" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph5" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph5" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph6" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph6" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph7" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph7" },
-      { key: "ui.legalNotice.content.termsOfUse.paragraph8" as const, legacyKey: "legalNotice.content.termsOfUse.paragraph8" },
-    ],
-  },
-];
+function renderFormattedParagraph(paragraph: string) {
+  const markerEnd = paragraph.indexOf(":");
+  if (!paragraph.startsWith("§") || markerEnd === -1) {
+    return paragraph;
+  }
+
+  const marker = paragraph.slice(0, markerEnd + 1);
+  const rest = paragraph.slice(markerEnd + 1).trimStart();
+
+  return (
+    <>
+      <strong>{marker}</strong>
+      {rest ? ` ${rest}` : null}
+    </>
+  );
+}
 
 function LegalNoticeContent({ messages, t }: { messages?: UiMessages; t?: UiT }) {
   const uiText = useUiText();
+  const content = uiText({
+    key: "ui.legalNotice.content",
+    legacyKey: "legalNotice.content",
+    messages,
+    t,
+  });
+  const blocks = content
+    .split(/\n\s*\n/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+
   return (
-    <div className="mt-4 text-black dark:text-text-200 whitespace-pre-wrap break-words text-sm leading-5 font-normal [&_strong]:font-medium [&_strong]:text-text-300">
-      {legalNoticeContentSections.map((section, sectionIndex) => (
-        <div key={section.headingKey}>
-          <p className={cn("mb-4 text-base leading-6 font-medium text-text-300", sectionIndex > 0)}>
-            {uiText({
-              key: section.headingKey,
-              legacyKey: section.legacyHeadingKey,
-              messages,
-              t,
-            })}
+    <div className="text-black dark:text-text-200 whitespace-pre-wrap break-words text-sm leading-5 font-normal [&_strong]:font-medium [&_strong]:text-text-300">
+      {blocks.map((block, index) => {
+        const isHeading = /^Part\s+[IVXLC]+\s+[—-]/i.test(block);
+        return (
+          <p
+            key={`${index}-${block.slice(0, 24)}`}
+            className={cn(
+              isHeading ? "mb-4 text-base leading-6 font-medium text-text-300" : "text-sm leading-5 font-normal",
+              !isHeading && index > 0 && "mt-[14px]",
+              isHeading && index > 0 && "mt-4"
+            )}
+          >
+            {renderFormattedParagraph(block)}
           </p>
-          {section.paragraphKeys.map((paragraph, paragraphIndex) => (
-            <p key={paragraph.key} className={cn(paragraphIndex > 0 && "mt-[14px]")}>
-              {uiText({
-                key: paragraph.key,
-                legacyKey: paragraph.legacyKey,
-                messages,
-                t,
-              })}
-            </p>
-          ))}
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -263,10 +262,14 @@ function buildDefaultPdfText({
   uiText: ReturnType<typeof useUiText>;
   footer?: LegalNoticeProps["footer"];
 }) {
-  const blocks = legalNoticeContentSections.flatMap((section) => [
-    uiText({ key: section.headingKey, legacyKey: section.legacyHeadingKey, messages, t }),
-    ...section.paragraphKeys.map((paragraph) => uiText({ key: paragraph.key, legacyKey: paragraph.legacyKey, messages, t })),
-  ]);
+  const blocks = [
+    uiText({
+      key: "ui.legalNotice.content",
+      legacyKey: "legalNotice.content",
+      messages,
+      t,
+    }),
+  ];
 
   if (footer?.version) {
     blocks.push(footer.version);
@@ -332,7 +335,7 @@ export function LegalNotice({
             {labels?.trigger ?? uiText({ key: "ui.legalNotice.review.trigger", legacyKey: "legalNotice.review.trigger", messages, t })}
           </span>
         </DrawerTrigger>
-        <DrawerContent className="flex max-h-[88vh] flex-col gap-5 px-4 pb-4 max-w-[430px] bg-elevation-50 mx-auto pt-4">
+        <DrawerContent className="flex max-h-[88vh] flex-col gap-5 px-4 pb-4 max-w-[430px] bg-elevation-50 mx-auto pt-4 mb-4">
           <DrawerDescription className="sr-only">
             {labels?.drawerDescription ??
               uiText({
@@ -342,7 +345,7 @@ export function LegalNotice({
                 t,
               })}
           </DrawerDescription>
-          <div className="grid grid-cols-[36px_1fr_36px] items-center gap-2 px-2">
+          <div className="grid grid-cols-[36px_1fr_36px] items-center gap-2 px-2 mb-4">
             <DrawerClose asChild>
               <button
                 type="button"
@@ -383,7 +386,7 @@ export function LegalNotice({
           </DrawerScrollArea>
 
           <DrawerClose asChild>
-            <Button type="button" variant="outline" size="md" className="w-full">
+            <Button type="button" variant="outline" size="md" className="w-full mt-4">
               {uiText({ key: "ui.legalNotice.actions.close", legacyKey: "legalNotice.actions.close", messages, t })}
             </Button>
           </DrawerClose>
@@ -416,9 +419,9 @@ function LegalNoticePage({
   const uiText = useUiText();
 
   return (
-    <Container className={cn("mx-auto flex h-[calc(100vh-2rem)] min-h-0 w-full max-w-[430px] flex-col gap-6 rounded-2xl p-5", className)}>
+    <Container className={cn("mx-auto flex h-[calc(100vh-2rem)] min-h-0 w-full max-w-[430px] flex-col gap-6 rounded-2xl", className)}>
       {!hidePageHeading ? (
-        <div className="grid grid-cols-[36px_1fr_36px] items-center gap-2">
+        <div className="grid grid-cols-[36px_1fr_36px] items-center gap-2 px-5 pt-5">
           <div aria-hidden="true" className="h-8 w-8" />
           <Heading as="h1" variant="sub" className="text-center">
             {labels?.pageTitle ?? uiText({ key: "ui.legalNotice.page.title", legacyKey: "legalNotice.page.title", messages, t })}
@@ -438,8 +441,8 @@ function LegalNoticePage({
           </button>
         </div>
       ) : null}
-      <DrawerScrollArea className="min-h-0 flex-1" viewportClassName="h-full min-h-0 pr-1 pb-10">
-        <div className="flex flex-col gap-6">
+      <DrawerScrollArea className="min-h-0 flex-1" viewportClassName="h-full min-h-0 px-5 pr-[22px] pb-10">
+        <div className="flex flex-col gap-6 pt-5">
           {content}
           {footer?.version || footer?.date ? (
             <div className="pt-1 text-text-200 text-xs leading-[18px] font-medium">
