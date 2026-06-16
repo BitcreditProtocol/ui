@@ -1,6 +1,8 @@
 import * as React from "react";
+import { ChevronDown } from "lucide-react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
+import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
 const Drawer = ({
@@ -93,6 +95,104 @@ const DrawerContent = React.forwardRef<
 });
 DrawerContent.displayName = "DrawerContent";
 
+const DrawerScrollArea = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement> & {
+    viewportClassName?: string;
+    fadeClassName?: string;
+    indicatorClassName?: string;
+  }
+>(({ children, className, viewportClassName, fadeClassName, indicatorClassName, ...props }, ref) => {
+  const viewportRef = React.useRef<HTMLDivElement>(null);
+  const [showBottomFade, setShowBottomFade] = React.useState(false);
+
+  const setRefs = React.useCallback(
+    (node: HTMLDivElement | null) => {
+      viewportRef.current = node;
+
+      if (typeof ref === "function") {
+        ref(node);
+      } else if (ref) {
+        ref.current = node;
+      }
+    },
+    [ref]
+  );
+
+  const updateScrollState = React.useCallback(() => {
+    const element = viewportRef.current;
+    if (!element) {
+      setShowBottomFade(false);
+      return;
+    }
+
+    const hasOverflow = element.scrollHeight - element.clientHeight > 1;
+    const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
+    setShowBottomFade(hasOverflow && !isAtBottom);
+  }, []);
+
+  React.useEffect(() => {
+    updateScrollState();
+
+    const element = viewportRef.current;
+    if (!element) return;
+
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateScrollState);
+      return () => {
+        window.removeEventListener("resize", updateScrollState);
+      };
+    }
+
+    const resizeObserver = new ResizeObserver(() => {
+      updateScrollState();
+    });
+
+    resizeObserver.observe(element);
+    if (element.firstElementChild) {
+      resizeObserver.observe(element.firstElementChild);
+    }
+
+    window.addEventListener("resize", updateScrollState);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateScrollState);
+    };
+  }, [children, updateScrollState]);
+
+  return (
+    <div className={cn("relative min-h-0", className)}>
+      <div ref={setRefs} onScroll={updateScrollState} className={cn("min-h-0 overflow-y-auto", viewportClassName)} {...props}>
+        {children}
+      </div>
+      {showBottomFade ? (
+        <>
+          <div
+            aria-hidden="true"
+            className={cn(
+              "pointer-events-none absolute inset-x-0 bottom-0 h-14 bg-gradient-to-t from-elevation-50 via-elevation-50/90 to-transparent dark:from-elevation-250 dark:via-elevation-250/90",
+              fadeClassName
+            )}
+          />
+          <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center">
+            <div
+              aria-hidden="true"
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full border border-divider-100 bg-elevation-50 text-text-300 shadow-sm dark:bg-elevation-250",
+                indicatorClassName
+              )}
+            >
+              <AppIcon icon={ChevronDown} className="h-4 w-4" />
+            </div>
+          </div>
+        </>
+      ) : null}
+    </div>
+  );
+});
+DrawerScrollArea.displayName = "DrawerScrollArea";
+
 const DrawerHeader = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
   <div className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)} {...props} />
 );
@@ -128,6 +228,7 @@ export {
   DrawerHeader,
   DrawerOverlay,
   DrawerPortal,
+  DrawerScrollArea,
   DrawerTitle,
   DrawerTrigger,
 };

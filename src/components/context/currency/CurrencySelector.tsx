@@ -3,7 +3,7 @@ import React, { type PropsWithChildren, useMemo, useRef, useState } from "react"
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import type { FiatCurrencyCode } from "@/constants/currencies";
@@ -184,8 +184,9 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
           {uiText({ key: "ui.currencySelector.description", legacyKey: "settings.displayCurrency.description", messages, t })}
         </DrawerDescription>
 
-        <div
-          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+        <DrawerScrollArea
+          className="flex-1"
+          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}
         >
@@ -241,7 +242,7 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
               </React.Fragment>
             ))}
           </div>
-        </div>
+        </DrawerScrollArea>
       </DrawerContent>
     </Drawer>
   );

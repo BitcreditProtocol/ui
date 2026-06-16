@@ -209,6 +209,7 @@ export const defaultUiMessages = {
   "ui.datePicker.range.selectLabel": "Select date range",
   "ui.datePicker.range.start": "Start",
   "ui.datePicker.single.selectedDate": "Selected date",
+  "ui.drawer.actions.close": "ui.drawer.actions.close",
   "ui.decimalSeparator.comma": "Comma",
   "ui.decimalSeparator.description": "Select your preferred decimal and thousands separator format",
   "ui.decimalSeparator.menuLabel": "Decimals",
@@ -223,31 +224,24 @@ export const defaultUiMessages = {
   "ui.languagePreference.resultsCount": "{count, plural, one {# language} other {# languages}}",
   "ui.languagePreference.searchPlaceholder": "Search...",
   "ui.languagePreference.title": "Language preference",
-  "ui.termsAndConditions.content.summary.heading": "Summary:",
-  "ui.termsAndConditions.content.summary.text":
-    "Bitcredit's software lets you issue and use bills of exchange digitally. E-Bills have the same key features as handwritten bills but are faster, easier, and cryptographically secure.",
-  "ui.termsAndConditions.content.termsOfUse.heading": "Terms of Use:",
-  "ui.termsAndConditions.content.termsOfUse.paragraph1":
-    "E-Bills reproduce the legal and practical features of handwritten bills of exchange in digital form. They include all required elements and use electronic signatures instead of handwritten ones.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph2":
-    "The rightful holder of an E-Bill can always be verified through cryptographic proof.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph3":
-    "By signing or transacting with an E-Bill, you agree that electronic signatures are legally binding.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph4":
-    "Each party is responsible for reasonable due diligence to confirm the identity of their counterparty.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph5":
-    "The United Nations Convention on International Bills of Exchange and other applicable international rules apply to all E-Bills, whether domestic or international.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph6":
-    "Where legally possible, the parties agree to use fast-track court procedures for bill of exchange disputes to ensure quick decisions.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph7":
-    "If a provision of bill of exchange law cannot apply directly to an E-Bill, the closest permissible alternative with the same economic effect shall apply.",
-  "ui.termsAndConditions.content.termsOfUse.paragraph8":
-    "If national or international laws recognize E-Bills as equivalent to handwritten bills, those laws will apply automatically.",
-  "ui.termsAndConditions.content.title": "Bill of Exchange Agreement",
-  "ui.termsAndConditions.page.title": "Terms and Conditions",
-  "ui.termsAndConditions.review.description": "Bill of exchange agreement and terms of use for terms and conditions",
-  "ui.termsAndConditions.review.terms": "Terms and Conditions",
-  "ui.termsAndConditions.review.title": "Terms",
+  "ui.legalNotice.content.summary.heading": "ui.legalNotice.content.summary.heading",
+  "ui.legalNotice.content.summary.text": "ui.legalNotice.content.summary.text",
+  "ui.legalNotice.content.termsOfUse.heading": "ui.legalNotice.content.termsOfUse.heading",
+  "ui.legalNotice.content.termsOfUse.paragraph1": "ui.legalNotice.content.termsOfUse.paragraph1",
+  "ui.legalNotice.content.termsOfUse.paragraph2": "ui.legalNotice.content.termsOfUse.paragraph2",
+  "ui.legalNotice.content.termsOfUse.paragraph3": "ui.legalNotice.content.termsOfUse.paragraph3",
+  "ui.legalNotice.content.termsOfUse.paragraph4": "ui.legalNotice.content.termsOfUse.paragraph4",
+  "ui.legalNotice.content.termsOfUse.paragraph5": "ui.legalNotice.content.termsOfUse.paragraph5",
+  "ui.legalNotice.content.termsOfUse.paragraph6": "ui.legalNotice.content.termsOfUse.paragraph6",
+  "ui.legalNotice.content.termsOfUse.paragraph7": "ui.legalNotice.content.termsOfUse.paragraph7",
+  "ui.legalNotice.content.termsOfUse.paragraph8": "ui.legalNotice.content.termsOfUse.paragraph8",
+  "ui.legalNotice.content.title": "ui.legalNotice.content.title",
+  "ui.legalNotice.actions.close": "ui.legalNotice.actions.close",
+  "ui.legalNotice.actions.downloadPdf": "ui.legalNotice.actions.downloadPdf",
+  "ui.legalNotice.page.title": "ui.legalNotice.page.title",
+  "ui.legalNotice.review.description": "ui.legalNotice.review.description",
+  "ui.legalNotice.review.title": "ui.legalNotice.review.title",
+  "ui.legalNotice.review.trigger": "ui.legalNotice.review.trigger",
   "ui.theme.dark": "Dark",
   "ui.theme.description": "Select your preferred theme mode",
   "ui.theme.light": "Light",

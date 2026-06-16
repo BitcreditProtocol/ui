@@ -32,7 +32,7 @@ export * from "./components/DatePicker/yearPicker";
 export * from "./components/NodeIdDisplay";
 export * from "./components/QRCode/DynamicQrProgress";
 export * from "./components/QRCode/QRCodeShareButton";
-export * from "./components/TermsAndConditions";
+export * from "./components/LegalNotice";
 export * from "./components/TruncatedText/TruncatedLinkPopover";
 export * from "./components/TruncatedText/TruncatedTextPopover";
 export * from "./components/TruncatedText/truncated-text";

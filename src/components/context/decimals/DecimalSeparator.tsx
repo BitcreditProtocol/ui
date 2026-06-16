@@ -4,7 +4,7 @@ import React, { type PropsWithChildren, useCallback, useState } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
@@ -140,8 +140,9 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
           {uiText({ key: "ui.decimalSeparator.description", legacyKey: "settings.decimalSeparator.description", messages, t })}
         </DrawerDescription>
 
-        <div
-          className="flex flex-col gap-3 max-h-[65vh] overflow-y-auto pr-1"
+        <DrawerScrollArea
+          className="flex-1"
+          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}
         >
@@ -171,7 +172,7 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
               ));
             })()}
           </div>
-        </div>
+        </DrawerScrollArea>
       </DrawerContent>
     </Drawer>
   );
