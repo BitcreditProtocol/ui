@@ -124,7 +124,11 @@ const SelectTrigger = React.forwardRef<React.ComponentRef<typeof SelectPrimitive
           )}
           {...props}
         >
-          <SelectPrimitive.Icon asChild>{icon && <div className="mr-2">{icon}</div>}</SelectPrimitive.Icon>
+          {icon ? (
+            <SelectPrimitive.Icon asChild>
+              <div className="mr-2">{icon}</div>
+            </SelectPrimitive.Icon>
+          ) : null}
 
           <div className="flex-1 h-full flex flex-col justify-center text-left transition-all duration-200 ease-out">
             <label
