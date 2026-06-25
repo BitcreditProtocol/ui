@@ -122,3 +122,57 @@ export const RangeWithPresets: Story = {
   },
   render: () => <RangeWithPresetsStory />,
 };
+
+function SingleDateWithTimeStory() {
+  const [value, setValue] = React.useState<DateRange | undefined>({
+    from: new Date(2026, 3, 16, 9, 30),
+  });
+
+  return <DatePicker mode="single" value={value} onChange={setValue} label="Choose a date and time" withTime />;
+}
+
+function SingleDateWithTime12hStory() {
+  const [value, setValue] = React.useState<DateRange | undefined>({
+    from: new Date(2026, 3, 16, 14, 45),
+  });
+
+  return <DatePicker mode="single" value={value} onChange={setValue} label="Choose a date and time" withTime timeFormat="12h" />;
+}
+
+function RangeDateWithTimeStory() {
+  const [value, setValue] = React.useState<DateRange | undefined>({
+    from: new Date(2026, 3, 10, 8, 0),
+    to: new Date(2026, 3, 18, 17, 0),
+  });
+
+  return <DatePicker mode="range" value={value} onChange={setValue} onDateFilterTypeChange={() => {}} withTime />;
+}
+
+function RangeDateWithTime12hStory() {
+  const [value, setValue] = React.useState<DateRange | undefined>({
+    from: new Date(2026, 3, 10, 8, 0),
+    to: new Date(2026, 3, 18, 17, 0),
+  });
+
+  return <DatePicker mode="range" value={value} onChange={setValue} onDateFilterTypeChange={() => {}} withTime timeFormat="12h" />;
+}
+
+export const SingleDateWithTime: Story = {
+  args: { mode: "single" },
+  render: () => <SingleDateWithTimeStory />,
+};
+
+export const SingleDateWithTime12h: Story = {
+  args: { mode: "single" },
+  render: () => <SingleDateWithTime12hStory />,
+};
+
+export const RangeDateWithTime: Story = {
+  args: { mode: "range" },
+  render: () => <RangeDateWithTimeStory />,
+};
+
+export const RangeDateWithTime12h: Story = {
+  args: { mode: "range" },
+  render: () => <RangeDateWithTime12hStory />,
+};
