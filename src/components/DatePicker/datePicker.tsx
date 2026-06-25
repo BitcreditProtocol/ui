@@ -109,10 +109,6 @@ function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = tru
   const isProgrammatic = React.useRef(false);
   const mounted = React.useRef(false);
   const debounce = React.useRef<number | null>(null);
-  // Ref keeps `onChange` stable so callbacks don't recreate on every value change
-  const onChangeRef = React.useRef(onChange);
-  onChangeRef.current = onChange;
-
   // For infinite columns: always snap back to the middle repetition
   const middleStart = infinite ? items.length * Math.floor(REPEAT_COUNT / 2) : 0;
 
@@ -123,7 +119,7 @@ function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = tru
     const virtualIndex = Math.round(el.scrollTop / ITEM_H);
     if (infinite) {
       const normalized = ((virtualIndex % items.length) + items.length) % items.length;
-      onChangeRef.current(normalized);
+      onChange(normalized);
       // Instantly re-anchor to the middle repetition so scroll stays infinite
       isProgrammatic.current = true;
       el.scrollTop = (middleStart + normalized) * ITEM_H;
@@ -132,9 +128,9 @@ function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = tru
       }, 50);
     } else {
       const normalized = Math.max(0, Math.min(items.length - 1, virtualIndex));
-      onChangeRef.current(normalized);
+      onChange(normalized);
     }
-  }, [infinite, items.length, middleStart]);
+  }, [infinite, items.length, middleStart, onChange]);
 
   // scrollend fires after momentum finishes (Chrome 114+, FF 109+)
   useEffect(() => {
@@ -212,7 +208,7 @@ function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = tru
             )}
             onClick={() => {
               if (disabled) return;
-              onChangeRef.current(normalizedI);
+              onChange(normalizedI);
             }}
           >
             {item}
