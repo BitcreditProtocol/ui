@@ -180,10 +180,7 @@ function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = tru
     }
   }, [selectedIndex, middleStart]);
 
-  const allItems = useMemo(
-    () => (infinite ? Array.from({ length: REPEAT_COUNT }, () => items).flat() : items),
-    [infinite, items]
-  );
+  const allItems = useMemo(() => (infinite ? Array.from({ length: REPEAT_COUNT }, () => items).flat() : items), [infinite, items]);
   const pad = Math.floor(VISIBLE_COUNT / 2) * ITEM_H;
 
   return (
@@ -721,7 +718,6 @@ export function DatePicker({
                     </button>
                   </div>
                 </div>
-
               </>
             ) : (
               <div className="flex flex-col gap-1">
@@ -758,60 +754,60 @@ export function DatePicker({
 
           <div className={cn("mb-4 flex flex-col sm:flex-row sm:gap-3 sm:items-center", withTime && "gap-3")}>
             <div>
-            {showYearPicker && (
-              <YearPicker
-                key={(draft.from || baseDate).getFullYear()}
-                value={draft.from || baseDate}
-                onChange={(date) => {
-                  setDraft({
-                    ...draft,
-                    from: date,
-                  });
-                  setShowYearPicker(false);
-                  setShowMonthPicker(true);
-                }}
-                onCaptionLabelClicked={() => {
-                  setShowYearPicker(false);
-                  setShowMonthPicker(false);
-                }}
-                shouldDisableFutureNavigation={isFutureNavigationDisabled}
-                currentYearPosition={currentYearPosition}
-                order={order}
-              />
-            )}
-            {showMonthPicker && (
-              <MonthPicker
-                value={draft.from || baseDate}
-                onChange={(date) => {
-                  setDraft({
-                    ...draft,
-                    from: date,
-                  });
-                  setShowYearPicker(false);
-                  setShowMonthPicker(false);
-                }}
-                onCaptionLabelClicked={() => {
-                  setShowYearPicker(true);
-                  setShowMonthPicker(false);
-                }}
-                shouldDisableFutureNavigation={isFutureNavigationDisabled}
-              />
-            )}
-            {!showYearPicker && !showMonthPicker && (
-              <Calendar
-                mode={mode}
-                selected={draft}
-                month={calendarMonth}
-                onCaptionLabelClicked={openYearPicker}
-                onSelect={handleCalendarSelect}
-                onMonthChange={handleCalendarMonthChange}
-                disabled={disabled}
-                isFutureNavigationDisabled={isFutureNavigationDisabled}
-                modifiers={calendarModifiers}
-                modifiersClassNames={calendarModifiersClassNames}
-                rangeFocus={rangeFocus}
-              />
-            )}
+              {showYearPicker && (
+                <YearPicker
+                  key={(draft.from || baseDate).getFullYear()}
+                  value={draft.from || baseDate}
+                  onChange={(date) => {
+                    setDraft({
+                      ...draft,
+                      from: date,
+                    });
+                    setShowYearPicker(false);
+                    setShowMonthPicker(true);
+                  }}
+                  onCaptionLabelClicked={() => {
+                    setShowYearPicker(false);
+                    setShowMonthPicker(false);
+                  }}
+                  shouldDisableFutureNavigation={isFutureNavigationDisabled}
+                  currentYearPosition={currentYearPosition}
+                  order={order}
+                />
+              )}
+              {showMonthPicker && (
+                <MonthPicker
+                  value={draft.from || baseDate}
+                  onChange={(date) => {
+                    setDraft({
+                      ...draft,
+                      from: date,
+                    });
+                    setShowYearPicker(false);
+                    setShowMonthPicker(false);
+                  }}
+                  onCaptionLabelClicked={() => {
+                    setShowYearPicker(true);
+                    setShowMonthPicker(false);
+                  }}
+                  shouldDisableFutureNavigation={isFutureNavigationDisabled}
+                />
+              )}
+              {!showYearPicker && !showMonthPicker && (
+                <Calendar
+                  mode={mode}
+                  selected={draft}
+                  month={calendarMonth}
+                  onCaptionLabelClicked={openYearPicker}
+                  onSelect={handleCalendarSelect}
+                  onMonthChange={handleCalendarMonthChange}
+                  disabled={disabled}
+                  isFutureNavigationDisabled={isFutureNavigationDisabled}
+                  modifiers={calendarModifiers}
+                  modifiersClassNames={calendarModifiersClassNames}
+                  rangeFocus={rangeFocus}
+                />
+              )}
             </div>
 
             {withTime && (
