@@ -29,7 +29,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build && tsc -p tsconfig.lib.json && node ./scripts/rewrite-dts-aliases.mjs",
-    "format": "biome format --write .",
+    "format": "biome check --write .",
     "check:format": "biome check .",
     "style:check": "npm run check:format",
     "lint": "eslint .",

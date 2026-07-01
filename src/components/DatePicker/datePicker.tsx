@@ -345,7 +345,7 @@ export function DatePicker({
           </div>
 
           <div className={cn("mb-4 flex flex-col sm:flex-row sm:gap-3 sm:items-center", withTime && "gap-3")}>
-            <div>
+            <div className={cn("sm:flex-1", !withTime && "w-full")}>
               {showYearPicker && (
                 <YearPicker
                   key={(draft.from || baseDate).getFullYear()}

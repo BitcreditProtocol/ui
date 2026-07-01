@@ -144,7 +144,7 @@ export function Calendar({
         ))}
       </div>
 
-      <div className="grid grid-cols-7 gap-1 place-items-center">
+      <div className="grid grid-cols-7 gap-1">
         {monthDays.map((day) => {
           const isOutsideMonth = day.getMonth() !== visibleMonth.getMonth();
           const isDisabled = dateMatchModifiers(day, disabled);
@@ -169,7 +169,7 @@ export function Calendar({
                 onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
               }}
               className={cn(
-                "w-10 h-10 rounded-xl border text-sm bg-elevation-200",
+                "w-full h-10 rounded-xl border text-sm bg-elevation-200",
                 "disabled:pointer-events-none disabled:opacity-40",
                 isOutsideMonth ? "text-text-200/70" : "text-text-300",
                 isToday && "border-divider-100 bg-elevation-200",
