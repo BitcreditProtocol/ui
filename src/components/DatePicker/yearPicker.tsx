@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import React, { useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
@@ -27,6 +28,7 @@ const YearPicker = ({
   currentYearPosition = "start",
   order = "asc",
 }: YearPickerProps) => {
+  const uiText = useUiText();
   const lang = useLanguage();
   const currentYear = new Date().getFullYear();
   const total = numberYears;
@@ -82,7 +84,7 @@ const YearPicker = ({
   return (
     <div className="flex flex-col gap-2" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ touchAction: "pan-y" }}>
       <div className="flex justify-between items-center">
-        <button type="button" onClick={prevYears} aria-label="Previous years" className="mx-1 cursor-pointer bg-transparent p-0 border-0">
+        <button type="button" onClick={prevYears} aria-label={uiText({ key: "ui.yearPicker.previousYears" })} className="mx-1 cursor-pointer bg-transparent p-0 border-0">
           <AppIcon icon={ChevronLeft} />
         </button>
         <button
@@ -96,7 +98,7 @@ const YearPicker = ({
         <button
           type="button"
           onClick={nextYears}
-          aria-label="Next years"
+          aria-label={uiText({ key: "ui.yearPicker.nextYears" })}
           disabled={!canGoForward}
           className={cn("mx-1 bg-transparent p-0 border-0", {
             "cursor-pointer": canGoForward,

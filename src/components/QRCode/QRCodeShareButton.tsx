@@ -2,7 +2,18 @@ import { ShareIcon } from "lucide-react";
 import { toCanvas } from "qrcode";
 import React from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
+
+const componentMessages: UiMessages = {
+  "ui.qrCodeShareButton.ariaLabel": "Share QR code",
+  "ui.qrCodeShareButton.defaultShareText": "My Bitcredit ecash token:",
+  "ui.qrCodeShareButton.sharedSuccessfully": "Shared successfully!",
+  "ui.qrCodeShareButton.qrCodeDownloaded": "QR code downloaded!",
+  "ui.qrCodeShareButton.tokenCopied": "Token copied to clipboard!",
+  "ui.qrCodeShareButton.failedToShare": "Failed to share token",
+};
 
 export interface QRCodeShareButtonProps {
   value: string;
@@ -22,6 +33,8 @@ export interface QRCodeShareButtonProps {
   qrGenerationFailed?: boolean;
   className?: string;
   disabled?: boolean;
+  messages?: UiMessages;
+  t?: UiT;
 }
 
 export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
@@ -42,7 +55,15 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
   qrGenerationFailed: hasQrGenerationFailed = false,
   className = "",
   disabled: isDisabled = false,
+  messages,
+  t,
 }) => {
+  const uiText = useUiText();
+  const resolvedMessages = { ...componentMessages, ...messages };
+
+  const ui = (key: keyof typeof componentMessages) =>
+    uiText({ key, messages: resolvedMessages, t });
+
   const handleShare = async () => {
     if (!value || typeof window === "undefined") {
       return;
@@ -57,7 +78,7 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
         shareData.title = shareTitle;
       }
 
-      const baseMsg = shareText ?? "My Bitcredit ecash token:";
+      const baseMsg = shareText ?? ui("ui.qrCodeShareButton.defaultShareText");
       shareData.text = `${baseMsg}\n\n${actualTokenText}`;
 
       let file: File | null = null;
@@ -102,7 +123,7 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
 
       if (navigator.share) {
         await navigator.share(shareData);
-        onSuccess?.("Shared successfully!");
+        onSuccess?.(ui("ui.qrCodeShareButton.sharedSuccessfully"));
       } else {
         if (dataUrl && !hasQrGenerationFailed) {
           const a = document.createElement("a");
@@ -110,11 +131,11 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
           a.download = filename;
           a.click();
           onFallback?.();
-          onSuccess?.("QR code downloaded!");
+          onSuccess?.(ui("ui.qrCodeShareButton.qrCodeDownloaded"));
         } else {
           await navigator.clipboard.writeText(actualTokenText);
           onFallback?.();
-          onSuccess?.("Token copied to clipboard!");
+          onSuccess?.(ui("ui.qrCodeShareButton.tokenCopied"));
         }
       }
     } catch (error) {
@@ -129,13 +150,13 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
           a.download = filename;
           a.click();
           onFallback?.();
-          onSuccess?.("QR code downloaded!");
+          onSuccess?.(ui("ui.qrCodeShareButton.qrCodeDownloaded"));
         } catch (downloadError) {
           console.error("Error downloading QR code:", downloadError);
-          onError?.("Failed to share token");
+          onError?.(ui("ui.qrCodeShareButton.failedToShare"));
         }
       } else {
-        onError?.("Failed to share token");
+        onError?.(ui("ui.qrCodeShareButton.failedToShare"));
       }
     }
   };
@@ -156,8 +177,8 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
         void handleShare();
       }}
       className={`${baseVariantClasses} ${disabledClasses} ${className}`.trim()}
-      aria-label={shareTitle || "Share QR code"}
-      title={shareTitle || "Share QR code"}
+      aria-label={shareTitle || ui("ui.qrCodeShareButton.ariaLabel")}
+      title={shareTitle || ui("ui.qrCodeShareButton.ariaLabel")}
     >
       <AppIcon icon={ShareIcon} className="text-text-300" size="md" />
       {label && variant === "withLabel" ? <span className="text-text-300 text-sm font-medium pl-2">{label}</span> : null}

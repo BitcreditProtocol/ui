@@ -1,6 +1,7 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
@@ -53,6 +54,7 @@ export function Calendar({
   modifiersClassNames,
   ISOWeek = true,
 }: CalendarProps) {
+  const uiText = useUiText();
   const { locale } = useLanguage();
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(month ?? selected.from ?? new Date()));
 
@@ -106,14 +108,14 @@ export function Calendar({
       onTouchEnd={handleTouchEnd}
     >
       <div className="flex items-center justify-between">
-        <button type="button" className="bg-transparent p-0" onClick={() => handleMonthShift(-1)} aria-label="Previous month">
+        <button type="button" className="bg-transparent p-0" onClick={() => handleMonthShift(-1)} aria-label={uiText({ key: "ui.calendar.previousMonth" })}>
           <AppIcon icon={ChevronLeft} />
         </button>
         <button
           type="button"
           className="flex items-center gap-2 bg-transparent p-0 text-sm font-medium"
           onClick={onCaptionLabelClicked}
-          aria-label="Open month and year picker"
+          aria-label={uiText({ key: "ui.calendar.openMonthYearPicker" })}
         >
           <span>{formatMonthYear(visibleMonth, locale)}</span>
           <AppIcon icon={ChevronDown} strokeWidth={3} size={15} />
@@ -122,7 +124,7 @@ export function Calendar({
           type="button"
           className={cn("bg-transparent p-0", !canGoForward && "pointer-events-none opacity-30")}
           onClick={() => handleMonthShift(1)}
-          aria-label="Next month"
+          aria-label={uiText({ key: "ui.calendar.nextMonth" })}
           disabled={!canGoForward}
         >
           <AppIcon icon={ChevronRight} />

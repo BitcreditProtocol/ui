@@ -1,3 +1,4 @@
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { cn } from "@/lib/utils";
 
 type AnonymousUserIconProps = {
@@ -5,14 +6,15 @@ type AnonymousUserIconProps = {
   className?: string;
 };
 
-export function AnonymousUserIcon({ alt = "Anonymous user", className }: AnonymousUserIconProps) {
+export function AnonymousUserIcon({ alt, className }: AnonymousUserIconProps) {
+  const uiText = useUiText();
   return (
     <svg
       viewBox="0 0 24 24"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       role="img"
-      aria-label={alt}
+      aria-label={alt ?? uiText({ key: "ui.anonymousUserIcon.alt" })}
       className={cn("text-white dark:text-black", className)}
     >
       <path
