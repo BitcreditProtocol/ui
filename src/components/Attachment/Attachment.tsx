@@ -22,9 +22,10 @@ type AttachmentProps = {
   disabled?: boolean;
   onLoadingChange?: (loading: boolean) => void;
   onOpeningChange?: (opening: boolean) => void;
+  onError?: (error: unknown) => void;
 };
 
-export function Attachment({ id, fileName, getFile, className, disabled, onLoadingChange, onOpeningChange }: AttachmentProps) {
+export function Attachment({ id, fileName, getFile, className, disabled, onLoadingChange, onOpeningChange, onError }: AttachmentProps) {
   const uiText = useUiText();
   const [fileSize, setFileSize] = useState(0);
   const [url, setUrl] = useState("");
@@ -64,6 +65,7 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
         setUrl(objectUrl);
       } catch (error) {
         console.error("Failed to download file:", error);
+        onError?.(error);
       } finally {
         onLoadingChangeRef.current?.(false);
       }
