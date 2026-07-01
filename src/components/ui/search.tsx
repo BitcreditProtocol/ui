@@ -2,6 +2,7 @@ import { cva } from "class-variance-authority";
 import { SearchIcon, XIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
@@ -49,6 +50,7 @@ function Search({
   enableDebounce = true,
   debounceMs = 300,
 }: SearchProps) {
+  const uiText = useUiText();
   const searchFieldRef = useRef<HTMLInputElement>(null);
   const debounceRef = useRef<number | null>(null);
   const [internalValue, setInternalValue] = useState(value ?? "");
@@ -139,7 +141,7 @@ function Search({
           latestOnSearch.current("");
         }}
         className={cn("transition-opacity duration-200 ease-out", hasValue ? "opacity-100" : "opacity-0 pointer-events-none")}
-        aria-label="Clear search"
+        aria-label={uiText({ key: "ui.search.clearAriaLabel" })}
         tabIndex={hasValue ? 0 : -1}
       >
         <AppIcon

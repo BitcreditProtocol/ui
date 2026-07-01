@@ -2,6 +2,7 @@ import { cva } from "class-variance-authority";
 import { XIcon } from "lucide-react";
 import React, { forwardRef, useEffect, useId, useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
@@ -64,6 +65,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref
   ) => {
+    const uiText = useUiText();
     const inputRef = useRef<HTMLInputElement | null>(null);
     const generatedId = useId();
     const inputId = id ?? generatedId;
@@ -143,7 +145,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     const resolvedSuffixIconAriaLabel =
-      suffixIconAriaLabel ?? (typeof label === "string" && label.trim().length > 0 ? `${label} action` : "Input action");
+      suffixIconAriaLabel ??
+      (typeof label === "string" && label.trim().length > 0 ? `${label} action` : uiText({ key: "ui.input.suffixIconAriaLabel" }));
 
     const isNestedInteractiveElement = (target: EventTarget | null) =>
       target instanceof HTMLElement && target.closest("button, a, input, select, textarea, [role='button']") !== null;
@@ -201,7 +204,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             {isClearable && hasValue ? (
               <button
                 type="button"
-                aria-label="Clear input"
+                aria-label={uiText({ key: "ui.input.clearAriaLabel" })}
                 onMouseDown={stopContainerFocus}
                 onTouchStart={stopContainerFocus}
                 onClick={clearField}

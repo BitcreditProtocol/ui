@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
@@ -16,6 +17,7 @@ interface MonthPickerProps {
 }
 
 const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutureNavigation = false }: MonthPickerProps) => {
+  const uiText = useUiText();
   const lang = useLanguage();
   const now = new Date();
   const currentYear = now.getFullYear();
@@ -66,7 +68,7 @@ const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutu
         <button
           type="button"
           onClick={prevYear}
-          aria-label="Previous year"
+          aria-label={uiText({ key: "ui.monthPicker.previousYear" })}
           disabled={!canGoBackward}
           className={cn("mx-1 bg-transparent p-0 border-0", {
             "cursor-pointer": canGoBackward,
@@ -86,7 +88,7 @@ const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutu
         <button
           type="button"
           onClick={nextYear}
-          aria-label="Next year"
+          aria-label={uiText({ key: "ui.monthPicker.nextYear" })}
           disabled={!canGoForward}
           className={cn("mx-1 bg-transparent p-0 border-0", {
             "cursor-pointer": canGoForward,

@@ -1,3 +1,4 @@
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { cn } from "@/lib/utils";
 
 export interface DynamicQrProgressProps {
@@ -7,6 +8,7 @@ export interface DynamicQrProgressProps {
 }
 
 export function DynamicQrProgress({ currentFrameIndex, totalFrames, className = "" }: DynamicQrProgressProps) {
+  const uiText = useUiText();
   const currentFrame = totalFrames > 0 ? Math.min(Math.max(currentFrameIndex + 1, 0), totalFrames) : 0;
   const progress = totalFrames > 0 ? (currentFrame / totalFrames) * 100 : 0;
 
@@ -14,7 +16,7 @@ export function DynamicQrProgress({ currentFrameIndex, totalFrames, className = 
     <div className={cn("w-40 max-w-full", className)}>
       <div
         role="progressbar"
-        aria-label="Animated QR progress"
+        aria-label={uiText({ key: "ui.dynamicQrProgress.ariaLabel" })}
         aria-valuemin={0}
         aria-valuemax={totalFrames}
         aria-valuenow={currentFrame}

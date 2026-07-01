@@ -1,6 +1,7 @@
 import { CircleCheckIcon, SquareArrowOutUpRightIcon } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { TruncatedTextPopover } from "@/components/TruncatedText/TruncatedTextPopover";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
@@ -24,10 +25,12 @@ type AttachmentProps = {
 };
 
 export function Attachment({ id, fileName, getFile, className, disabled, onLoadingChange, onOpeningChange }: AttachmentProps) {
+  const uiText = useUiText();
   const [fileSize, setFileSize] = useState(0);
   const [url, setUrl] = useState("");
   const [isOpening, setIsOpening] = useState(false);
   const openingTimeoutRef = useRef<number | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
   const onLoadingChangeRef = useRef(onLoadingChange);
   const onOpeningChangeRef = useRef(onOpeningChange);
 
@@ -56,7 +59,9 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
         });
 
         setFileSize(Math.round(blob.size / 1024));
-        setUrl(URL.createObjectURL(blob));
+        const objectUrl = URL.createObjectURL(blob);
+        objectUrlRef.current = objectUrl;
+        setUrl(objectUrl);
       } catch (error) {
         console.error("Failed to download file:", error);
       } finally {
@@ -72,6 +77,9 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
     return () => {
       if (openingTimeoutRef.current !== null) {
         window.clearTimeout(openingTimeoutRef.current);
+      }
+      if (objectUrlRef.current !== null) {
+        URL.revokeObjectURL(objectUrlRef.current);
       }
     };
   }, []);
@@ -106,11 +114,11 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
         type="button"
         className="shrink-0 p-1 !bg-transparent disabled:cursor-not-allowed disabled:opacity-40"
         onClick={openFile}
-        aria-label={`Open ${fileName}`}
+        aria-label={uiText({ key: "ui.attachment.openAriaLabel", params: { fileName } })}
         disabled={!url || isOpening || disabled}
       >
         {isOpening ? (
-          <span className="text-xs text-text-200">Opening...</span>
+          <span className="text-xs text-text-200">{uiText({ key: "ui.attachment.opening" })}</span>
         ) : (
           <AppIcon icon={SquareArrowOutUpRightIcon} className="text-text-200" />
         )}

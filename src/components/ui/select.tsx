@@ -2,6 +2,7 @@ import * as SelectPrimitive from "@radix-ui/react-select";
 import { Check, ChevronDown, ChevronUp, XIcon } from "lucide-react";
 import * as React from "react";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
 import { cn } from "@/lib/utils";
 
@@ -14,6 +15,7 @@ interface SelectProps {
 }
 
 const Select: React.FC<SelectProps> = ({ children, value, onValueChange, clearable: isClearable, required: isRequired }) => {
+  const uiText = useUiText();
   const hasValue = React.useMemo(() => !!value, [value]);
   const [triggerWidth, setTriggerWidth] = React.useState<number | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
@@ -68,7 +70,7 @@ const Select: React.FC<SelectProps> = ({ children, value, onValueChange, clearab
 
       {isClearable && hasValue && (
         <button
-          aria-label="Clear selection"
+          aria-label={uiText({ key: "ui.select.clearAriaLabel" })}
           className="absolute top-1/2 right-12 -translate-y-1/2 z-[5px] bg-transparent!"
           onClick={handleClear}
         >
