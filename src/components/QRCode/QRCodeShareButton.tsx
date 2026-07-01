@@ -61,8 +61,7 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
   const uiText = useUiText();
   const resolvedMessages = { ...componentMessages, ...messages };
 
-  const ui = (key: keyof typeof componentMessages) =>
-    uiText({ key, messages: resolvedMessages, t });
+  const ui = (key: keyof typeof componentMessages) => uiText({ key, messages: resolvedMessages, t });
 
   const handleShare = async () => {
     if (!value || typeof window === "undefined") {

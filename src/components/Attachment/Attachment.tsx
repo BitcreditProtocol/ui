@@ -30,6 +30,7 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
   const [url, setUrl] = useState("");
   const [isOpening, setIsOpening] = useState(false);
   const openingTimeoutRef = useRef<number | null>(null);
+  const objectUrlRef = useRef<string | null>(null);
   const onLoadingChangeRef = useRef(onLoadingChange);
   const onOpeningChangeRef = useRef(onOpeningChange);
 
@@ -58,7 +59,9 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
         });
 
         setFileSize(Math.round(blob.size / 1024));
-        setUrl(URL.createObjectURL(blob));
+        const objectUrl = URL.createObjectURL(blob);
+        objectUrlRef.current = objectUrl;
+        setUrl(objectUrl);
       } catch (error) {
         console.error("Failed to download file:", error);
       } finally {
@@ -74,6 +77,9 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
     return () => {
       if (openingTimeoutRef.current !== null) {
         window.clearTimeout(openingTimeoutRef.current);
+      }
+      if (objectUrlRef.current !== null) {
+        URL.revokeObjectURL(objectUrlRef.current);
       }
     };
   }, []);

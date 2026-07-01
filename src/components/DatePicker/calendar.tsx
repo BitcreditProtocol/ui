@@ -108,7 +108,12 @@ export function Calendar({
       onTouchEnd={handleTouchEnd}
     >
       <div className="flex items-center justify-between">
-        <button type="button" className="bg-transparent p-0" onClick={() => handleMonthShift(-1)} aria-label={uiText({ key: "ui.calendar.previousMonth" })}>
+        <button
+          type="button"
+          className="bg-transparent p-0"
+          onClick={() => handleMonthShift(-1)}
+          aria-label={uiText({ key: "ui.calendar.previousMonth" })}
+        >
           <AppIcon icon={ChevronLeft} />
         </button>
         <button

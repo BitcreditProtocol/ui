@@ -145,7 +145,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     };
 
     const resolvedSuffixIconAriaLabel =
-      suffixIconAriaLabel ?? (typeof label === "string" && label.trim().length > 0 ? `${label} action` : uiText({ key: "ui.input.suffixIconAriaLabel" }));
+      suffixIconAriaLabel ??
+      (typeof label === "string" && label.trim().length > 0 ? `${label} action` : uiText({ key: "ui.input.suffixIconAriaLabel" }));
 
     const isNestedInteractiveElement = (target: EventTarget | null) =>
       target instanceof HTMLElement && target.closest("button, a, input, select, textarea, [role='button']") !== null;

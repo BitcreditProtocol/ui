@@ -84,7 +84,12 @@ const YearPicker = ({
   return (
     <div className="flex flex-col gap-2" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd} style={{ touchAction: "pan-y" }}>
       <div className="flex justify-between items-center">
-        <button type="button" onClick={prevYears} aria-label={uiText({ key: "ui.yearPicker.previousYears" })} className="mx-1 cursor-pointer bg-transparent p-0 border-0">
+        <button
+          type="button"
+          onClick={prevYears}
+          aria-label={uiText({ key: "ui.yearPicker.previousYears" })}
+          className="mx-1 cursor-pointer bg-transparent p-0 border-0"
+        >
           <AppIcon icon={ChevronLeft} />
         </button>
         <button

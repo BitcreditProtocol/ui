@@ -811,7 +811,9 @@ export function DatePicker({
                 {allowRangeSelection ? (
                   <>
                     <div className="flex flex-col items-center sm:items-start gap-1">
-                      <span className="hidden sm:block text-xs text-text-200">{uiText({ key: "ui.datePicker.time.from", messages, t })}</span>
+                      <span className="hidden sm:block text-xs text-text-200">
+                        {uiText({ key: "ui.datePicker.time.from", messages, t })}
+                      </span>
                       <TimeInput
                         value={draft.from}
                         format={timeFormat}
