@@ -59,7 +59,7 @@ export const savePreferences = (prefs: Partial<PreferencesContext>) => {
     if (isTheme(prefs.theme)) {
       localStorage.setItem(THEME_STORAGE_KEY, prefs.theme);
     }
-  } catch {
-    console.error("Failed to save preferences");
+  } catch (error) {
+    console.error("Failed to save preferences", error);
   }
 };

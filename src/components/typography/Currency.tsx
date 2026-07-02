@@ -40,7 +40,7 @@ const withSign = (content: React.ReactNode, amount: number, signDisplay: Formatt
   if (signDisplay === "never") {
     return content;
   }
-  if (amount < 0 || signDisplay === "negative") {
+  if (amount < 0) {
     return (
       <>
         {"-"}
@@ -48,7 +48,7 @@ const withSign = (content: React.ReactNode, amount: number, signDisplay: Formatt
       </>
     );
   }
-  if (amount > 0 || signDisplay === "always") {
+  if (signDisplay === "always" || (signDisplay === "exceptZero" && amount !== 0)) {
     return (
       <>
         {"+"}

@@ -23,22 +23,6 @@ export type CalendarSelectHandler = (
   event: React.MouseEvent<HTMLButtonElement>
 ) => void;
 
-export type CalendarProps = {
-  className?: string;
-  mode: "single" | "range";
-  month?: Date;
-  selected: DateRange;
-  onSelect: CalendarSelectHandler;
-  onCaptionLabelClicked: () => void;
-  onMonthChange?: (month: Date) => void;
-  disabled?: Matcher | Matcher[];
-  isFutureNavigationDisabled?: boolean;
-  rangeFocus?: "from" | "to";
-  modifiers?: Record<string, (date: Date) => boolean>;
-  modifiersClassNames?: Record<string, string>;
-  ISOWeek?: boolean;
-};
-
 export function Calendar({
   className,
   mode,
@@ -53,7 +37,21 @@ export function Calendar({
   modifiers,
   modifiersClassNames,
   ISOWeek = true,
-}: CalendarProps) {
+}: {
+  className?: string;
+  mode: "single" | "range";
+  month?: Date;
+  selected: DateRange;
+  onSelect: CalendarSelectHandler;
+  onCaptionLabelClicked: () => void;
+  onMonthChange?: (month: Date) => void;
+  disabled?: Matcher | Matcher[];
+  isFutureNavigationDisabled?: boolean;
+  rangeFocus?: "from" | "to";
+  modifiers?: Record<string, (date: Date) => boolean>;
+  modifiersClassNames?: Record<string, string>;
+  ISOWeek?: boolean;
+}) {
   const uiText = useUiText();
   const { locale } = useLanguage();
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(month ?? selected.from ?? new Date()));

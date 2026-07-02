@@ -29,8 +29,8 @@ export function useAmountVisibility(): {
             detail: { isVisible: isNewVisible, value: isNewVisible },
           })
         );
-      } catch {
-        console.error("Failed to save amount visibility state");
+      } catch (error) {
+        console.error("Failed to save amount visibility state", error);
       }
       return isNewVisible;
     });
@@ -43,8 +43,8 @@ export function useAmountVisibility(): {
       if (e.key === STORAGE_KEY && e.newValue !== null) {
         try {
           setIsAmountVisible(JSON.parse(e.newValue) as boolean);
-        } catch {
-          console.error("Failed to parse amount visibility state");
+        } catch (error) {
+          console.error("Failed to parse amount visibility state", error);
         }
       }
     };

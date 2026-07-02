@@ -3,15 +3,19 @@ import { cn } from "@/lib/utils";
 import { ScrollColumn } from "./ScrollColumn";
 import { AM_PM, HOURS_12, HOURS_24, ITEM_H, MINUTES_LIST, VISIBLE_COUNT } from "./scrollColumnConstants";
 
-export interface TimeInputProps {
+export function TimeInput({
+  value,
+  format = "24h",
+  disabled,
+  onChange,
+  className,
+}: {
   value?: Date;
   format?: "12h" | "24h";
   disabled?: boolean;
   onChange: (timeStr: string) => void;
   className?: string;
-}
-
-export function TimeInput({ value, format = "24h", disabled, onChange, className }: TimeInputProps) {
+}) {
   const h24 = value?.getHours() ?? 0;
   const minutes = value?.getMinutes() ?? 0;
   const isPM = h24 >= 12;

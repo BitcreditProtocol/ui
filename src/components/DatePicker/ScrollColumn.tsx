@@ -2,15 +2,19 @@ import React, { useCallback, useEffect, useMemo } from "react";
 import { cn } from "@/lib/utils";
 import { ITEM_H, REPEAT_COUNT, VISIBLE_COUNT } from "./scrollColumnConstants";
 
-export interface ScrollColumnProps {
+export function ScrollColumn({
+  items,
+  selectedIndex,
+  onChange,
+  disabled,
+  infinite = true,
+}: {
   items: string[];
   selectedIndex: number;
   onChange: (i: number) => void;
   disabled?: boolean;
   infinite?: boolean;
-}
-
-export function ScrollColumn({ items, selectedIndex, onChange, disabled, infinite = true }: ScrollColumnProps) {
+}) {
   const ref = React.useRef<HTMLDivElement>(null);
   const isProgrammatic = React.useRef(false);
   const mounted = React.useRef(false);

@@ -117,6 +117,7 @@ export const QRCodeShareButton: React.FC<QRCodeShareButtonProps> = ({
           }
         } catch (error) {
           console.error("Error generating/fetching QR code for sharing:", error);
+          throw error;
         }
       }
 
