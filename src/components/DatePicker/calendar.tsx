@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
@@ -55,14 +55,14 @@ export function Calendar({
   const uiText = useUiText();
   const { locale } = useLanguage();
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(month ?? selected.from ?? new Date()));
-
-  useEffect(() => {
+  const [prevMonth, setPrevMonth] = useState(month);
+  if (month !== prevMonth) {
+    setPrevMonth(month);
     if (month) {
       const next = startOfMonth(month);
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setVisibleMonth((prev) => (prev.getTime() === next.getTime() ? prev : next));
     }
-  }, [month]);
+  }
 
   const weekdayLabels = useMemo(() => getWeekdayLabels(locale, ISOWeek), [ISOWeek, locale]);
   const monthDays = useMemo(() => getMonthDays(visibleMonth, ISOWeek), [ISOWeek, visibleMonth]);
