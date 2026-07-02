@@ -13,10 +13,10 @@ import { applyTimeToDate, cloneRange, formatDisplayDate, formatDisplayDateTime }
 import { DateRangeDropdown } from "./dateRangeDropdown";
 import { MonthPicker } from "./monthPicker";
 import { TimeInput } from "./TimeInput";
+import type { DateFilterType, DatePickerMode, SortOrder, TimeFormat, YearPosition } from "./types";
 import { useDatePickerState } from "./useDatePickerState";
 import { useDatePickerVisibility } from "./useDatePickerVisibility";
 import { YearPicker } from "./yearPicker";
-import type { DateFilterType, DatePickerMode, SortOrder, TimeFormat, YearPosition } from "./types";
 
 export interface DatePickerProps {
   className?: string;
