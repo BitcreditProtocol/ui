@@ -41,7 +41,8 @@ export function useDatePickerState({
   const [draft, setDraft] = useState(getInitialDate());
   const [rangeFocus, setRangeFocus] = useState<"from" | "to">("from");
   const [selectedRange, setSelectedRange] = useState<number>();
-  const previousValueRef = React.useRef(value);
+  const [prevSyncDeps, setPrevSyncDeps] = useState({ showCalendar, showYearPicker, showMonthPicker, value });
+  const [prevCurrent, setPrevCurrent] = useState(current);
 
   const allowRangeSelection = useMemo(() => mode === "range", [mode]);
   const baseDate = useMemo(() => current.from || new Date(), [current.from]);
@@ -73,27 +74,23 @@ export function useDatePickerState({
     [mode, rangeFocus]
   );
 
-  useEffect(() => {
-    if (showCalendar || showYearPicker || showMonthPicker) {
-      return;
+  if (prevSyncDeps.showCalendar !== showCalendar || prevSyncDeps.showYearPicker !== showYearPicker || prevSyncDeps.showMonthPicker !== showMonthPicker || prevSyncDeps.value !== value) {
+    setPrevSyncDeps({ showCalendar, showYearPicker, showMonthPicker, value });
+    if (!showCalendar && !showYearPicker && !showMonthPicker) {
+      if (value) {
+        setCurrent((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
+        setDraft((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
+        setHasBeenCleared(false);
+      } else if (prevSyncDeps.value) {
+        const clearedRange = { from: undefined, to: undefined };
+        setCurrent((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
+        setDraft((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
+        setHasBeenCleared(true);
+        setSelectedRange(undefined);
+        setRangeFocus("from");
+      }
     }
-
-    if (value) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCurrent((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
-      setDraft((prev) => (isSameRange(prev, value) ? prev : cloneRange(value)));
-      setHasBeenCleared(false);
-    } else if (previousValueRef.current) {
-      const clearedRange = { from: undefined, to: undefined };
-      setCurrent((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
-      setDraft((prev) => (isSameRange(prev, clearedRange) ? prev : clearedRange));
-      setHasBeenCleared(true);
-      setSelectedRange(undefined);
-      setRangeFocus("from");
-    }
-
-    previousValueRef.current = value;
-  }, [showCalendar, showMonthPicker, showYearPicker, value]);
+  }
 
   useEffect(() => {
     if (selectedRange === undefined) {
@@ -110,8 +107,8 @@ export function useDatePickerState({
     setDraft(newRange);
   }, [selectedRange]);
 
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  if (prevCurrent !== current) {
+    setPrevCurrent(current);
     setSelectedRange((val) => {
       if (current.from === undefined || current.to === undefined) {
         return val;
@@ -119,7 +116,7 @@ export function useDatePickerState({
       const diffDays = differenceInCalendarDays(current.to, current.from);
       return diffDays !== val ? undefined : val;
     });
-  }, [current]);
+  }
 
   const handleCalendarSelect = useCallback<CalendarSelectHandler>(
     (_ignored: DateRange | undefined, selectedDay) => {
@@ -187,7 +184,6 @@ export function useDatePickerState({
     setSelectedRange,
     hasBeenCleared,
     setHasBeenCleared,
-    previousValueRef,
     allowRangeSelection,
     baseDate,
     calendarMonth,

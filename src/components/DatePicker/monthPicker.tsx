@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight, ChevronUp } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
@@ -27,16 +27,16 @@ const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutu
     const initYear = shouldDisableFutureNavigation ? Math.min(value.getFullYear(), currentYear) : value.getFullYear();
     return new Date(initYear, value.getMonth(), 1);
   });
-
-  useEffect(() => {
+  const [prevBaseDeps, setPrevBaseDeps] = useState({ value, shouldDisableFutureNavigation, currentYear });
+  if (prevBaseDeps.value !== value || prevBaseDeps.shouldDisableFutureNavigation !== shouldDisableFutureNavigation || prevBaseDeps.currentYear !== currentYear) {
+    setPrevBaseDeps({ value, shouldDisableFutureNavigation, currentYear });
     const nextYear = shouldDisableFutureNavigation ? Math.min(value.getFullYear(), currentYear) : value.getFullYear();
     const nextMonth = value.getMonth();
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setBase((prev) => {
       if (prev.getFullYear() === nextYear && prev.getMonth() === nextMonth) return prev;
       return new Date(nextYear, nextMonth, 1);
     });
-  }, [value, shouldDisableFutureNavigation, currentYear]);
+  }
 
   const handleOnChange = (monthIndex: number) => {
     const newDate = new Date(base);
