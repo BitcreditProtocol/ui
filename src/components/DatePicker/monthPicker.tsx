@@ -28,7 +28,11 @@ const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutu
     return new Date(initYear, value.getMonth(), 1);
   });
   const [prevBaseDeps, setPrevBaseDeps] = useState({ value, shouldDisableFutureNavigation, currentYear });
-  if (prevBaseDeps.value !== value || prevBaseDeps.shouldDisableFutureNavigation !== shouldDisableFutureNavigation || prevBaseDeps.currentYear !== currentYear) {
+  if (
+    prevBaseDeps.value !== value ||
+    prevBaseDeps.shouldDisableFutureNavigation !== shouldDisableFutureNavigation ||
+    prevBaseDeps.currentYear !== currentYear
+  ) {
     setPrevBaseDeps({ value, shouldDisableFutureNavigation, currentYear });
     const nextYear = shouldDisableFutureNavigation ? Math.min(value.getFullYear(), currentYear) : value.getFullYear();
     const nextMonth = value.getMonth();

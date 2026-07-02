@@ -74,7 +74,12 @@ export function useDatePickerState({
     [mode, rangeFocus]
   );
 
-  if (prevSyncDeps.showCalendar !== showCalendar || prevSyncDeps.showYearPicker !== showYearPicker || prevSyncDeps.showMonthPicker !== showMonthPicker || prevSyncDeps.value !== value) {
+  if (
+    prevSyncDeps.showCalendar !== showCalendar ||
+    prevSyncDeps.showYearPicker !== showYearPicker ||
+    prevSyncDeps.showMonthPicker !== showMonthPicker ||
+    prevSyncDeps.value !== value
+  ) {
     setPrevSyncDeps({ showCalendar, showYearPicker, showMonthPicker, value });
     if (!showCalendar && !showYearPicker && !showMonthPicker) {
       if (value) {
