@@ -31,11 +31,11 @@ const MonthPicker = ({ value, onChange, onCaptionLabelClicked, shouldDisableFutu
   useEffect(() => {
     const nextYear = shouldDisableFutureNavigation ? Math.min(value.getFullYear(), currentYear) : value.getFullYear();
     const nextMonth = value.getMonth();
-    if (nextYear !== base.getFullYear() || nextMonth !== base.getMonth()) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setBase(() => new Date(nextYear, nextMonth, 1));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setBase((prev) => {
+      if (prev.getFullYear() === nextYear && prev.getMonth() === nextMonth) return prev;
+      return new Date(nextYear, nextMonth, 1);
+    });
   }, [value, shouldDisableFutureNavigation, currentYear]);
 
   const handleOnChange = (monthIndex: number) => {

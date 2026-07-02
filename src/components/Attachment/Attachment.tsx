@@ -32,8 +32,10 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
   const [isOpening, setIsOpening] = useState(false);
   const openingTimeoutRef = useRef<number | null>(null);
   const objectUrlRef = useRef<string | null>(null);
+  const mountParamsRef = useRef({ id, fileName, getFile });
   const onLoadingChangeRef = useRef(onLoadingChange);
   const onOpeningChangeRef = useRef(onOpeningChange);
+  const onErrorRef = useRef(onError);
 
   useEffect(() => {
     onLoadingChangeRef.current = onLoadingChange;
@@ -41,10 +43,14 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
   useEffect(() => {
     onOpeningChangeRef.current = onOpeningChange;
   }, [onOpeningChange]);
+  useEffect(() => {
+    onErrorRef.current = onError;
+  }, [onError]);
 
   useEffect(() => {
     onLoadingChangeRef.current?.(true);
 
+    const { id, fileName, getFile } = mountParamsRef.current;
     const retrieveFile = async () => {
       try {
         let response: BinaryFileResponse;
@@ -65,14 +71,13 @@ export function Attachment({ id, fileName, getFile, className, disabled, onLoadi
         setUrl(objectUrl);
       } catch (error) {
         console.error("Failed to download file:", error);
-        onError?.(error);
+        onErrorRef.current?.(error);
       } finally {
         onLoadingChangeRef.current?.(false);
       }
     };
 
     void retrieveFile();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

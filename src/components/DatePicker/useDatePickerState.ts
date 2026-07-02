@@ -47,6 +47,10 @@ export function useDatePickerState({
   const baseDate = useMemo(() => current.from || new Date(), [current.from]);
   const calendarMonth = useMemo(() => draft.from || current.from || new Date(), [draft.from, current.from]);
   const displayedSingleDate = useMemo(() => draft.from || current.from, [draft.from, current.from]);
+  const startDateRef = React.useRef(draft.from || current.from);
+  useEffect(() => {
+    startDateRef.current = draft.from || current.from;
+  }, [draft.from, current.from]);
 
   const handleCalendarMonthChange = useCallback(
     (newMonth: Date) => {
@@ -96,16 +100,14 @@ export function useDatePickerState({
       return;
     }
 
-    const startDate = draft.from || current.from || new Date();
+    const startDate = startDateRef.current || new Date();
     const newRange = {
       from: startDate,
       to: addDays(startDate, selectedRange),
     };
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setCurrent(newRange);
     setDraft(newRange);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRange]);
 
   useEffect(() => {
