@@ -89,7 +89,7 @@ function truncateMiddle(value: string, maxLength: number): string {
   return `${graphemes.slice(0, headCount).join("")}…${graphemes.slice(graphemes.length - tailCount).join("")}`;
 }
 
-function truncateWithSafeguard(line: string, maxLength: number, truncationMode: "end" | "middle"): string {
+function truncateWithSafeguard(line: string, maxLength: number, truncationMode: Exclude<TruncationMode, "auto">): string {
   if (line.length <= maxLength && visualWidth(line) <= maxLength) {
     return line;
   }

@@ -15,6 +15,7 @@ import {
   type Matcher,
   startOfMonth,
 } from "@/utils/dates";
+import type { DatePickerMode, RangeFocus } from "./types";
 
 export type CalendarSelectHandler = (
   range: DateRange | undefined,
@@ -39,7 +40,7 @@ export function Calendar({
   ISOWeek = true,
 }: {
   className?: string;
-  mode: "single" | "range";
+  mode: DatePickerMode;
   month?: Date;
   selected: DateRange;
   onSelect: CalendarSelectHandler;
@@ -47,7 +48,7 @@ export function Calendar({
   onMonthChange?: (month: Date) => void;
   disabled?: Matcher | Matcher[];
   isFutureNavigationDisabled?: boolean;
-  rangeFocus?: "from" | "to";
+  rangeFocus?: RangeFocus;
   modifiers?: Record<string, (date: Date) => boolean>;
   modifiersClassNames?: Record<string, string>;
   ISOWeek?: boolean;

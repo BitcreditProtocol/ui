@@ -3,6 +3,7 @@ import { createContext, useContext } from "react";
 import type { CurrencyCode } from "@/lib/currency";
 
 export type Theme = "system" | "light" | "dark";
+export type ResolvedTheme = Exclude<Theme, "system">;
 export type Currency = CurrencyCode;
 export type DecimalFormat = "point" | "comma" | "space";
 

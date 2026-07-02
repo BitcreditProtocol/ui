@@ -1,4 +1,5 @@
 import { type DateRange, formatIsoDateShort, isSameDay } from "@/utils/dates";
+import type { TimeFormat } from "./types";
 
 export const isSameOrBothMissing = (a?: Date, b?: Date) => {
   if (!a && !b) {
@@ -21,7 +22,7 @@ export const cloneRange = (range?: DateRange): DateRange => ({
 
 export const formatDisplayDate = (date: Date | undefined, locale: string) => (date ? formatIsoDateShort(date, locale) : "");
 
-export const getTimeString = (date?: Date, format: "12h" | "24h" = "24h") => {
+export const getTimeString = (date?: Date, format: TimeFormat = "24h") => {
   if (!date) return "";
   const h = date.getHours();
   const m = date.getMinutes();
@@ -40,5 +41,5 @@ export const applyTimeToDate = (date: Date, timeStr: string): Date => {
   return next;
 };
 
-export const formatDisplayDateTime = (date: Date | undefined, locale: string, timeFormat: "12h" | "24h" = "24h") =>
+export const formatDisplayDateTime = (date: Date | undefined, locale: string, timeFormat: TimeFormat = "24h") =>
   date ? `${formatIsoDateShort(date, locale)}, ${getTimeString(date, timeFormat)}` : "";

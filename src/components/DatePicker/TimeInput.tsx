@@ -2,6 +2,7 @@ import { useCallback } from "react";
 import { cn } from "@/lib/utils";
 import { ScrollColumn } from "./ScrollColumn";
 import { AM_PM, HOURS_12, HOURS_24, ITEM_H, MINUTES_LIST, VISIBLE_COUNT } from "./scrollColumnConstants";
+import type { TimeFormat } from "./types";
 
 export function TimeInput({
   value,
@@ -11,7 +12,7 @@ export function TimeInput({
   className,
 }: {
   value?: Date;
-  format?: "12h" | "24h";
+  format?: TimeFormat;
   disabled?: boolean;
   onChange: (timeStr: string) => void;
   className?: string;

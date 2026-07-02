@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 
 type Theme = "light" | "dark" | "system";
+type ResolvedTheme = Exclude<Theme, "system">;
 
 const getStorage = (): Storage | null => {
   try {
@@ -35,12 +36,12 @@ export function useTheme() {
     return getSystemPrefersDark();
   });
 
-  const currentTheme = useMemo<"light" | "dark">(() => {
+  const currentTheme = useMemo<ResolvedTheme>(() => {
     const isDark = theme === "dark" || (theme === "system" && isSystemPrefersDark);
     return isDark ? "dark" : "light";
   }, [theme, isSystemPrefersDark]);
 
-  const applyTheme = useCallback((nextTheme: "light" | "dark") => {
+  const applyTheme = useCallback((nextTheme: ResolvedTheme) => {
     document.documentElement.classList.toggle("dark", nextTheme === "dark");
   }, []);
 
