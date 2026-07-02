@@ -16,11 +16,12 @@ import { TimeInput } from "./TimeInput";
 import { useDatePickerState } from "./useDatePickerState";
 import { useDatePickerVisibility } from "./useDatePickerVisibility";
 import { YearPicker } from "./yearPicker";
+import type { DateFilterType, DatePickerMode, SortOrder, TimeFormat, YearPosition } from "./types";
 
 export interface DatePickerProps {
   className?: string;
   label?: string;
-  mode: "single" | "range";
+  mode: DatePickerMode;
   value?: DateRange;
   onChange: (dateRange: DateRange | undefined) => void;
   customComponent?: React.ReactElement<{
@@ -30,12 +31,12 @@ export interface DatePickerProps {
   shouldDisplayIncrementButtons?: boolean;
   isFutureNavigationDisabled?: boolean;
   isAutoSelectDisabled?: boolean;
-  currentYearPosition?: "start" | "center" | "end";
-  order?: "asc" | "desc";
-  dateFilterType?: "issue" | "maturity";
-  onDateFilterTypeChange?: (type: "issue" | "maturity") => void;
+  currentYearPosition?: YearPosition;
+  order?: SortOrder;
+  dateFilterType?: DateFilterType;
+  onDateFilterTypeChange?: (type: DateFilterType) => void;
   withTime?: boolean;
-  timeFormat?: "12h" | "24h";
+  timeFormat?: TimeFormat;
   messages?: UiMessages;
   t?: UiT;
 }
@@ -236,7 +237,7 @@ export function DatePicker({
                   value={dateFilterType}
                   onValueChange={(value) => {
                     if (onDateFilterTypeChange) {
-                      onDateFilterTypeChange(value as "issue" | "maturity");
+                      onDateFilterTypeChange(value as DateFilterType);
                     }
                   }}
                   className="w-full"

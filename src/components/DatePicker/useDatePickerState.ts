@@ -2,9 +2,10 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { type CalendarSelectHandler } from "@/components/DatePicker/calendar";
 import { addDays, type DateRange, dateMatchModifiers, differenceInCalendarDays, isSameDay, type Matcher } from "@/utils/dates";
 import { cloneRange, isSameRange } from "./datePickerUtils";
+import type { DatePickerMode, RangeFocus } from "./types";
 
 type UseDatePickerStateOptions = {
-  mode: "single" | "range";
+  mode: DatePickerMode;
   value?: DateRange;
   disabled?: Matcher | Matcher[];
   isAutoSelectDisabled: boolean;
@@ -39,7 +40,7 @@ export function useDatePickerState({
 
   const [current, setCurrent] = useState(getInitialDate());
   const [draft, setDraft] = useState(getInitialDate());
-  const [rangeFocus, setRangeFocus] = useState<"from" | "to">("from");
+  const [rangeFocus, setRangeFocus] = useState<RangeFocus>("from");
   const [selectedRange, setSelectedRange] = useState<number>();
   const previousValueRef = React.useRef(value);
 

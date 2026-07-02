@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { formatYearNumeric } from "@/utils/dates";
 
 import { buttonVariants } from "../ui/button";
+import type { SortOrder, YearPosition } from "./types";
 
 interface YearPickerProps {
   value: Date;
@@ -15,8 +16,8 @@ interface YearPickerProps {
   onCaptionLabelClicked: () => void;
   numberYears?: number;
   shouldDisableFutureNavigation?: boolean;
-  currentYearPosition?: "start" | "center" | "end";
-  order?: "asc" | "desc";
+  currentYearPosition?: YearPosition;
+  order?: SortOrder;
 }
 
 const YearPicker = ({

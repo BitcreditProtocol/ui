@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import type { Currency, DecimalFormat, Theme } from "./PreferencesContext";
+import type { Currency, DecimalFormat, ResolvedTheme, Theme } from "./PreferencesContext";
 import { getStoredPreferences, PreferencesContext, savePreferences } from "./PreferencesContext";
 
 const detectDefaultDecimalFormat = (): DecimalFormat => {
@@ -24,7 +24,7 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
   const [theme, setThemeState] = useState<Theme>(stored.theme ?? "system");
   const [currency, setCurrencyState] = useState<Currency>(stored.currency ?? "sat");
   const [decimalFormat, setDecimalFormatState] = useState<DecimalFormat>(stored.decimalFormat ?? detectDefaultDecimalFormat());
-  const [currentTheme, setCurrentTheme] = useState<"light" | "dark">("light");
+  const [currentTheme, setCurrentTheme] = useState<ResolvedTheme>("light");
 
   const detectSystemTheme = () => {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
