@@ -9,7 +9,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 
 export default defineConfig([
-  globalIgnores(["coverage", "dist", "storybook-static"]),
+  globalIgnores([".claude", "coverage", "dist", "storybook-static"]),
   {
     files: ["**/*.{ts,tsx}"],
     extends: [
@@ -21,6 +21,9 @@ export default defineConfig([
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
+      parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
+      },
     },
   },
   ...storybook.configs["flat/recommended"],
