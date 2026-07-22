@@ -1,4 +1,4 @@
-import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import React, { useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
@@ -15,7 +15,7 @@ import {
   type Matcher,
   startOfMonth,
 } from "@/utils/dates";
-import type { DatePickerMode, RangeFocus } from "./types";
+import type { DatePickerMode } from "./types";
 
 export type CalendarSelectHandler = (
   range: DateRange | undefined,
@@ -34,7 +34,6 @@ export function Calendar({
   onMonthChange,
   disabled,
   isFutureNavigationDisabled = false,
-  rangeFocus = "from",
   modifiers,
   modifiersClassNames,
   ISOWeek = true,
@@ -48,7 +47,6 @@ export function Calendar({
   onMonthChange?: (month: Date) => void;
   disabled?: Matcher | Matcher[];
   isFutureNavigationDisabled?: boolean;
-  rangeFocus?: RangeFocus;
   modifiers?: Record<string, (date: Date) => boolean>;
   modifiersClassNames?: Record<string, string>;
   ISOWeek?: boolean;
@@ -69,6 +67,8 @@ export function Calendar({
   const monthDays = useMemo(() => getMonthDays(visibleMonth, ISOWeek), [ISOWeek, visibleMonth]);
   const currentMonthStart = startOfMonth(new Date());
   const canGoForward = !isFutureNavigationDisabled || visibleMonth < currentMonthStart;
+  const nextYearMonth = new Date(visibleMonth.getFullYear() + 1, visibleMonth.getMonth(), 1);
+  const canGoForwardYear = !isFutureNavigationDisabled || nextYearMonth <= currentMonthStart;
 
   const handleMonthShift = (offset: number) => {
     if (offset > 0 && !canGoForward) {
@@ -77,6 +77,18 @@ export function Calendar({
 
     setVisibleMonth((current) => {
       const next = new Date(current.getFullYear(), current.getMonth() + offset, 1);
+      onMonthChange?.(next);
+      return next;
+    });
+  };
+
+  const handleYearShift = (offset: number) => {
+    if (offset > 0 && !canGoForwardYear) {
+      return;
+    }
+
+    setVisibleMonth((current) => {
+      const next = new Date(current.getFullYear() + offset, current.getMonth(), 1);
       onMonthChange?.(next);
       return next;
     });
@@ -106,36 +118,57 @@ export function Calendar({
       onTouchStart={handleTouchStart}
       onTouchEnd={handleTouchEnd}
     >
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between text-text-300">
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className="bg-transparent p-0"
+            onClick={() => handleYearShift(-1)}
+            aria-label={uiText({ key: "ui.calendar.previousYear" })}
+          >
+            <AppIcon icon={ChevronsLeft} size="md" />
+          </button>
+          <button
+            type="button"
+            className="bg-transparent p-0"
+            onClick={() => handleMonthShift(-1)}
+            aria-label={uiText({ key: "ui.calendar.previousMonth" })}
+          >
+            <AppIcon icon={ChevronLeft} size="md" />
+          </button>
+        </div>
         <button
           type="button"
-          className="bg-transparent p-0"
-          onClick={() => handleMonthShift(-1)}
-          aria-label={uiText({ key: "ui.calendar.previousMonth" })}
-        >
-          <AppIcon icon={ChevronLeft} />
-        </button>
-        <button
-          type="button"
-          className="flex items-center gap-2 bg-transparent p-0 text-sm font-medium"
+          className="flex items-center gap-2 bg-transparent p-0 text-base leading-6 font-medium text-center"
           onClick={onCaptionLabelClicked}
           aria-label={uiText({ key: "ui.calendar.openMonthYearPicker" })}
         >
           <span>{formatMonthYear(visibleMonth, locale)}</span>
-          <AppIcon icon={ChevronDown} strokeWidth={3} size={15} />
+          <AppIcon icon={ChevronDown} strokeWidth={3} size="md" />
         </button>
-        <button
-          type="button"
-          className={cn("bg-transparent p-0", !canGoForward && "pointer-events-none opacity-30")}
-          onClick={() => handleMonthShift(1)}
-          aria-label={uiText({ key: "ui.calendar.nextMonth" })}
-          disabled={!canGoForward}
-        >
-          <AppIcon icon={ChevronRight} />
-        </button>
+        <div className="flex items-center gap-1">
+          <button
+            type="button"
+            className={cn("bg-transparent p-0", !canGoForward && "pointer-events-none opacity-30")}
+            onClick={() => handleMonthShift(1)}
+            aria-label={uiText({ key: "ui.calendar.nextMonth" })}
+            disabled={!canGoForward}
+          >
+            <AppIcon icon={ChevronRight} size="md" />
+          </button>
+          <button
+            type="button"
+            className={cn("bg-transparent p-0", !canGoForwardYear && "pointer-events-none opacity-30")}
+            onClick={() => handleYearShift(1)}
+            aria-label={uiText({ key: "ui.calendar.nextYear" })}
+            disabled={!canGoForwardYear}
+          >
+            <AppIcon icon={ChevronsRight} size="md" />
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-7 gap-1 text-center text-xs text-text-200">
+      <div className="grid grid-cols-7 gap-1 text-center text-sm leading-5 font-medium text-text-200">
         {weekdayLabels.map((label) => (
           <div key={label} className="py-1">
             {label}
@@ -144,43 +177,59 @@ export function Calendar({
       </div>
 
       <div className="grid grid-cols-7 gap-1">
-        {monthDays.map((day) => {
+        {monthDays.map((day, index) => {
           const isOutsideMonth = day.getMonth() !== visibleMonth.getMonth();
           const isDisabled = dateMatchModifiers(day, disabled);
           const isToday = isSameDay(day, new Date());
           const isSelectedStart = !!selected.from && isSameDay(day, selected.from);
           const isSelectedEnd = !!selected.to && isSameDay(day, selected.to);
           const isSelectedSingle = mode === "single" && !!selected.from && isSameDay(day, selected.from);
-          const isRangeMiddle = !!selected.from && !!selected.to && day > selected.from && day < selected.to;
+          const isRangeEndpoint = mode === "range" && (isSelectedStart || isSelectedEnd);
+          const hasRange = mode === "range" && !!selected.from && !!selected.to;
+          const isRangeMiddle = mode === "range" && !!selected.from && !!selected.to && day > selected.from && day < selected.to;
           const isSelected = isSelectedSingle || isSelectedStart || isSelectedEnd || isRangeMiddle;
+          const isCircleSelected = isSelectedSingle || isSelectedStart || isSelectedEnd;
+          const columnIndex = index % 7;
+          const showRangeBackground = hasRange && (isRangeEndpoint || isRangeMiddle);
           const customClassNames = Object.entries(modifiersClassNames ?? {})
             .filter(([modifierName]) => modifiers?.[modifierName]?.(day))
             .map(([, modifierClassName]) => modifierClassName)
             .join(" ");
 
           return (
-            <button
-              key={day.toISOString()}
-              type="button"
-              disabled={isDisabled}
-              onClick={(event) => {
-                setVisibleMonth(startOfMonth(day));
-                onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
-              }}
-              className={cn(
-                "w-full h-10 rounded-xl border text-sm bg-elevation-200",
-                "disabled:pointer-events-none disabled:opacity-40",
-                isOutsideMonth ? "text-text-200/70" : "text-text-300",
-                isToday && "border-divider-100 bg-elevation-200",
-                isRangeMiddle && "rounded-lg border-transparent bg-brand-100/40",
-                (isSelectedSingle || isSelectedStart || isSelectedEnd) && "border-divider-100 bg-elevation-200",
-                rangeFocus === "from" && isSelectedStart && "ring-2 ring-brand-200",
-                rangeFocus === "to" && isSelectedEnd && "ring-2 ring-brand-200",
-                customClassNames
+            <div key={day.toISOString()} className="relative h-10 flex items-center justify-center">
+              {showRangeBackground && (
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    "absolute inset-y-0 bg-elevation-200",
+                    isSelectedStart ? "left-1/2" : columnIndex === 0 ? "left-0" : "-left-0.5",
+                    isSelectedEnd ? "right-1/2" : columnIndex === 6 ? "right-0" : "-right-0.5",
+                    (isSelectedStart || columnIndex === 0) && "rounded-l-full",
+                    (isSelectedEnd || columnIndex === 6) && "rounded-r-full"
+                  )}
+                />
               )}
-            >
-              {day.getDate()}
-            </button>
+              <button
+                type="button"
+                disabled={isDisabled}
+                onClick={(event) => {
+                  setVisibleMonth(startOfMonth(day));
+                  onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
+                }}
+                className={cn(
+                  "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full pt-2.5 pr-2 pb-2.5 pl-2 text-sm leading-5 font-normal transition-colors",
+                  "disabled:pointer-events-none disabled:opacity-40",
+                  isOutsideMonth ? "text-text-200/70" : "text-text-300",
+                  !isCircleSelected && "hover:bg-elevation-200",
+                  isToday && !isCircleSelected && "border border-divider-300",
+                  isCircleSelected && "bg-text-300 text-text-active hover:bg-base-hover",
+                  customClassNames
+                )}
+              >
+                {day.getDate()}
+              </button>
+            </div>
           );
         })}
       </div>

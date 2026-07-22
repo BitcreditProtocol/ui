@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext";
+import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
 
-import { Calendar } from "./calendar";
+import { Calendar } from "../calendar.tsx";
 
 const locale = "en-US";
 
@@ -58,6 +58,29 @@ describe("Calendar", () => {
     const { onCaptionLabelClicked } = renderCalendar();
     fireEvent.click(screen.getByRole("button", { name: "Open month and year picker" }));
     expect(onCaptionLabelClicked).toHaveBeenCalledOnce();
+  });
+
+  it("navigates to the previous year via double chevron button", () => {
+    renderCalendar({ selected: { from: new Date(2026, 3, 1) } });
+    fireEvent.click(screen.getByRole("button", { name: "Previous year" }));
+    expect(screen.getByText("April 2025")).toBeInTheDocument();
+  });
+
+  it("navigates to the next year via double chevron button", () => {
+    renderCalendar({ selected: { from: new Date(2026, 3, 1) } });
+    fireEvent.click(screen.getByRole("button", { name: "Next year" }));
+    expect(screen.getByText("April 2027")).toBeInTheDocument();
+  });
+
+  it("does not navigate forward a year when isFutureNavigationDisabled and it would land in the future", () => {
+    const now = new Date();
+    renderCalendar({
+      selected: { from: new Date(now.getFullYear(), now.getMonth(), 1) },
+      isFutureNavigationDisabled: true,
+    });
+    fireEvent.click(screen.getByRole("button", { name: "Next year" }));
+    const expected = now.toLocaleString("en-US", { month: "long", year: "numeric" });
+    expect(screen.getByText(expected)).toBeInTheDocument();
   });
 
   it("calls onSelect with the clicked day", () => {

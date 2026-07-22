@@ -1,4 +1,4 @@
-import { ArrowRight, CalendarIcon } from "lucide-react";
+import { ArrowRight, CalendarIcon, ChevronLeft, X } from "lucide-react";
 import React, { useCallback, useRef } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
@@ -9,8 +9,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 import { addDays, type DateRange, type Matcher } from "@/utils/dates";
-import { applyTimeToDate, cloneRange, formatDisplayDate, formatDisplayDateTime } from "./datePickerUtils";
-import { DateRangeDropdown } from "./dateRangeDropdown";
+import { applyTimeToDate, cloneDate, cloneRange, formatDisplayDate, formatDisplayDateTime } from "./datePickerUtils";
 import { MonthPicker } from "./monthPicker";
 import { TimeInput } from "./TimeInput";
 import type { DateFilterType, DatePickerMode, SortOrder, TimeFormat, YearPosition } from "./types";
@@ -88,9 +87,7 @@ export function DatePicker({
     setDraft,
     rangeFocus,
     setRangeFocus,
-    selectedRange,
     setSelectedRange,
-    setHasBeenCleared,
     allowRangeSelection,
     baseDate,
     calendarMonth,
@@ -121,31 +118,19 @@ export function DatePicker({
     }
   }, [showCalendar, current, setDraft, openCalendar, closePicker, setShowYearPicker, setShowMonthPicker]);
 
-  const clearSelection = () => {
-    const clearedRange: DateRange = {
-      from: draft.from || current.from,
-      to: undefined,
-    };
-    setSelectedRange(undefined);
-    setDraft(clearedRange);
-    setCurrent(clearedRange);
-    onChange(clearedRange);
-    setHasBeenCleared(true);
-    setRangeFocus("to");
-    setShowMonthPicker(false);
-    setShowYearPicker(false);
-  };
-
   const handleCancel = useCallback(() => {
     closePicker();
   }, [closePicker]);
 
   const handleConfirm = useCallback(() => {
     const nextRange = cloneRange(draft);
+    if (mode === "range" && nextRange.from && !nextRange.to) {
+      nextRange.to = cloneDate(nextRange.from);
+    }
     setCurrent(nextRange);
     onChange(nextRange);
     closePicker();
-  }, [draft, onChange, closePicker, setCurrent]);
+  }, [draft, mode, onChange, closePicker, setCurrent]);
 
   const runFooterTouchAction = useCallback((action: () => void) => {
     lastFooterTouchAtRef.current = Date.now();
@@ -226,7 +211,51 @@ export function DatePicker({
         )}
       >
         <div className="flex flex-col gap-2 min-h-full">
-          <div className="flex flex-col gap-2">
+          <div
+            className={cn(
+              "grid items-center gap-2",
+              !allowRangeSelection ? "grid-cols-[40px_1fr]" : shouldDisplayIncrementButtons ? "grid-cols-[40px_1fr_auto]" : "grid-cols-[40px_1fr_8px]"
+            )}
+          >
+            <button
+              type="button"
+              onClick={handleCancel}
+              aria-label={uiText({
+                key: allowRangeSelection ? "ui.datePicker.actions.back" : "ui.datePicker.actions.close",
+                messages,
+                t,
+              })}
+              className="flex h-10 w-10 items-center justify-center rounded-full border border-divider-100 bg-elevation-200 text-text-300"
+            >
+              <AppIcon icon={allowRangeSelection ? ChevronLeft : X} className="text-text-300" size="md" />
+            </button>
+            {allowRangeSelection && (
+              <span className="text-base leading-6 font-medium text-center text-text-300">
+                {uiText({ key: "ui.datePicker.title.range", messages, t })}
+              </span>
+            )}
+            {allowRangeSelection &&
+              (shouldDisplayIncrementButtons ? (
+                <div className="flex items-center gap-0.5">
+                  {[30, 60, 90, 180, 365].map((days) => (
+                    <button
+                      key={days}
+                      type="button"
+                      className="bg-elevation-200/70 p-1.5 rounded-sm text-text-300 text-[10px] font-medium"
+                      onClick={() => {
+                        setSelectedRange(days);
+                      }}
+                    >
+                      +{days}
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <span aria-hidden="true" className="w-2 h-2" />
+              ))}
+          </div>
+
+          <div className="mt-4 flex flex-col gap-2">
             {allowRangeSelection ? (
               <>
                 <div className="text-xs text-text-200">
@@ -252,21 +281,7 @@ export function DatePicker({
                   </TabsList>
                 </Tabs>
 
-                <div className="text-xs text-text-200">
-                  {uiText({ key: "ui.datePicker.range.selectLabel", legacyKey: "datePicker.range.selectRange", messages, t })}
-                </div>
-
-                <DateRangeDropdown
-                  value={selectedRange}
-                  onRangeChange={setSelectedRange}
-                  messages={messages}
-                  t={t}
-                  onClear={() => {
-                    clearSelection();
-                  }}
-                />
-
-                <div className="grid grid-cols-9 text-sm">
+                <div className="mt-4 grid grid-cols-9 text-sm leading-5 font-medium">
                   <div className="col-span-4">
                     <button
                       type="button"
@@ -274,7 +289,7 @@ export function DatePicker({
                         setRangeFocus("from");
                       }}
                       className={cn(
-                        "h-[46px] py-3 px-4 w-full bg-elevation-200 border rounded-lg truncate text-left",
+                        "flex h-[42px] w-full items-center justify-center gap-2 truncate rounded-xl border bg-elevation-200 px-4",
                         rangeFocus === "from" ? "border-brand-200" : "border-gray-200"
                       )}
                     >
@@ -288,7 +303,7 @@ export function DatePicker({
                   </div>
 
                   <div className="col-auto flex justify-center items-center">
-                    <AppIcon icon={ArrowRight} className="text-text-200" size={24} />
+                    <AppIcon icon={ArrowRight} className="text-text-200" size="md" />
                   </div>
 
                   <div className="col-span-4">
@@ -298,7 +313,7 @@ export function DatePicker({
                         setRangeFocus("to");
                       }}
                       className={cn(
-                        "h-[46px] py-3 pl-4 pr-2 w-full bg-elevation-200 border rounded-lg truncate text-left",
+                        "flex h-[42px] w-full items-center justify-center gap-2 truncate rounded-xl border bg-elevation-200 px-4",
                         rangeFocus === "to" ? "border-brand-200" : "border-gray-200"
                       )}
                     >
@@ -345,7 +360,7 @@ export function DatePicker({
             )}
           </div>
 
-          <div className={cn("mb-4 flex flex-col sm:flex-row sm:gap-3 sm:items-center", withTime && "gap-3")}>
+          <div className={cn("mt-4 mb-4 flex flex-col sm:flex-row sm:gap-3 sm:items-center", withTime && "gap-3")}>
             <div className={cn("sm:flex-1", !withTime && "w-full")}>
               {showYearPicker && (
                 <YearPicker
@@ -398,7 +413,6 @@ export function DatePicker({
                   isFutureNavigationDisabled={isFutureNavigationDisabled}
                   modifiers={calendarModifiers}
                   modifiersClassNames={calendarModifiersClassNames}
-                  rangeFocus={rangeFocus}
                 />
               )}
             </div>
@@ -479,7 +493,7 @@ export function DatePicker({
               className="w-full"
               size="sm"
               type="button"
-              disabled={!canSelect || draft.from === undefined || (mode === "range" && draft.to === undefined)}
+              disabled={!canSelect}
               onPointerDown={(e) => {
                 handleFooterPointerDown(e, handleConfirm);
               }}

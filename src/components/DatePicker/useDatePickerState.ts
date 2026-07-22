@@ -165,19 +165,18 @@ export function useDatePickerState({
       return false;
     }
 
-    if (mode === "single") {
-      return disabled ? !dateMatchModifiers(draft.from, disabled) : true;
-    }
-
-    if (!draft.to) {
+    const isDisabledFrom = disabled ? dateMatchModifiers(draft.from, disabled) : false;
+    if (isDisabledFrom) {
       return false;
     }
 
-    const isDisabledFrom = disabled ? dateMatchModifiers(draft.from, disabled) : false;
-    const isDisabledTo = disabled ? dateMatchModifiers(draft.to, disabled) : false;
+    if (!draft.to) {
+      return true;
+    }
 
-    return !isDisabledFrom && !isDisabledTo;
-  }, [draft, disabled, mode]);
+    const isDisabledTo = disabled ? dateMatchModifiers(draft.to, disabled) : false;
+    return !isDisabledTo;
+  }, [draft, disabled]);
 
   return {
     current,

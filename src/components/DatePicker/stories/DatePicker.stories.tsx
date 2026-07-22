@@ -2,27 +2,17 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext";
-import type { DateRange } from "@/utils/dates";
+import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
+import type { DateRange } from "@/utils/dates.ts";
 
-import { DatePicker } from "./datePicker";
+import { DatePicker } from "../datePicker.tsx";
 
 const locale = "en-US";
 
 const messages = {
-  "displayRange.days": "{value} days",
-  "displayRange.sixMonths": "6 Months",
-  "displayRange.oneYear": "1 Year",
-  "displayRange.selectRange": "Select range",
-  "dropdown.option.30days": "30 Days",
-  "dropdown.option.60days": "60 Days",
-  "dropdown.option.90days": "90 Days",
-  "dropdown.option.6months": "6 Months",
-  "dropdown.option.1year": "1 Year",
   "bills.list.filter.by": "Filter by",
   "bills.list.filter.date.issue": "Issue date",
   "bills.list.filter.date.maturity": "Maturity date",
-  "datePicker.range.selectRange": "Select date range",
   "datePicker.range.start": "Start",
   "datePicker.range.end": "End",
   "datePicker.single.selectedDate": "Selected date",
@@ -98,6 +88,7 @@ function RangeWithPresetsStory() {
       onDateFilterTypeChange={setDateFilterType}
       isFutureNavigationDisabled
       currentYearPosition="center"
+      shouldDisplayIncrementButtons
     />
   );
 }
