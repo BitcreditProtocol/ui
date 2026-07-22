@@ -214,7 +214,11 @@ export function DatePicker({
           <div
             className={cn(
               "grid items-center gap-2",
-              !allowRangeSelection ? "grid-cols-[40px_1fr]" : shouldDisplayIncrementButtons ? "grid-cols-[40px_1fr_auto]" : "grid-cols-[40px_1fr_8px]"
+              !allowRangeSelection
+                ? "grid-cols-[40px_1fr]"
+                : shouldDisplayIncrementButtons
+                  ? "grid-cols-[40px_1fr_auto]"
+                  : "grid-cols-[40px_1fr_8px]"
             )}
           >
             <button
