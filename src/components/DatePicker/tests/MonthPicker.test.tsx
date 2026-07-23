@@ -1,10 +1,11 @@
-import { cleanup, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
 
 import { MonthPicker } from "../monthPicker.tsx";
+
+const testNow = new Date(2024, 0, 20);
 
 function renderComponent(props?: Partial<React.ComponentProps<typeof MonthPicker>>) {
   const onChange = vi.fn();
@@ -26,24 +27,28 @@ function renderComponent(props?: Partial<React.ComponentProps<typeof MonthPicker
 }
 
 describe("MonthPicker", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(testNow);
+  });
+
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it("changes the selected month and exposes the caption action", async () => {
-    const user = userEvent.setup();
+  it("changes the selected month and exposes the caption action", () => {
     const { onChange, onCaptionLabelClicked } = renderComponent();
 
-    await user.click(screen.getByRole("button", { name: /June 2024/i }));
+    fireEvent.click(screen.getByRole("button", { name: /June 2024/i }));
     expect(onCaptionLabelClicked).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getByRole("button", { name: "January" }));
+    fireEvent.click(screen.getByRole("button", { name: "January" }));
     expect(onChange).toHaveBeenCalledWith(new Date(2024, 0, 1));
   });
 
-  it("navigates years and blocks future months when requested", async () => {
-    const user = userEvent.setup();
+  it("navigates years and blocks future months when requested", () => {
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonthName = new Intl.DateTimeFormat("en-US", {
@@ -66,8 +71,8 @@ describe("MonthPicker", () => {
       expect(screen.getByRole("button", { name: nextMonthName })).toBeDisabled();
     }
 
-    await user.click(screen.getByRole("button", { name: "Previous year" }));
-    await user.click(screen.getByRole("button", { name: "January" }));
+    fireEvent.click(screen.getByRole("button", { name: "Previous year" }));
+    fireEvent.click(screen.getByRole("button", { name: "January" }));
 
     expect(onChange).toHaveBeenCalledWith(new Date(currentYear - 1, 0, 1));
   });

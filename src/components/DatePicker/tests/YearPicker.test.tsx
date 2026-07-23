@@ -1,10 +1,11 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
 
 import { YearPicker } from "../yearPicker.tsx";
+
+const testNow = new Date(2024, 0, 20);
 
 function renderComponent(props?: Partial<React.ComponentProps<typeof YearPicker>>) {
   const onChange = vi.fn();
@@ -32,31 +33,35 @@ function renderComponent(props?: Partial<React.ComponentProps<typeof YearPicker>
 }
 
 describe("YearPicker", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(testNow);
+  });
+
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
-  it("changes the selected year and exposes the caption action", async () => {
-    const user = userEvent.setup();
+  it("changes the selected year and exposes the caption action", () => {
     const { onChange, onCaptionLabelClicked } = renderComponent();
 
-    await user.click(screen.getAllByRole("button", { name: "2024" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "2024" })[0]);
     expect(onCaptionLabelClicked).toHaveBeenCalledTimes(1);
 
-    await user.click(screen.getAllByRole("button", { name: "2026" })[0]);
+    fireEvent.click(screen.getAllByRole("button", { name: "2026" })[0]);
     expect(onChange).toHaveBeenCalledWith(new Date(2026, 0, 1));
   });
 
-  it("supports paging with buttons and touch gestures", async () => {
-    const user = userEvent.setup();
+  it("supports paging with buttons and touch gestures", () => {
     const { onChange } = renderComponent({
       value: new Date(2020, 0, 1),
       order: "desc",
     });
 
-    await user.click(screen.getByRole("button", { name: "Next years" }));
-    await user.click(screen.getByRole("button", { name: "2025" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next years" }));
+    fireEvent.click(screen.getByRole("button", { name: "2025" }));
     expect(onChange).toHaveBeenCalledWith(new Date(2025, 0, 1));
 
     const root = screen.getByRole("button", { name: "Previous years" }).closest("div[class*='flex flex-col']");
