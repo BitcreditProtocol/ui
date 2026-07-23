@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
+import { LanguageContext } from "@/components/context/language/LanguageContext";
 
-import { YearPicker } from "../yearPicker.tsx";
+import { YearPicker } from "../yearPicker";
 
 const locale = "en-US";
 

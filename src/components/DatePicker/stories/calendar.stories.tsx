@@ -1,10 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
-import type { DateRange } from "@/utils/dates.ts";
+import { LanguageContext } from "@/components/context/language/LanguageContext";
+import type { DateRange } from "@/utils/dates";
 
-import { Calendar } from "../calendar.tsx";
+import { Calendar } from "../calendar";
 
 const locale = "en-US";
 

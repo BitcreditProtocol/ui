@@ -1,7 +1,7 @@
 import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { CopyToClipboardButton } from "@/components/CopyToClipboard/CopyToClipboardButton.tsx";
+import { CopyToClipboardButton } from "@/components/CopyToClipboard/CopyToClipboardButton";
 
 vi.mock("@/hooks/use-toast.ts", () => ({
   toast: vi.fn(),

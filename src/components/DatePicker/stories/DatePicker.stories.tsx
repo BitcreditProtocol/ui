@@ -2,10 +2,10 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import * as React from "react";
 import { IntlProvider } from "react-intl";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
-import type { DateRange } from "@/utils/dates.ts";
+import { LanguageContext } from "@/components/context/language/LanguageContext";
+import type { DateRange } from "@/utils/dates";
 
-import { DatePicker } from "../datePicker.tsx";
+import { DatePicker } from "../datePicker";
 
 const locale = "en-US";
 

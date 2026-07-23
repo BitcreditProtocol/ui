@@ -1,9 +1,9 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
+import { LanguageContext } from "@/components/context/language/LanguageContext";
 
-import { Calendar } from "../calendar.tsx";
+import { Calendar } from "../calendar";
 
 const locale = "en-US";
 
