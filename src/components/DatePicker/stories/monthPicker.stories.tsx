@@ -3,13 +3,13 @@ import * as React from "react";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext";
 
-import { YearPicker } from "./yearPicker";
+import { MonthPicker } from "../monthPicker";
 
 const locale = "en-US";
 
 const meta = {
-  title: "Components/DatePicker/YearPicker",
-  component: YearPicker,
+  title: "Components/DatePicker/MonthPicker",
+  component: MonthPicker,
   decorators: [
     (Story) => (
       <LanguageContext.Provider
@@ -25,16 +25,16 @@ const meta = {
       </LanguageContext.Provider>
     ),
   ],
-} satisfies Meta<typeof YearPicker>;
+} satisfies Meta<typeof MonthPicker>;
 
 export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-function YearPickerStory() {
+function MonthPickerStory() {
   const [value, setValue] = React.useState(new Date(2026, 3, 16));
 
-  return <YearPicker value={value} onChange={setValue} onCaptionLabelClicked={() => {}} currentYearPosition="center" />;
+  return <MonthPicker value={value} onChange={setValue} onCaptionLabelClicked={() => {}} shouldDisableFutureNavigation />;
 }
 
 export const Default: Story = {
@@ -43,5 +43,5 @@ export const Default: Story = {
     onChange: () => {},
     onCaptionLabelClicked: () => {},
   },
-  render: () => <YearPickerStory />,
+  render: () => <MonthPickerStory />,
 };

@@ -4,7 +4,7 @@ import * as React from "react";
 import { LanguageContext } from "@/components/context/language/LanguageContext";
 import type { DateRange } from "@/utils/dates";
 
-import { Calendar } from "./calendar";
+import { Calendar } from "../calendar";
 
 const locale = "en-US";
 
@@ -61,7 +61,6 @@ function RangeCalendarStory() {
       mode="range"
       selected={selected}
       month={selected.from}
-      rangeFocus="to"
       onCaptionLabelClicked={() => {}}
       onSelect={(_range, selectedDay) => {
         setSelected((current) => {
