@@ -1,11 +1,12 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext";
 
 import { Calendar } from "../calendar";
 
 const locale = "en-US";
+const testNow = new Date(2024, 0, 20);
 
 function renderCalendar(props: Partial<React.ComponentProps<typeof Calendar>> = {}) {
   const onSelect = vi.fn();
@@ -32,8 +33,14 @@ function swipe(element: HTMLElement, fromX: number, toX: number) {
 }
 
 describe("Calendar", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(testNow);
+  });
+
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 

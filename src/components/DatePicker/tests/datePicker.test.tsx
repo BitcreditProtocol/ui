@@ -1,5 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { IntlProvider } from "react-intl";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
 import type { DateRange } from "@/utils/dates.ts";
@@ -7,13 +8,16 @@ import type { DateRange } from "@/utils/dates.ts";
 import { DatePicker } from "../datePicker.tsx";
 
 const locale = "en-US";
+const testNow = new Date(2024, 0, 20);
 
 function renderDatePicker(props: Partial<React.ComponentProps<typeof DatePicker>> = {}) {
   const onChange = vi.fn();
   const utils = render(
-    <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
-      <DatePicker mode="range" onChange={onChange} {...props} />
-    </LanguageContext.Provider>
+    <IntlProvider locale="en" messages={{}}>
+      <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
+        <DatePicker mode="range" onChange={onChange} {...props} />
+      </LanguageContext.Provider>
+    </IntlProvider>
   );
 
   const openSheet = () => {
@@ -25,8 +29,14 @@ function renderDatePicker(props: Partial<React.ComponentProps<typeof DatePicker>
 }
 
 describe("DatePicker", () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(testNow);
+  });
+
   afterEach(() => {
     cleanup();
+    vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
@@ -35,6 +45,57 @@ describe("DatePicker", () => {
     openSheet();
     expect(screen.getByText("Custom range")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+  });
+
+  it("supports a custom trigger component", () => {
+    renderDatePicker({
+      customComponent: <div role="button">Open custom calendar</div>,
+      mode: "single",
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "Open custom calendar" }));
+
+    expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeInTheDocument();
+  });
+
+  it("renders the provided label as the trigger", () => {
+    renderDatePicker({ label: "Pick a date", mode: "single" });
+
+    expect(screen.getByRole("button", { name: /Pick a date/i })).toBeInTheDocument();
+  });
+
+  it("enables confirm once a start date is set, even without an end date", () => {
+    renderDatePicker({
+      mode: "range",
+      value: { from: new Date(2024, 0, 10), to: undefined },
+    });
+
+    fireEvent.click(screen.getAllByRole("button")[0]);
+
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeEnabled();
+  });
+
+  it("syncs from incoming value changes while closed", () => {
+    const onChange = vi.fn();
+
+    const { rerender } = render(
+      <IntlProvider locale="en" messages={{}}>
+        <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
+          <DatePicker mode="single" onChange={onChange} value={{ from: new Date(2024, 0, 1), to: undefined }} />
+        </LanguageContext.Provider>
+      </IntlProvider>
+    );
+
+    rerender(
+      <IntlProvider locale="en" messages={{}}>
+        <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
+          <DatePicker mode="single" onChange={onChange} value={{ from: new Date(2024, 1, 2), to: undefined }} />
+        </LanguageContext.Provider>
+      </IntlProvider>
+    );
+
+    expect(screen.getByRole("button", { name: /02 Feb 2024/i })).toBeInTheDocument();
   });
 
   it("shows no title and a close (X) button in single mode", () => {
