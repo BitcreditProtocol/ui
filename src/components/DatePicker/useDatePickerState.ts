@@ -109,7 +109,6 @@ export function useDatePickerState({
       to: addDays(startDate, selectedRange),
     };
 
-    setCurrent(newRange);
     setDraft(newRange);
   }, [selectedRange]);
 

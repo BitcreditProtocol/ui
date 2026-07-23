@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
-import React, { useMemo, useRef, useState } from "react";
+import React, { useId, useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import {
   type DateRange,
   dateMatchModifiers,
+  formatIsoDateShort,
   formatMonthYear,
   getMonthDays,
   getWeekdayLabels,
@@ -53,6 +54,7 @@ export function Calendar({
 }) {
   const uiText = useUiText();
   const { locale } = useLanguage();
+  const descriptionIdPrefix = useId();
   const [visibleMonth, setVisibleMonth] = useState(() => startOfMonth(month ?? selected.from ?? new Date()));
   const [prevMonth, setPrevMonth] = useState(month);
   if (month !== prevMonth) {
@@ -195,6 +197,7 @@ export function Calendar({
             .filter(([modifierName]) => modifiers?.[modifierName]?.(day))
             .map(([, modifierClassName]) => modifierClassName)
             .join(" ");
+          const descriptionId = `${descriptionIdPrefix}-day-desc-${index}`;
 
           return (
             <div key={day.toISOString()} className="relative h-10 flex items-center justify-center">
@@ -213,6 +216,7 @@ export function Calendar({
               <button
                 type="button"
                 disabled={isDisabled}
+                aria-describedby={descriptionId}
                 onClick={(event) => {
                   setVisibleMonth(startOfMonth(day));
                   onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
@@ -229,6 +233,9 @@ export function Calendar({
               >
                 {day.getDate()}
               </button>
+              <span id={descriptionId} className="sr-only">
+                {formatIsoDateShort(day, locale)}
+              </span>
             </div>
           );
         })}
