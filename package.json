@@ -25,11 +25,12 @@
       "require": "./dist/index.cjs"
     },
     "./style.css": "./dist/style.css",
-    "./tokens.css": "./dist/tokens.css"
+    "./tokens.css": "./dist/tokens.css",
+    "./fonts.css": "./dist/fonts.css"
   },
   "scripts": {
     "dev": "vite",
-    "build": "tsc -b && vite build && tsc -p tsconfig.lib.json && node ./scripts/rewrite-dts-aliases.mjs && node ./scripts/build-tokens-css.mjs",
+    "build": "tsc -b && vite build && tsc -p tsconfig.lib.json && node ./scripts/rewrite-dts-aliases.mjs && node ./scripts/build-tokens-css.mjs && node ./scripts/build-fonts-css.mjs",
     "format": "biome check --write .",
     "check:format": "biome check .",
     "style:check": "npm run check:format",
