@@ -222,7 +222,7 @@ export function Calendar({
                   onSelect(undefined, day, { disabled: isDisabled, selected: isSelected }, event);
                 }}
                 className={cn(
-                  "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full pt-2.5 pr-2 pb-2.5 pl-2 text-sm leading-5 font-normal transition-colors",
+                  "relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-transparent pt-2.5 pr-2 pb-2.5 pl-2 text-sm leading-5 font-normal transition-colors",
                   "disabled:pointer-events-none disabled:opacity-40",
                   isOutsideMonth ? "text-text-200/70" : "text-text-300",
                   !isCircleSelected && "hover:bg-elevation-200",
