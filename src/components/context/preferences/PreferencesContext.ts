@@ -1,5 +1,6 @@
 import { createContext, useContext } from "react";
 
+import type { DateFormatPattern } from "@/constants/dateFormats";
 import type { CurrencyCode } from "@/lib/currency";
 
 export type Theme = "system" | "light" | "dark";
@@ -11,10 +12,12 @@ type PreferencesContext = {
   theme: Theme;
   currency: Currency;
   decimalFormat: DecimalFormat;
+  dateFormat: DateFormatPattern;
   currentTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
   setCurrency: (currency: Currency) => void;
   setDecimalFormat: (decimalFormat: DecimalFormat) => void;
+  setDateFormat: (dateFormat: DateFormatPattern) => void;
 };
 
 export const PreferencesContext = createContext<PreferencesContext | undefined>(undefined);

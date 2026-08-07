@@ -1,3 +1,5 @@
+import type { DateFormatPattern } from "@/constants/dateFormats";
+
 export type DateRange = {
   from?: Date;
   to?: Date;
@@ -48,17 +50,60 @@ export function isSameDay(left?: Date, right?: Date): boolean {
   return left.getFullYear() === right.getFullYear() && left.getMonth() === right.getMonth() && left.getDate() === right.getDate();
 }
 
-export function formatIsoDateShort(date: Date, locale: string): string {
-  const formatter = getFormatter(locale, {
+function getDateParts(date: Date, locale: string) {
+  const shortFormatter = getFormatter(locale, {
     day: "2-digit",
     month: "short",
     year: "numeric",
   });
-  const parts = formatter.formatToParts(date);
+  const longFormatter = getFormatter(locale, {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+  const parts = shortFormatter.formatToParts(date);
+  const longParts = longFormatter.formatToParts(date);
   const day = parts.find((part) => part.type === "day")?.value ?? "";
   const month = parts.find((part) => part.type === "month")?.value ?? "";
+  const longMonth = longParts.find((part) => part.type === "month")?.value ?? "";
   const year = parts.find((part) => part.type === "year")?.value ?? "";
-  return `${day} ${month} ${year}`.trim();
+  return { day, longMonth, month, year };
+}
+
+export function formatIsoDateShort(date: Date, locale: string, pattern?: DateFormatPattern): string {
+  const { day, longMonth, month, year } = getDateParts(date, locale);
+
+  if (!pattern || pattern === "dd MMM yyyy") {
+    return `${day} ${month} ${year}`.trim();
+  }
+
+  const numericMonth = String(date.getMonth() + 1).padStart(2, "0");
+
+  switch (pattern) {
+    case "dd/MM/yyyy":
+      return `${day}/${numericMonth}/${year}`;
+    case "MM/dd/yyyy":
+      return `${numericMonth}/${day}/${year}`;
+    case "dd-MM-yyyy":
+      return `${day}-${numericMonth}-${year}`;
+    case "yyyy-MM-dd":
+      return `${year}-${numericMonth}-${day}`;
+    case "yyyy/MM/dd":
+      return `${year}/${numericMonth}/${day}`;
+    case "dd.MM.yyyy":
+      return `${day}.${numericMonth}.${year}`;
+    case "MMM dd, yyyy":
+      return `${month} ${day}, ${year}`;
+    case "dd MMMM yyyy":
+      return `${day} ${longMonth} ${year}`;
+    case "MMMM dd, yyyy":
+      return `${longMonth} ${day}, ${year}`;
+  }
+}
+
+export function formatIsoDateTimeShort(date: Date, locale: string, pattern?: DateFormatPattern): string {
+  const time = `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${formatIsoDateShort(date, locale, pattern)}, ${time}`;
 }
 
 export function formatMonthLong(date: Date, locale: string): string {

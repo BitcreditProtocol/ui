@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-
+import { isDateFormatPattern } from "@/constants/dateFormatPatterns";
+import { type DateFormatPattern, DEFAULT_DATE_FORMAT } from "@/constants/dateFormats";
 import type { Currency, DecimalFormat, ResolvedTheme, Theme } from "./PreferencesContext";
 import { getStoredPreferences, PreferencesContext, savePreferences } from "./PreferencesContext";
 
@@ -24,6 +25,9 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
   const [theme, setThemeState] = useState<Theme>(stored.theme ?? "system");
   const [currency, setCurrencyState] = useState<Currency>(stored.currency ?? "sat");
   const [decimalFormat, setDecimalFormatState] = useState<DecimalFormat>(stored.decimalFormat ?? detectDefaultDecimalFormat());
+  const [dateFormat, setDateFormatState] = useState<DateFormatPattern>(
+    isDateFormatPattern(stored.dateFormat) ? stored.dateFormat : DEFAULT_DATE_FORMAT
+  );
   const [currentTheme, setCurrentTheme] = useState<ResolvedTheme>("light");
 
   const detectSystemTheme = () => {
@@ -59,8 +63,8 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
     const persistedTheme = localStorage.getItem("theme");
     const themeToPersist = persistedTheme === "light" || persistedTheme === "dark" || persistedTheme === "system" ? persistedTheme : theme;
 
-    savePreferences({ theme: themeToPersist, currency, decimalFormat });
-  }, [theme, currency, decimalFormat]);
+    savePreferences({ theme: themeToPersist, currency, decimalFormat, dateFormat });
+  }, [theme, currency, decimalFormat, dateFormat]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -74,16 +78,22 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
     setDecimalFormatState(format);
   };
 
+  const setDateFormat = (format: DateFormatPattern) => {
+    setDateFormatState(format);
+  };
+
   return (
     <PreferencesContext.Provider
       value={{
         theme,
         currency,
         decimalFormat,
+        dateFormat,
         currentTheme,
         setTheme,
         setCurrency,
         setDecimalFormat,
+        setDateFormat,
       }}
     >
       {children}
