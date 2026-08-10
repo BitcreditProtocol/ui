@@ -4,6 +4,7 @@ import React, { useId, useMemo, useRef, useState } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
 import { AppIcon } from "@/components/ui/app-icon";
+import type { DateFormatPattern } from "@/constants/dateFormats";
 import { cn } from "@/lib/utils";
 import {
   type DateRange,
@@ -38,6 +39,7 @@ export function Calendar({
   modifiers,
   modifiersClassNames,
   ISOWeek = true,
+  dateFormat,
 }: {
   className?: string;
   mode: DatePickerMode;
@@ -51,6 +53,7 @@ export function Calendar({
   modifiers?: Record<string, (date: Date) => boolean>;
   modifiersClassNames?: Record<string, string>;
   ISOWeek?: boolean;
+  dateFormat?: DateFormatPattern;
 }) {
   const uiText = useUiText();
   const { locale } = useLanguage();
@@ -234,7 +237,7 @@ export function Calendar({
                 {day.getDate()}
               </button>
               <span id={descriptionId} className="sr-only">
-                {formatIsoDateShort(day, locale)}
+                {formatIsoDateShort(day, locale, dateFormat)}
               </span>
             </div>
           );

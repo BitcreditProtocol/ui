@@ -3,6 +3,7 @@ import { IntlProvider } from "react-intl";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { LanguageContext } from "@/components/context/language/LanguageContext.ts";
+import { PreferencesContext } from "@/components/context/preferences/PreferencesContext.ts";
 import type { DateRange } from "@/utils/dates.ts";
 
 import { DatePicker } from "../datePicker.tsx";
@@ -16,6 +17,38 @@ function renderDatePicker(props: Partial<React.ComponentProps<typeof DatePicker>
     <IntlProvider locale="en" messages={{}}>
       <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
         <DatePicker mode="range" onChange={onChange} {...props} />
+      </LanguageContext.Provider>
+    </IntlProvider>
+  );
+
+  const openSheet = () => {
+    const trigger = utils.container.querySelector("button.peer") as HTMLButtonElement;
+    fireEvent.click(trigger);
+  };
+
+  return { ...utils, onChange, openSheet };
+}
+
+function renderDatePickerWithPreferences(props: Partial<React.ComponentProps<typeof DatePicker>> = {}) {
+  const onChange = vi.fn();
+  const utils = render(
+    <IntlProvider locale="en" messages={{}}>
+      <LanguageContext.Provider value={{ locale, setLocale: () => {}, availableLocales: () => [locale] }}>
+        <PreferencesContext.Provider
+          value={{
+            theme: "light",
+            currency: "sat",
+            decimalFormat: "comma",
+            dateFormat: "yyyy-MM-dd",
+            currentTheme: "light",
+            setTheme: () => {},
+            setCurrency: () => {},
+            setDecimalFormat: () => {},
+            setDateFormat: () => {},
+          }}
+        >
+          <DatePicker mode="single" onChange={onChange} {...props} />
+        </PreferencesContext.Provider>
       </LanguageContext.Provider>
     </IntlProvider>
   );
@@ -96,6 +129,18 @@ describe("DatePicker", () => {
     );
 
     expect(screen.getByRole("button", { name: /02 Feb 2024/i })).toBeInTheDocument();
+  });
+
+  it("formats the calendar sheet selected date using the selected date format", () => {
+    const { openSheet } = renderDatePickerWithPreferences({
+      mode: "single",
+      value: { from: new Date(2026, 7, 25), to: undefined },
+    });
+
+    openSheet();
+
+    expect(screen.getAllByText("2026-08-25")).toHaveLength(3);
+    expect(screen.queryByText("25 Aug 2026")).not.toBeInTheDocument();
   });
 
   it("shows no title and a close (X) button in single mode", () => {
