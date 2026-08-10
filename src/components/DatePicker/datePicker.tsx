@@ -1,7 +1,8 @@
 import { ArrowRight, CalendarIcon, ChevronLeft, X } from "lucide-react";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useContext, useRef } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { useLanguage } from "@/components/context/language/LanguageContext";
+import { PreferencesContext } from "@/components/context/preferences/PreferencesContext";
 import { Calendar } from "@/components/DatePicker/calendar";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Button } from "@/components/ui/button";
@@ -62,11 +63,13 @@ export function DatePicker({
 }: DatePickerProps) {
   const uiText = useUiText();
   const lang = useLanguage();
+  const preferences = useContext(PreferencesContext);
+  const dateFormat = preferences?.dateFormat;
   const lastFooterTouchAtRef = useRef(0);
 
   const formatDate = withTime
-    ? (date: Date | undefined, locale: string) => formatDisplayDateTime(date, locale, timeFormat)
-    : formatDisplayDate;
+    ? (date: Date | undefined, locale: string) => formatDisplayDateTime(date, locale, timeFormat, dateFormat)
+    : (date: Date | undefined, locale: string) => formatDisplayDate(date, locale, dateFormat);
 
   const {
     showCalendar,
@@ -297,7 +300,7 @@ export function DatePicker({
                         rangeFocus === "from" ? "border-brand-200" : "border-gray-200"
                       )}
                     >
-                      {draft.from && formatDisplayDate(draft.from, lang.locale)}
+                      {draft.from && formatDate(draft.from, lang.locale)}
                       {!draft.from && (
                         <span className="text-text-200">
                           {uiText({ key: "ui.datePicker.range.start", legacyKey: "datePicker.range.start", messages, t })}
@@ -321,7 +324,7 @@ export function DatePicker({
                         rangeFocus === "to" ? "border-brand-200" : "border-gray-200"
                       )}
                     >
-                      {draft.to && formatDisplayDate(draft.to, lang.locale)}
+                      {draft.to && formatDate(draft.to, lang.locale)}
                       {!draft.to && (
                         <span className="text-text-200">
                           {uiText({ key: "ui.datePicker.range.end", legacyKey: "datePicker.range.end", messages, t })}
@@ -417,6 +420,7 @@ export function DatePicker({
                   isFutureNavigationDisabled={isFutureNavigationDisabled}
                   modifiers={calendarModifiers}
                   modifiersClassNames={calendarModifiersClassNames}
+                  dateFormat={dateFormat}
                 />
               )}
             </div>
