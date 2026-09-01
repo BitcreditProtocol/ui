@@ -26,5 +26,17 @@ export default defineConfig([
       },
     },
   },
+  {
+    files: ["src/components/ui/**/*.tsx"],
+    rules: {
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    files: ["src/components/context/i18n/UiI18nProvider.tsx"],
+    rules: {
+      "react-refresh/only-export-components": ["error", { allowExportNames: ["UiI18nContext"] }],
+    },
+  },
   ...storybook.configs["flat/recommended"],
 ]);
