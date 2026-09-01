@@ -1,6 +1,6 @@
 import { createContext, useContext } from "react";
 
-import type { DateFormatPattern } from "@/constants/dateFormats";
+import type { DateFormatPattern, DateFormatSetting } from "@/constants/dateFormats";
 import type { CurrencyCode } from "@/lib/currency";
 
 export type Theme = "system" | "light" | "dark";
@@ -12,12 +12,22 @@ type PreferencesContext = {
   theme: Theme;
   currency: Currency;
   decimalFormat: DecimalFormat;
+  /** Concrete pattern to format with — `"auto"` is already resolved here. */
   dateFormat: DateFormatPattern;
+  /** What the user picked in Settings, which may be `"auto"`. */
+  dateFormatSetting: DateFormatSetting;
   currentTheme: "light" | "dark";
   setTheme: (theme: Theme) => void;
   setCurrency: (currency: Currency) => void;
   setDecimalFormat: (decimalFormat: DecimalFormat) => void;
-  setDateFormat: (dateFormat: DateFormatPattern) => void;
+  setDateFormat: (dateFormat: DateFormatSetting) => void;
+};
+
+export type StoredPreferences = {
+  theme?: Theme;
+  currency?: Currency;
+  decimalFormat?: DecimalFormat;
+  dateFormat?: DateFormatSetting;
 };
 
 export const PreferencesContext = createContext<PreferencesContext | undefined>(undefined);
@@ -36,12 +46,12 @@ const STORAGE_KEY = "user-preferences";
 const THEME_STORAGE_KEY = "theme";
 const isTheme = (value: unknown): value is Theme => value === "system" || value === "light" || value === "dark";
 
-export const getStoredPreferences = (): Partial<PreferencesContext> => {
+export const getStoredPreferences = (): StoredPreferences => {
   const fallbackTheme = localStorage.getItem(THEME_STORAGE_KEY);
 
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? (JSON.parse(raw) as Partial<PreferencesContext>) : {};
+    const parsed = raw ? (JSON.parse(raw) as StoredPreferences) : {};
 
     // Keep localStorage("theme") as the source of truth for startup/theme boot script.
     if (isTheme(fallbackTheme)) {
@@ -57,7 +67,7 @@ export const getStoredPreferences = (): Partial<PreferencesContext> => {
   }
 };
 
-export const savePreferences = (prefs: Partial<PreferencesContext>) => {
+export const savePreferences = (prefs: StoredPreferences) => {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(prefs));
     if (isTheme(prefs.theme)) {

@@ -35,7 +35,7 @@ export const Default: Story = {
       <CurrencySelector value={value} onChange={setValue}>
         <MenuOption
           icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
-          label="Display currency"
+          label="Display currencies"
           defaultValue={value.toUpperCase()}
         />
       </CurrencySelector>
@@ -55,7 +55,7 @@ export const PreselectedExotic: Story = {
       <CurrencySelector value={value} onChange={setValue}>
         <MenuOption
           icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
-          label="Display currency"
+          label="Display currencies"
           defaultValue={value.toUpperCase()}
         />
       </CurrencySelector>
@@ -75,7 +75,7 @@ export const PreselectedBitcoin: Story = {
       <CurrencySelector value={value} onChange={setValue}>
         <MenuOption
           icon={<AppIcon icon={BanknoteIcon} className="text-text-300" size="lg" />}
-          label="Display currency"
+          label="Display currencies"
           defaultValue={value === "sat" ? "sat" : value.toUpperCase()}
         />
       </CurrencySelector>

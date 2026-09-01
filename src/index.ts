@@ -87,3 +87,4 @@ export * from "./lib/ui-i18n";
 export * from "./lib/utils";
 export * from "./utils/dateFormatResolver";
 export * from "./utils/dates";
+export * from "./utils/flagEmoji";

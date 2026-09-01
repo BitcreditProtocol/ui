@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
-import { isDateFormatPattern } from "@/constants/dateFormatPatterns";
-import { type DateFormatPattern, DEFAULT_DATE_FORMAT } from "@/constants/dateFormats";
+import React, { useEffect, useMemo, useState } from "react";
+import { isDateFormatSetting } from "@/constants/dateFormatPatterns";
+import { DATE_FORMAT_AUTO, type DateFormatSetting } from "@/constants/dateFormats";
+import { resolveDateFormatPattern } from "@/utils/dateFormatResolver";
 import type { Currency, DecimalFormat, ResolvedTheme, Theme } from "./PreferencesContext";
 import { getStoredPreferences, PreferencesContext, savePreferences } from "./PreferencesContext";
 
@@ -25,10 +26,15 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
   const [theme, setThemeState] = useState<Theme>(stored.theme ?? "system");
   const [currency, setCurrencyState] = useState<Currency>(stored.currency ?? "sat");
   const [decimalFormat, setDecimalFormatState] = useState<DecimalFormat>(stored.decimalFormat ?? detectDefaultDecimalFormat());
-  const [dateFormat, setDateFormatState] = useState<DateFormatPattern>(
-    isDateFormatPattern(stored.dateFormat) ? stored.dateFormat : DEFAULT_DATE_FORMAT
+  const [dateFormatSetting, setDateFormatState] = useState<DateFormatSetting>(
+    isDateFormatSetting(stored.dateFormat) ? stored.dateFormat : DATE_FORMAT_AUTO
   );
   const [currentTheme, setCurrentTheme] = useState<ResolvedTheme>("light");
+
+  const dateFormat = useMemo(
+    () => (dateFormatSetting === DATE_FORMAT_AUTO ? resolveDateFormatPattern() : dateFormatSetting),
+    [dateFormatSetting]
+  );
 
   const detectSystemTheme = () => {
     return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
@@ -63,8 +69,8 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
     const persistedTheme = localStorage.getItem("theme");
     const themeToPersist = persistedTheme === "light" || persistedTheme === "dark" || persistedTheme === "system" ? persistedTheme : theme;
 
-    savePreferences({ theme: themeToPersist, currency, decimalFormat, dateFormat });
-  }, [theme, currency, decimalFormat, dateFormat]);
+    savePreferences({ theme: themeToPersist, currency, decimalFormat, dateFormat: dateFormatSetting });
+  }, [theme, currency, decimalFormat, dateFormatSetting]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);
@@ -78,7 +84,7 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
     setDecimalFormatState(format);
   };
 
-  const setDateFormat = (format: DateFormatPattern) => {
+  const setDateFormat = (format: DateFormatSetting) => {
     setDateFormatState(format);
   };
 
@@ -89,6 +95,7 @@ export const PreferencesProvider = ({ children }: { children: React.ReactNode })
         currency,
         decimalFormat,
         dateFormat,
+        dateFormatSetting,
         currentTheme,
         setTheme,
         setCurrency,

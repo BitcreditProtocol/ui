@@ -24,6 +24,15 @@ export const DATE_FORMAT_OPTIONS = [
 
 export type DateFormatPattern = (typeof DATE_FORMAT_OPTIONS)[number];
 
+/** Follow the device locale instead of pinning a pattern. */
+export const DATE_FORMAT_AUTO = "auto" as const;
+
+/**
+ * What the user picked in Settings. `"auto"` is resolved to a concrete pattern
+ * at read time, so anything that formats a date works with `DateFormatPattern`.
+ */
+export type DateFormatSetting = typeof DATE_FORMAT_AUTO | DateFormatPattern;
+
 /**
  * Fallback used when no explicit choice, country, or device language can
  * determine a format. Matches the day-first, short-month styling the app has
@@ -31,16 +40,20 @@ export type DateFormatPattern = (typeof DATE_FORMAT_OPTIONS)[number];
  */
 export const DEFAULT_DATE_FORMAT: DateFormatPattern = "dd MMM yyyy";
 
-/** Example rendering of each pattern, shown next to the option in Settings. */
+/**
+ * Example rendering of each pattern, shown next to the option in Settings. The
+ * sample date is the 17th so that day-first and month-first patterns read
+ * differently from one another.
+ */
 export const DATE_FORMAT_EXAMPLES: Record<DateFormatPattern, string> = {
-  "dd/MM/yyyy": "06/08/2026",
-  "MM/dd/yyyy": "08/06/2026",
-  "dd-MM-yyyy": "06-08-2026",
-  "yyyy-MM-dd": "2026-08-06",
-  "yyyy/MM/dd": "2026/08/06",
-  "dd.MM.yyyy": "06.08.2026",
-  "dd MMM yyyy": "06 Aug 2026",
-  "MMM dd, yyyy": "Aug 06, 2026",
-  "dd MMMM yyyy": "06 August 2026",
-  "MMMM dd, yyyy": "August 06, 2026",
+  "dd/MM/yyyy": "17/08/2026",
+  "MM/dd/yyyy": "08/17/2026",
+  "dd-MM-yyyy": "17-08-2026",
+  "yyyy-MM-dd": "2026-08-17",
+  "yyyy/MM/dd": "2026/08/17",
+  "dd.MM.yyyy": "17.08.2026",
+  "dd MMM yyyy": "17 Aug 2026",
+  "MMM dd, yyyy": "Aug 17, 2026",
+  "dd MMMM yyyy": "17 August 2026",
+  "MMMM dd, yyyy": "August 17, 2026",
 };
