@@ -1,8 +1,10 @@
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, XIcon } from "lucide-react";
 import * as React from "react";
 import { Drawer as DrawerPrimitive } from "vaul";
 
+import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
+import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
 
 const Drawer = ({
@@ -56,8 +58,8 @@ DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName;
 
 const DrawerContent = React.forwardRef<
   React.ComponentRef<typeof DrawerPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & { showHandle?: boolean }
->(({ className, children, onOpenAutoFocus, showHandle = false, ...props }, ref) => {
+  React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Content> & { showHandle?: boolean; innerClassName?: string }
+>(({ className, innerClassName, children, onOpenAutoFocus, showHandle = false, ...props }, ref) => {
   const handleOpenAutoFocus = React.useCallback(
     (event: Event) => {
       event.preventDefault();
@@ -88,7 +90,7 @@ const DrawerContent = React.forwardRef<
         {...props}
       >
         {showHandle && <div className="mx-auto mt-4 h-2 w-[70px] rounded-full bg-elevation-300" />}
-        <div className={cn(!showHandle && "pt-6")}>{children}</div>
+        <div className={cn(!showHandle && "pt-6", innerClassName)}>{children}</div>
       </DrawerPrimitive.Content>
     </DrawerPortal>
   );
@@ -211,6 +213,38 @@ const DrawerTitle = React.forwardRef<
 ));
 DrawerTitle.displayName = DrawerPrimitive.Title.displayName;
 
+/**
+ * Header used by the settings drawers: the title sits centred over the drawer
+ * while a circular close button is pinned to the left edge of its padding.
+ */
+const DrawerTopBar = ({
+  title,
+  className,
+  messages,
+  t,
+  ...props
+}: Omit<React.HTMLAttributes<HTMLDivElement>, "title"> & {
+  title: React.ReactNode;
+  messages?: UiMessages;
+  t?: UiT;
+}) => {
+  const uiText = useUiText();
+
+  return (
+    <div className={cn("relative flex h-12 w-full shrink-0 items-center justify-center", className)} {...props}>
+      <DrawerClose
+        aria-label={uiText({ key: "ui.drawer.actions.close", messages, t })}
+        className="absolute left-0 top-1 flex h-10 w-10 items-center justify-center rounded-full border border-divider-50 bg-elevation-200 outline-none focus-visible:ring-2 focus-visible:ring-brand-200"
+      >
+        <AppIcon icon={XIcon} className="text-text-300" size="lg" />
+      </DrawerClose>
+
+      <DrawerTitle className="text-text-300 text-base font-medium leading-6">{title}</DrawerTitle>
+    </div>
+  );
+};
+DrawerTopBar.displayName = "DrawerTopBar";
+
 const DrawerDescription = React.forwardRef<
   React.ComponentRef<typeof DrawerPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof DrawerPrimitive.Description>
@@ -230,5 +264,6 @@ export {
   DrawerPortal,
   DrawerScrollArea,
   DrawerTitle,
+  DrawerTopBar,
   DrawerTrigger,
 };

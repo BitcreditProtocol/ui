@@ -3,19 +3,27 @@ import React, { type PropsWithChildren, useMemo, useRef, useState } from "react"
 
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTopBar, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import type { FiatCurrencyCode } from "@/constants/currencies";
 import { FIAT_CURRENCY_CODES, PINNED_FIAT_CURRENCY_CODES } from "@/constants/currencies";
 import type { UiMessages, UiT, UiTranslationKey } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
+import { getCurrencyFlagEmoji } from "@/utils/flagEmoji";
 
 function BitcoinBadge() {
   return <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F7931A] text-xs font-semibold text-white">B</div>;
 }
 
+/** Flag of the issuing country, falling back to the code for currencies without one. */
 function FiatBadge({ code }: { code: string }) {
+  const flag = getCurrencyFlagEmoji(code);
+
+  if (flag) {
+    return <span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-lg text-[28px] leading-[38px]">{flag}</span>;
+  }
+
   return (
     <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-[10px] font-semibold uppercase text-muted-foreground">
       {code.slice(0, 3).toUpperCase()}
@@ -30,6 +38,8 @@ function Label({ children }: { children: React.ReactNode }) {
 function Description({ children }: { children: React.ReactNode }) {
   return <span className="text-text-200 text-sm font-normal leading-5">{children}</span>;
 }
+
+const CURRENCY_ROW_CLASSES = "flex w-full items-center gap-3 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-brand-200";
 
 type CurrencySelectorProps = PropsWithChildren<{
   value: string;
@@ -111,19 +121,17 @@ function CurrencyOption({
           onSelect(def.code);
         }
       }}
-      className={cn(
-        "flex items-center justify-between gap-4 rounded-md px-2 py-1 outline-none cursor-pointer focus:ring-2 focus:ring-brand-200"
-      )}
+      className={cn(CURRENCY_ROW_CLASSES)}
     >
-      <div className="flex min-w-0 items-center gap-4">
+      <span className="shrink-0" aria-hidden="true">
         {def.icon}
-        <div className="flex flex-col gap-0.5">
-          <Label>{label}</Label>
-          <Description>{def.code === "sat" ? "sat" : def.code.toUpperCase()}</Description>
-        </div>
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <Label>{label}</Label>
+        <Description>{def.code === "sat" ? "sat" : def.code.toUpperCase()}</Description>
       </div>
-      <span className="flex h-5 w-5 items-center justify-center" aria-hidden="true">
-        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300 stroke-[1.75]" size="md" /> : null}
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center" aria-hidden="true">
+        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300" size="lg" /> : null}
       </span>
     </div>
   );
@@ -176,21 +184,23 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">{children}</DrawerTrigger>
 
-      <DrawerContent className="max-w-[430px] py-4 px-5 bg-elevation-50 mx-auto">
-        <DrawerTitle className="text-text-300 text-lg font-medium leading-[28px] mb-3">
-          {uiText({ key: "ui.currencySelector.title", legacyKey: "settings.displayCurrency.title", messages, t })}
-        </DrawerTitle>
+      <DrawerContent className="max-w-[430px] bg-elevation-50 mx-auto" innerClassName="flex flex-col gap-6 px-5 pt-4 pb-8">
+        <DrawerTopBar
+          title={uiText({ key: "ui.currencySelector.title", legacyKey: "settings.displayCurrency.title", messages, t })}
+          messages={messages}
+          t={t}
+        />
         <DrawerDescription className="sr-only">
           {uiText({ key: "ui.currencySelector.description", legacyKey: "settings.displayCurrency.description", messages, t })}
         </DrawerDescription>
 
         <DrawerScrollArea
           className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
+          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}
         >
-          <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 pb-2">
+          <div ref={searchContainerRef} className="sticky top-0 z-10 bg-elevation-50 pt-0 dark:bg-elevation-250">
             <Search
               className={cn(
                 "bg-elevation-50 hover:bg-elevation-250 focus:bg-elevation-250",
@@ -226,7 +236,7 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
             tabIndex={0}
             aria-label={uiText({ key: "ui.currencySelector.ariaLabel", messages, t })}
             onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-3 pb-2"
+            className="flex flex-col gap-2 pb-2"
           >
             {available.map((def, idx) => (
               <React.Fragment key={def.code}>
@@ -238,7 +248,7 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
                   t={t}
                   tabIndex={value.toLowerCase() === def.code ? 0 : idx === 0 ? 0 : -1}
                 />
-                {idx < available.length - 1 && <Separator className="bg-divider-75" />}
+                {idx < available.length - 1 && <Separator className="bg-divider-50" />}
               </React.Fragment>
             ))}
           </div>

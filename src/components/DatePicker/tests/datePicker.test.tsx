@@ -40,6 +40,7 @@ function renderDatePickerWithPreferences(props: Partial<React.ComponentProps<typ
             currency: "sat",
             decimalFormat: "comma",
             dateFormat: "yyyy-MM-dd",
+            dateFormatSetting: "yyyy-MM-dd",
             currentTheme: "light",
             setTheme: () => {},
             setCurrency: () => {},

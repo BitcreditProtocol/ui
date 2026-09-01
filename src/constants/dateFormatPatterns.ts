@@ -1,5 +1,5 @@
 import { COUNTRIES, type CountryCode } from "./countries";
-import { DATE_FORMAT_OPTIONS, type DateFormatPattern, DEFAULT_DATE_FORMAT } from "./dateFormats";
+import { DATE_FORMAT_AUTO, DATE_FORMAT_OPTIONS, type DateFormatPattern, type DateFormatSetting, DEFAULT_DATE_FORMAT } from "./dateFormats";
 
 export const DEFAULT_DATE_FORMAT_PATTERN = DEFAULT_DATE_FORMAT;
 
@@ -22,6 +22,10 @@ export const DEFAULT_COUNTRY_DATE_FORMAT_PATTERN: DateFormatPattern = "dd/MM/yyy
 
 export function isDateFormatPattern(value: unknown): value is DateFormatPattern {
   return typeof value === "string" && DATE_FORMAT_OPTIONS.includes(value as DateFormatPattern);
+}
+
+export function isDateFormatSetting(value: unknown): value is DateFormatSetting {
+  return value === DATE_FORMAT_AUTO || isDateFormatPattern(value);
 }
 
 export function normalizeCountryCode(value: string | undefined | null): CountryCode | undefined {

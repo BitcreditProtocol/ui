@@ -4,7 +4,7 @@ import React, { type PropsWithChildren, useCallback, useState } from "react";
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTopBar, DrawerTrigger } from "@/components/ui/drawer";
 import { Separator } from "@/components/ui/separator";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
@@ -27,16 +27,16 @@ interface DecimalFormatDef {
 
 const DECIMAL_FORMATS: DecimalFormatDef[] = [
   {
-    value: "point",
-    labelKey: "ui.decimalSeparator.point",
-    legacyKey: "settings.decimalFormat.point",
-    example: "1.000,00",
-  },
-  {
     value: "comma",
     labelKey: "ui.decimalSeparator.comma",
     legacyKey: "settings.decimalFormat.comma",
     example: "1,000.00",
+  },
+  {
+    value: "point",
+    labelKey: "ui.decimalSeparator.point",
+    legacyKey: "settings.decimalFormat.point",
+    example: "1.000,00",
   },
   {
     value: "space",
@@ -79,18 +79,18 @@ function DecimalFormatOption({
           onSelect(def.value);
         }
       }}
-      className={cn("flex items-center justify-between cursor-pointer rounded-md px-2 py-3 outline-none focus:ring-2 focus:ring-brand-200")}
+      className={cn("flex w-full items-center gap-3 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-brand-200")}
     >
-      <div className="flex flex-col gap-0.5">
-        <Text variant="titleSm" as="span">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <Text variant="titleSm" as="span" className="leading-6">
           {uiText({ key: def.labelKey, legacyKey: def.legacyKey, messages, t })}
         </Text>
-        <Text variant="caption" as="span">
+        <Text variant="caption" as="span" className="text-text-200 leading-5">
           {def.example}
         </Text>
       </div>
-      <span className="flex h-5 w-5 items-center justify-center" aria-hidden="true">
-        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300 stroke-[1.75]" size="md" /> : null}
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center" aria-hidden="true">
+        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300" size="lg" /> : null}
       </span>
     </div>
   );
@@ -132,17 +132,19 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">{children}</DrawerTrigger>
 
-      <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
-        <DrawerTitle className="text-text-300 text-left text-lg font-medium leading-[28px] mb-3">
-          {uiText({ key: "ui.decimalSeparator.title", legacyKey: "settings.decimalSeparator.title", messages, t })}
-        </DrawerTitle>
+      <DrawerContent className="max-w-[430px] bg-elevation-50 mx-auto" innerClassName="flex flex-col gap-6 px-5 pt-4 pb-8">
+        <DrawerTopBar
+          title={uiText({ key: "ui.decimalSeparator.title", legacyKey: "settings.decimalSeparator.title", messages, t })}
+          messages={messages}
+          t={t}
+        />
         <DrawerDescription className="sr-only">
           {uiText({ key: "ui.decimalSeparator.description", legacyKey: "settings.decimalSeparator.description", messages, t })}
         </DrawerDescription>
 
         <DrawerScrollArea
           className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
+          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}
         >
@@ -151,7 +153,7 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
             aria-label={uiText({ key: "ui.decimalSeparator.radioLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-3 pb-2"
+            className="flex flex-col gap-2 pb-2"
           >
             {(() => {
               const hasActiveVisible = DECIMAL_FORMATS.some((f) => f.value === value);
@@ -167,7 +169,7 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
                     messages={messages}
                     t={t}
                   />
-                  {idx < DECIMAL_FORMATS.length - 1 && <Separator key={`${def.value}-sep`} className="bg-divider-75" />}
+                  {idx < DECIMAL_FORMATS.length - 1 && <Separator key={`${def.value}-sep`} className="bg-divider-50" />}
                 </React.Fragment>
               ));
             })()}

@@ -1,21 +1,15 @@
 import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
-// import ArFlag from "@/components/assets/flags/AR.svg";
-// import AtFlag from "@/components/assets/flags/AT.svg";
-import GerFlag from "@/components/assets/flags/DE.svg";
-import EsFlag from "@/components/assets/flags/ES.svg";
-import ItFlag from "@/components/assets/flags/IT.svg";
-import TrFlag from "@/components/assets/flags/TR.svg";
-// import UkFlag from "@/components/assets/flags/UK.svg";
-import UsFlag from "@/components/assets/flags/US.svg";
+
 import { useUiText } from "@/components/context/i18n/useUiText";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
-import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
+import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTopBar, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
 import { Separator } from "@/components/ui/separator";
 import type { UiMessages, UiT } from "@/lib/ui-i18n";
 import { cn } from "@/lib/utils";
+import { getLocaleFlagEmoji } from "@/utils/flagEmoji";
 
 type LanguagePreferenceProps = PropsWithChildren<{
   value: string;
@@ -29,23 +23,17 @@ interface LanguageDef {
   locale: string;
   label: string;
   short?: string;
-  flag: string;
 }
 
 const ALL_LANGUAGES: LanguageDef[] = [
-  { locale: "en-US", label: "American English", short: "en-US", flag: UsFlag },
-  // { locale: "en-GB", label: "British English", short: "en-GB", flag: UkFlag },
-  { locale: "es-ES", label: "Español (España)", short: "es-ES", flag: EsFlag },
-  // { locale: "es-AR", label: "Español (Argentina)", short: "es-AR", flag: ArFlag },
-  {
-    locale: "de-DE",
-    label: "Deutsch (Deutschland)",
-    short: "de-DE",
-    flag: GerFlag,
-  },
-  // { locale: "de-AT", label: "Deutsch (Österreich)", short: "de-AT", flag: AtFlag },
-  { locale: "it-IT", label: "Italiano", short: "it-IT", flag: ItFlag },
-  { locale: "tr-TR", label: "Türkçe", short: "tr-TR", flag: TrFlag },
+  { locale: "en-US", label: "American English", short: "en-US" },
+  // { locale: "en-GB", label: "British English", short: "en-GB" },
+  { locale: "es-ES", label: "Español (España)", short: "es-ES" },
+  // { locale: "es-AR", label: "Español (Argentina)", short: "es-AR" },
+  { locale: "de-DE", label: "Deutsch (Deutschland)", short: "de-DE" },
+  // { locale: "de-AT", label: "Deutsch (Österreich)", short: "de-AT" },
+  { locale: "it-IT", label: "Italiano", short: "it-IT" },
+  { locale: "tr-TR", label: "Türkçe", short: "tr-TR" },
 ];
 
 function LanguageOption({
@@ -76,23 +64,24 @@ function LanguageOption({
           onSelect(def.locale);
         }
       }}
-      className={cn(
-        "flex items-center justify-between gap-4 rounded-md px-2 py-1 outline-none cursor-pointer focus:ring-2 focus:ring-brand-200"
-      )}
+      className={cn("flex w-full items-center gap-3 rounded-xl outline-none cursor-pointer focus:ring-2 focus:ring-brand-200")}
     >
-      <div className="flex min-w-0 items-center gap-4">
-        <img src={def.flag} alt={`${def.label} flag`} className="h-8 w-8" />
-        <div className="flex flex-col gap-0.5">
-          <Text variant="titleSm" as="span">
-            {def.label}
-          </Text>
-          <Text variant="caption" as="span">
-            {def.short ?? def.locale}
-          </Text>
-        </div>
+      <span
+        className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg text-[28px] leading-[38px]"
+        aria-hidden="true"
+      >
+        {getLocaleFlagEmoji(def.locale)}
+      </span>
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <Text variant="titleSm" as="span" className="leading-6">
+          {def.label}
+        </Text>
+        <Text variant="caption" as="span" className="text-text-200 leading-5">
+          {def.short ?? def.locale}
+        </Text>
       </div>
-      <span className="flex h-5 w-5 items-center justify-center" aria-hidden="true">
-        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300 stroke-[1.75]" size="md" /> : null}
+      <span className="flex h-6 w-6 shrink-0 items-center justify-center" aria-hidden="true">
+        {isActive ? <AppIcon icon={CheckIcon} className="text-text-300" size="lg" /> : null}
       </span>
     </div>
   );
@@ -168,21 +157,23 @@ export default function LanguagePreference({ children, onChange, value, values, 
     <Drawer open={isOpen} onOpenChange={setIsOpen}>
       <DrawerTrigger className="!bg-transparent outline-none focus-visible:outline-none">{children}</DrawerTrigger>
 
-      <DrawerContent className="max-w-[430px] bg-elevation-50 py-4 px-5 mx-auto">
+      <DrawerContent className="max-w-[430px] bg-elevation-50 mx-auto" innerClassName="flex flex-col gap-6 px-5 pt-4 pb-8">
         <DrawerDescription className="sr-only">
           {uiText({ key: "ui.languagePreference.description", legacyKey: "settings.languagePreference.description", messages, t })}
         </DrawerDescription>
-        <DrawerTitle className="text-text-300 text-left text-lg font-medium leading-[28px] mb-3">
-          {uiText({ key: "ui.languagePreference.title", legacyKey: "settings.languagePreference.title", messages, t })}
-        </DrawerTitle>
+        <DrawerTopBar
+          title={uiText({ key: "ui.languagePreference.title", legacyKey: "settings.languagePreference.title", messages, t })}
+          messages={messages}
+          t={t}
+        />
 
         <DrawerScrollArea
           className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-3 overflow-y-auto pr-1 pb-10"
+          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
           role="group"
           aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}
         >
-          <div ref={searchContainerRef} className="sticky top-0 z-10 pt-0 dark:bg-elevation-250">
+          <div ref={searchContainerRef} className="sticky top-0 z-10 bg-elevation-50 pt-0 dark:bg-elevation-250">
             <Search
               className={cn(
                 "bg-elevation-50 hover:bg-elevation-250 focus:bg-elevation-250",
@@ -223,7 +214,7 @@ export default function LanguagePreference({ children, onChange, value, values, 
             aria-label={uiText({ key: "ui.languagePreference.ariaLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-3 pb-2"
+            className="flex flex-col gap-2 pb-2"
           >
             {available.map((def, idx) => {
               const hasActiveVisible = available.some((l) => l.locale === value);
@@ -236,7 +227,7 @@ export default function LanguagePreference({ children, onChange, value, values, 
                     index={idx}
                     hasActiveVisible={hasActiveVisible}
                   />
-                  {idx < available.length - 1 && <Separator key={`${def.locale}-sep`} className="bg-divider-75" />}
+                  {idx < available.length - 1 && <Separator key={`${def.locale}-sep`} className="bg-divider-50" />}
                 </React.Fragment>
               );
             })}
