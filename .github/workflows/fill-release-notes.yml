@@ -1,0 +1,65 @@
+name: Fill an empty release note
+
+# Thirty-six of this repository's forty releases shipped with no body at all,
+# because a release cut by hand in the web form carries only what the person
+# typed and the "Generate release notes" button is easy to miss. This fills an
+# empty note from GitHub's own generator, shaped by .github/release.yml.
+#
+# It never touches a release that already has one. The emptiness test is made
+# against a fresh read rather than against github.event.release.body, for two
+# reasons: the event payload is a snapshot taken before this run started, and
+# GitHub coerces types across == inside an if: expression, so comparing a
+# possibly-null body to '' would depend on a coercion rule instead of on the
+# value. Some of the releases in this organisation carry ten thousand characters
+# of hand-written notes; overwriting one would be worse than every empty note.
+#
+# A release created by a workflow using GITHUB_TOKEN does not raise this event.
+# That is correct here: those releases already carry the notes their own
+# workflow generated.
+
+on:
+  release:
+    types: [published]
+
+permissions: {}
+
+jobs:
+  fill:
+    name: Fill the note if it is empty
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Generate and write
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RELEASE_ID: ${{ github.event.release.id }}
+          TAG: ${{ github.event.release.tag_name }}
+          TARGET: ${{ github.event.release.target_commitish }}
+        run: |
+          set -euo pipefail
+
+          body=$(gh api "repos/$REPO/releases/$RELEASE_ID" --jq '.body // ""')
+          if [ -n "$(printf '%s' "$body" | tr -d '[:space:]')" ]; then
+            echo "$TAG already has a release note. Leaving it alone."
+            exit 0
+          fi
+
+          gh api -X POST "repos/$REPO/releases/generate-notes" \
+            -f tag_name="$TAG" \
+            -f target_commitish="$TARGET" \
+            --jq '.body' > notes.md
+
+          # An empty generated note would blank the field for no gain, and it
+          # means something is wrong with the tag or the configuration. Fail
+          # loudly: the release itself already exists and is unaffected.
+          if [ ! -s notes.md ]; then
+            echo "::error::the generator returned nothing for $TAG"
+            exit 1
+          fi
+
+          jq -Rs '{body: .}' < notes.md \
+            | gh api -X PATCH "repos/$REPO/releases/$RELEASE_ID" --input - --jq '.html_url'
+          echo "Filled the release note for $TAG."
