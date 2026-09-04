@@ -2,6 +2,7 @@ import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
+import SearchEmptyState from "@/components/context/SearchEmptyState";
 import { Text } from "@/components/typography/Text";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTopBar, DrawerTrigger } from "@/components/ui/drawer";
@@ -168,8 +169,9 @@ export default function LanguagePreference({ children, onChange, value, values, 
         />
 
         <DrawerScrollArea
-          className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
+          className="flex-1 min-h-0"
+          viewportClassName="flex flex-1 flex-col gap-6 overflow-y-auto pr-1"
+          viewportOverflowClassName="pb-10"
           role="group"
           aria-label={uiText({ key: "ui.languagePreference.groupLabel", messages, t })}
         >
@@ -208,30 +210,41 @@ export default function LanguagePreference({ children, onChange, value, values, 
             </div>
           </div>
 
-          <div
-            ref={listRef}
-            role="radiogroup"
-            aria-label={uiText({ key: "ui.languagePreference.ariaLabel", messages, t })}
-            tabIndex={0}
-            onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-2 pb-2"
-          >
-            {available.map((def, idx) => {
-              const hasActiveVisible = available.some((l) => l.locale === value);
-              return (
-                <React.Fragment key={def.locale}>
-                  <LanguageOption
-                    def={def}
-                    isActive={value === def.locale}
-                    onSelect={_onChange}
-                    index={idx}
-                    hasActiveVisible={hasActiveVisible}
-                  />
-                  {idx < available.length - 1 && <Separator key={`${def.locale}-sep`} className="bg-divider-50" />}
-                </React.Fragment>
-              );
-            })}
-          </div>
+          {isNoResults ? (
+            <SearchEmptyState
+              title={uiText({ key: "ui.languagePreference.noResults", legacyKey: "language.search.no.results", messages, t })}
+              description={uiText({ key: "ui.languagePreference.noResultsDescription", messages, t })}
+              actionLabel={uiText({ key: "ui.languagePreference.clearSearch", messages, t })}
+              onClearSearch={() => {
+                setSearchTerm("");
+              }}
+            />
+          ) : (
+            <div
+              ref={listRef}
+              role="radiogroup"
+              aria-label={uiText({ key: "ui.languagePreference.ariaLabel", messages, t })}
+              tabIndex={0}
+              onKeyDown={handleKeyDownGroup}
+              className="flex flex-col gap-2"
+            >
+              {available.map((def, idx) => {
+                const hasActiveVisible = available.some((l) => l.locale === value);
+                return (
+                  <React.Fragment key={def.locale}>
+                    <LanguageOption
+                      def={def}
+                      isActive={value === def.locale}
+                      onSelect={_onChange}
+                      index={idx}
+                      hasActiveVisible={hasActiveVisible}
+                    />
+                    {idx < available.length - 1 && <Separator key={`${def.locale}-sep`} className="bg-divider-50" />}
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          )}
         </DrawerScrollArea>
       </DrawerContent>
     </Drawer>

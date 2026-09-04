@@ -70,8 +70,10 @@ export default function Theme({ messages, t }: ThemeProps) {
                   isActive ? "border-text-300" : "border-divider-75"
                 )}
               >
-                <AppIcon icon={option.icon} className="text-text-300" size="lg" />
-                <Text variant="caption" as="span" className="block w-full truncate leading-5">
+                {/* The card's 40px gap makes its content 4px taller than the 104px box;
+                    the design lets that overflow rather than squashing the 24px icon. */}
+                <AppIcon icon={option.icon} className="shrink-0 text-text-300" size="lg" />
+                <Text variant="caption" as="span" className="block w-full shrink-0 truncate leading-5">
                   {uiText({ key: option.labelKey, legacyKey: option.legacyKey, messages, t })}
                 </Text>
               </button>
