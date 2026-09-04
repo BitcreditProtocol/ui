@@ -115,8 +115,9 @@ export default function DateFormat({ messages, t }: DateFormatProps) {
         </DrawerDescription>
 
         <DrawerScrollArea
-          className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
+          className="flex-1 min-h-0"
+          viewportClassName="flex flex-1 flex-col gap-6 overflow-y-auto pr-1"
+          viewportOverflowClassName="pb-10"
           role="group"
           aria-label={uiText({ key: "ui.dateFormat.title", messages, t })}
         >
@@ -125,7 +126,7 @@ export default function DateFormat({ messages, t }: DateFormatProps) {
             aria-label={uiText({ key: "ui.dateFormat.radioLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-2 pb-2"
+            className="flex flex-col gap-2"
           >
             {DATE_FORMAT_SETTINGS.map((setting, idx) => {
               const isAuto = setting === DATE_FORMAT_AUTO;

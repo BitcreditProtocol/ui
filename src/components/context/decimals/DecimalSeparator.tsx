@@ -1,4 +1,4 @@
-import { AlignVerticalJustifyCenterIcon, CheckIcon } from "lucide-react";
+import { AlignVerticalDistributeCenterIcon, CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useCallback, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
@@ -143,8 +143,9 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
         </DrawerDescription>
 
         <DrawerScrollArea
-          className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
+          className="flex-1 min-h-0"
+          viewportClassName="flex flex-1 flex-col gap-6 overflow-y-auto pr-1"
+          viewportOverflowClassName="pb-10"
           role="group"
           aria-label={uiText({ key: "ui.decimalSeparator.title", messages, t })}
         >
@@ -153,7 +154,7 @@ export default function DecimalSeparator({ children, onChange, value, messages, 
             aria-label={uiText({ key: "ui.decimalSeparator.radioLabel", messages, t })}
             tabIndex={0}
             onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-2 pb-2"
+            className="flex flex-col gap-2"
           >
             {(() => {
               const hasActiveVisible = DECIMAL_FORMATS.some((f) => f.value === value);
@@ -192,7 +193,7 @@ export function DecimalSeparatorSetting() {
   return (
     <DecimalSeparator value={decimalFormat} onChange={setDecimalFormat}>
       <MenuOption
-        icon={<AppIcon icon={AlignVerticalJustifyCenterIcon} className="text-text-300" size="lg" />}
+        icon={<AppIcon icon={AlignVerticalDistributeCenterIcon} className="text-text-300" size="lg" />}
         label={uiText({ key: "ui.decimalSeparator.menuLabel", legacyKey: "settings.menu.decimals" })}
         defaultValue={getDisplayValue(decimalFormat)}
       />

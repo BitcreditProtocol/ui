@@ -140,6 +140,31 @@
   scrollbar-width: none;
 }
 
+/*
+ * Narrow, unobtrusive scrollbar for scroll areas inside surfaces like drawers,
+ * where the browser default is wide enough to crowd the content. Colours come
+ * from the divider tokens so dark mode follows automatically.
+ */
+@utility slim-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-divider-200) transparent;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  &::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: var(--color-divider-200);
+    border-radius: 9999px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background-color: var(--color-divider-300);
+  }
+}
+
 @layer utilities {
   .page-scroll-container {
     container-type: scroll-state;

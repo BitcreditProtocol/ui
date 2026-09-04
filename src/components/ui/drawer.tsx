@@ -80,7 +80,9 @@ const DrawerContent = React.forwardRef<
       <DrawerPrimitive.Content
         ref={ref}
         className={cn(
-          "fixed bottom-0 left-1/2 z-50 mt-24 flex h-auto w-full max-w-[430px] -translate-x-1/2 flex-col rounded-t-2xl border bg-elevation-50 data-[state=closed]:pointer-events-none dark:bg-elevation-250",
+          // Caps at 94vh so a long list stops just below the status bar, as drawn,
+          // while short drawers still hug their content.
+          "fixed bottom-0 left-1/2 z-50 mt-24 flex h-auto max-h-[94vh] w-full max-w-[430px] -translate-x-1/2 flex-col rounded-t-2xl border bg-elevation-50 data-[state=closed]:pointer-events-none dark:bg-elevation-250",
           className
         )}
         aria-modal="true"
@@ -90,7 +92,7 @@ const DrawerContent = React.forwardRef<
         {...props}
       >
         {showHandle && <div className="mx-auto mt-4 h-2 w-[70px] rounded-full bg-elevation-300" />}
-        <div className={cn(!showHandle && "pt-6", innerClassName)}>{children}</div>
+        <div className={cn("min-h-0", !showHandle && "pt-6", innerClassName)}>{children}</div>
       </DrawerPrimitive.Content>
     </DrawerPortal>
   );
@@ -101,12 +103,19 @@ const DrawerScrollArea = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement> & {
     viewportClassName?: string;
+    /**
+     * Applied to the viewport only while the content actually overflows, so a
+     * list that fits keeps the drawer's designed 32px bottom padding instead of
+     * reserving room for the scroll fade.
+     */
+    viewportOverflowClassName?: string;
     fadeClassName?: string;
     indicatorClassName?: string;
   }
->(({ children, className, viewportClassName, fadeClassName, indicatorClassName, ...props }, ref) => {
+>(({ children, className, viewportClassName, viewportOverflowClassName, fadeClassName, indicatorClassName, ...props }, ref) => {
   const viewportRef = React.useRef<HTMLDivElement>(null);
   const [showBottomFade, setShowBottomFade] = React.useState(false);
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
 
   const setRefs = React.useCallback(
     (node: HTMLDivElement | null) => {
@@ -125,12 +134,14 @@ const DrawerScrollArea = React.forwardRef<
     const element = viewportRef.current;
     if (!element) {
       setShowBottomFade(false);
+      setIsOverflowing(false);
       return;
     }
 
     const hasOverflow = element.scrollHeight - element.clientHeight > 1;
     const isAtBottom = element.scrollTop + element.clientHeight >= element.scrollHeight - 1;
     setShowBottomFade(hasOverflow && !isAtBottom);
+    setIsOverflowing(hasOverflow);
   }, []);
 
   React.useEffect(() => {
@@ -164,8 +175,13 @@ const DrawerScrollArea = React.forwardRef<
   }, [children, updateScrollState]);
 
   return (
-    <div className={cn("relative min-h-0", className)}>
-      <div ref={setRefs} onScroll={updateScrollState} className={cn("min-h-0 overflow-y-auto", viewportClassName)} {...props}>
+    <div className={cn("relative flex min-h-0 flex-col", className)}>
+      <div
+        ref={setRefs}
+        onScroll={updateScrollState}
+        className={cn("slim-scrollbar min-h-0 overflow-y-auto", viewportClassName, isOverflowing && viewportOverflowClassName)}
+        {...props}
+      >
         {children}
       </div>
       {showBottomFade ? (

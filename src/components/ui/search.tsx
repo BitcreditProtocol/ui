@@ -27,7 +27,7 @@ const searchVariants = cva(
     variants: {
       size: {
         xs: "p-2 text-xs",
-        sm: "px-4 py-3 text-sm",
+        sm: "p-3 gap-2 text-sm",
         md: "p-4 text-sm",
         lg: "px-4 py-5 text-sm",
       },

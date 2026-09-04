@@ -2,6 +2,7 @@ import { CheckIcon } from "lucide-react";
 import React, { type PropsWithChildren, useMemo, useRef, useState } from "react";
 
 import { useUiText } from "@/components/context/i18n/useUiText";
+import SearchEmptyState from "@/components/context/SearchEmptyState";
 import { AppIcon } from "@/components/ui/app-icon";
 import { Drawer, DrawerContent, DrawerDescription, DrawerScrollArea, DrawerTopBar, DrawerTrigger } from "@/components/ui/drawer";
 import { Search } from "@/components/ui/search";
@@ -195,8 +196,9 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
         </DrawerDescription>
 
         <DrawerScrollArea
-          className="flex-1"
-          viewportClassName="flex max-h-[65vh] flex-col gap-6 overflow-y-auto pr-1 pb-10"
+          className="flex-1 min-h-0"
+          viewportClassName="flex flex-1 flex-col gap-6 overflow-y-auto pr-1"
+          viewportOverflowClassName="pb-10"
           role="group"
           aria-label={uiText({ key: "ui.currencySelector.title", messages, t })}
         >
@@ -230,28 +232,39 @@ export function CurrencySelector({ children, onChange, value, messages, t }: Cur
             </div>
           </div>
 
-          <div
-            ref={listRef}
-            role="radiogroup"
-            tabIndex={0}
-            aria-label={uiText({ key: "ui.currencySelector.ariaLabel", messages, t })}
-            onKeyDown={handleKeyDownGroup}
-            className="flex flex-col gap-2 pb-2"
-          >
-            {available.map((def, idx) => (
-              <React.Fragment key={def.code}>
-                <CurrencyOption
-                  def={def}
-                  isActive={value.toLowerCase() === def.code}
-                  onSelect={_onChange}
-                  messages={messages}
-                  t={t}
-                  tabIndex={value.toLowerCase() === def.code ? 0 : idx === 0 ? 0 : -1}
-                />
-                {idx < available.length - 1 && <Separator className="bg-divider-50" />}
-              </React.Fragment>
-            ))}
-          </div>
+          {hasNoResults ? (
+            <SearchEmptyState
+              title={uiText({ key: "ui.currencySelector.noResults", legacyKey: "currency.search.no.results", messages, t })}
+              description={uiText({ key: "ui.currencySelector.noResultsDescription", messages, t })}
+              actionLabel={uiText({ key: "ui.currencySelector.clearSearch", messages, t })}
+              onClearSearch={() => {
+                setSearchTerm("");
+              }}
+            />
+          ) : (
+            <div
+              ref={listRef}
+              role="radiogroup"
+              tabIndex={0}
+              aria-label={uiText({ key: "ui.currencySelector.ariaLabel", messages, t })}
+              onKeyDown={handleKeyDownGroup}
+              className="flex flex-col gap-2"
+            >
+              {available.map((def, idx) => (
+                <React.Fragment key={def.code}>
+                  <CurrencyOption
+                    def={def}
+                    isActive={value.toLowerCase() === def.code}
+                    onSelect={_onChange}
+                    messages={messages}
+                    t={t}
+                    tabIndex={value.toLowerCase() === def.code ? 0 : idx === 0 ? 0 : -1}
+                  />
+                  {idx < available.length - 1 && <Separator className="bg-divider-50" />}
+                </React.Fragment>
+              ))}
+            </div>
+          )}
         </DrawerScrollArea>
       </DrawerContent>
     </Drawer>
