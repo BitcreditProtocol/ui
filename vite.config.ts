@@ -41,6 +41,11 @@ export default defineConfig({
   },
   test: {
     setupFiles: ["./src/vitest.setup.ts"],
+    // The unit and browser projects run concurrently, so on a 2-core CI runner a
+    // component that renders a long list (the currency selector has ~174 rows)
+    // can take an order of magnitude longer than locally. The 5s default left no
+    // headroom and flaked in CI.
+    testTimeout: 20_000,
     coverage: {
       reporter: ["text", "lcov", "clover", "json"],
     },
