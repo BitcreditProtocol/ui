@@ -190,8 +190,10 @@ Full SemVer is validated with npm while rejecting loose coercions. Build metadat
 is retained in tags and package manifests, but is not a separate npm registry
 version identity.
 
-To recover a partial publication, rerun the failed job or the original workflow.
-It restores the exact tarballs and verifies both registries before writing.
+To recover a partial publication, rerun only the failed publisher job in the
+original workflow. It restores the exact tarballs and verifies both registries
+before writing. Keep the successful build and its artifact. Do not select
+**Re-run all jobs**, which removes previous artifacts despite their retention.
 Matching publications are preserved; a missing publication is added. Conflicting
 content, a moved tag, unreadable metadata, or an unavailable original artifact
 stops the operation. Do not rebuild or overwrite an already published version.
