@@ -190,11 +190,11 @@ class PackageTests(unittest.TestCase):
                     release.restore(Path(tmp), {**self.ctx, key: value}, required=True)
 
     def test_http_error_is_not_missing_artifact(self):
-        for status in (403, 429, 500):
+        for status in (403, 404, 429, 500):
             with self.subTest(status=status), patch.object(release, "command", return_value=
                     subprocess.CompletedProcess([], 1, b"", f"HTTP {status}".encode())):
                 with self.assertRaises(release.ReleaseError):
-                    release.gh("test", missing=True)
+                    release.gh("test")
 
     def test_registry_metadata_requires_integrity(self):
         for output, status in ((b"null", 0), (b"broken", 0), (b'{"error":{"code":"E403"}}', 1)):

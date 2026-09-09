@@ -21,8 +21,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       NODE_VERSION: 25
-      RELEASE_PACKAGE_NAME: "@bitcredit/ui-library"
-      REPOSITORY_URL: "git+https://github.com/BitcreditProtocol/ui.git"
 
     steps:
       - name: Checkout code
@@ -75,24 +73,6 @@ jobs:
 
       - name: Verify both prepared registry packages without publication
         run: python3 .github/scripts/package_release.py prepare "$RUNNER_TEMP/registry-package-check" 0.0.0-ci
-
-      - name: Stage release package
-        run: |
-          mkdir -p release/package
-          cp -R dist release/package/dist
-          cp package.json release/package/package.json
-          cp README.md release/package/README.md
-          cp LICENSE release/package/LICENSE
-          cd release/package
-          npm pkg set name="${RELEASE_PACKAGE_NAME}"
-          npm pkg set version="0.0.0-ci"
-          npm pkg delete private
-          npm pkg set repository.type=git
-          npm pkg set repository.url="${REPOSITORY_URL}"
-
-      - name: Verify release package
-        working-directory: release/package
-        run: npm pack --dry-run
 
       - name: Smoke test packed library in a Vite consumer
         shell: bash

@@ -31,7 +31,7 @@ def command(args, **kwargs):
     return subprocess.run(args, capture_output=True, **kwargs)
 
 
-def gh(endpoint, *, raw=False, missing=False, paginate=False):
+def gh(endpoint, *, raw=False, paginate=False):
     args = ["gh", "api", endpoint]
     if paginate:
         args += ["--paginate", "--slurp"]
@@ -39,8 +39,6 @@ def gh(endpoint, *, raw=False, missing=False, paginate=False):
     if result.returncode:
         status = re.search(rb"HTTP (\d+)", result.stderr)
         status = status[1].decode() if status else "unknown"
-        if missing and status == "404":
-            return None
         raise ReleaseError(f"GitHub read failed (HTTP {status})")
     if raw:
         return result.stdout
