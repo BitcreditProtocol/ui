@@ -203,6 +203,14 @@ class PackageTests(unittest.TestCase):
                 with self.assertRaises(release.ReleaseError):
                     release.integrity("npmjs", "1.2.3")
 
+    def test_artifact_download_uses_the_actions_api_media_type(self):
+        def transport(args, **kwargs):
+            if "Accept: application/octet-stream" in args:
+                return subprocess.CompletedProcess(args, 1, b"", b"HTTP 415")
+            return subprocess.CompletedProcess(args, 0, b"archive-bytes", b"")
+        with patch.object(release, "command", side_effect=transport):
+            self.assertEqual(release.gh("repos/example/repo/actions/artifacts/5/zip", raw=True), b"archive-bytes")
+
     def test_both_packages_preserve_build_metadata(self):
         ctx = {**self.ctx, "version": "1.2.3+build.7", "tag": "v1.2.3+build.7"}
         with tempfile.TemporaryDirectory() as tmp:

@@ -33,8 +33,6 @@ def command(args, **kwargs):
 
 def gh(endpoint, *, raw=False, missing=False, paginate=False):
     args = ["gh", "api", endpoint]
-    if raw:
-        args += ["-H", "Accept: application/octet-stream"]
     if paginate:
         args += ["--paginate", "--slurp"]
     result = command(args)
