@@ -174,3 +174,31 @@ npm run style:check
 
 - Repository: `https://github.com/BitcreditProtocol/ui.git`
 - Storybook and local component development remain part of this repository, but the published package is a consumable UI library.
+
+## Package release recovery
+
+The tag-push release workflow builds the library once, prepares separate npmjs
+and GitHub Packages tarballs, and saves them in the immutable `release-package`
+Actions artifact for 90 days before either publication starts. The saved plan
+contains the full source SHA, tag/version, original run ID and both archive
+checksums and npm integrity values. The two existing approval environments remain
+independent; GitHub releases are still created separately.
+
+Stable versions use `latest`. Prerelease versions whose first identifier is
+`alpha`, `beta`, `rc` or `test` use that channel; other prereleases use `next`.
+Full SemVer is validated with npm while rejecting loose coercions. Build metadata
+is retained in tags and package manifests, but is not a separate npm registry
+version identity.
+
+To recover a partial publication, rerun the failed job or the original workflow.
+It restores the exact tarballs and verifies both registries before writing.
+Matching publications are preserved; a missing publication is added. Conflicting
+content, a moved tag, unreadable metadata, or an unavailable original artifact
+stops the operation. Do not rebuild or overwrite an already published version.
+
+Native Actions reruns are available for 30 days, even though the artifact is
+retained for 90 days. Beyond that window, keep the evidence and arrange separate
+operator recovery. A fresh workflow cannot adopt an existing publication without
+its original artifact. Normal CI verifies real package contents without
+publishing; the separate regression job uses simulated registry writes and has
+no publication credentials.
