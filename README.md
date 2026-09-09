@@ -194,6 +194,10 @@ To recover a partial publication, rerun only the failed publisher job in the
 original workflow. It restores the exact tarballs and verifies both registries
 before writing. Keep the successful build and its artifact. Do not select
 **Re-run all jobs**, which removes previous artifacts despite their retention.
+If a retry has no artifact, complete native job history must prove package
+saving never started before another preparation is allowed. A missing earlier
+saved package or incomplete inventory/history stops recovery even before any
+registry publication is visible.
 Matching publications are preserved; a missing publication is added. Conflicting
 content, a moved tag, unreadable metadata, or an unavailable original artifact
 stops the operation. Do not rebuild or overwrite an already published version.

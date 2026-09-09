@@ -40,7 +40,7 @@ class Remote:
         if "/git/ref/tags/" in endpoint:
             return {"object": {"type": "commit", "sha": self.ctx["sha"]}}
         if "/artifacts?" in endpoint:
-            return [{"artifacts": self.artifacts}]
+            return [{"total_count": len(self.artifacts), "artifacts": self.artifacts}]
         if endpoint.endswith("/artifacts/5/zip"):
             return self.archive
         raise AssertionError(endpoint)
@@ -188,6 +188,63 @@ class PackageTests(unittest.TestCase):
                     patch.object(release, "gh", side_effect=remote.gh):
                 with self.assertRaises(release.ReleaseError):
                     release.restore(Path(tmp), {**self.ctx, key: value}, required=True)
+
+    def restore_absent(self, artifact_pages, history=None, attempt="1"):
+        def read(endpoint, **kwargs):
+            if "/artifacts?" in endpoint:
+                return artifact_pages
+            previous = int(endpoint.split("/attempts/")[1].split("/")[0])
+            value = history[previous]
+            if isinstance(value, Exception):
+                raise value
+            return value
+        with tempfile.TemporaryDirectory() as tmp, patch.dict(os.environ, {"GITHUB_RUN_ATTEMPT": attempt}), \
+                patch.object(release, "gh", side_effect=read), patch.object(release, "verify_tag"), \
+                patch.object(release, "integrity", return_value=None), \
+                patch.object(release, "canonical_version", return_value=self.ctx["version"]):
+            destination = Path(tmp) / "restored"
+            result = release.restore(destination, self.ctx)
+            self.assertFalse(destination.exists())
+            return result
+
+    def preparation_history(self, *, conclusion="skipped", attempt=1):
+        return [{"total_count": 1, "jobs": [{"id": 10, "run_id": 123, "run_attempt": attempt,
+            "head_sha": self.ctx["sha"], "name": "Build release package", "status": "completed",
+            "conclusion": "failure", "steps": [{"number": 6, "name": "Save immutable packages before publication",
+                                                  "status": "completed", "conclusion": conclusion}]}]}]
+
+    def test_artifact_counts_cannot_turn_incomplete_read_into_preparation(self):
+        row = {"id": 6, "name": "other", "expired": False}
+        for pages in ([{"total_count": 1, "artifacts": []}], [{"artifacts": []}],
+                      [{"total_count": True, "artifacts": [row]}],
+                      [{"total_count": 2, "artifacts": [row, row]}],
+                      [{"total_count": 1, "artifacts": [row]}, {"total_count": 0, "artifacts": []}]):
+            with self.subTest(pages=pages), self.assertRaises(release.ReleaseError):
+                self.restore_absent(pages)
+        self.assertFalse(self.restore_absent([{"total_count": 0, "artifacts": []}]))
+        with patch.object(release, "gh", return_value=[{"total_count": 2, "artifacts": [row]},
+                         {"total_count": 2, "artifacts": [{**row, "id": 7}]}]):
+            self.assertEqual([v["id"] for v in release.pages("fixture", "artifacts")], [6, 7])
+
+    def test_deleted_package_is_not_rebuilt_before_publication(self):
+        empty = [{"total_count": 0, "artifacts": []}]
+        for conclusion in ("success", "failure", "cancelled"):
+            with self.subTest(conclusion=conclusion), self.assertRaisesRegex(release.ReleaseError, "refusing replacement"):
+                self.restore_absent(empty, {1: self.preparation_history(conclusion=conclusion)}, "2")
+        self.assertFalse(self.restore_absent(empty, {1: self.preparation_history()}, "2"))
+        with self.assertRaisesRegex(release.ReleaseError, "refusing replacement"):
+            self.restore_absent(empty, {1: self.preparation_history(conclusion="success"),
+                                       2: self.preparation_history(attempt=2)}, "3")
+
+    def test_unmeasured_prior_preparation_cannot_authorize_rebuild(self):
+        wrong_sha = self.preparation_history()
+        wrong_sha[0]["jobs"][0]["head_sha"] = "b" * 40
+        missing_step = self.preparation_history()
+        missing_step[0]["jobs"][0]["steps"] = []
+        for history in (wrong_sha, missing_step, [{"total_count": 1, "jobs": []}],
+                        release.ReleaseError("history unavailable")):
+            with self.subTest(history=history), self.assertRaises(release.ReleaseError):
+                self.restore_absent([{"total_count": 0, "artifacts": []}], {1: history}, "2")
 
     def test_http_error_is_not_missing_artifact(self):
         for status in (403, 404, 429, 500):

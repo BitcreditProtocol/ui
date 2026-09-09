@@ -48,6 +48,57 @@ def gh(endpoint, *, raw=False, paginate=False):
         raise ReleaseError("GitHub returned invalid JSON") from error
 
 
+def pages(endpoint, key):
+    result = gh(endpoint + "?per_page=100", paginate=True)
+    if not isinstance(result, list) or not result:
+        raise ReleaseError("Invalid paginated response")
+    rows, total = [], None
+    for page in result:
+        if not isinstance(page, dict) or type(page.get("total_count")) is not int or page["total_count"] < 0 \
+                or not isinstance(page.get(key), list) or len(page[key]) > 100:
+            raise ReleaseError("Invalid paginated response")
+        if total is not None and total != page["total_count"]:
+            raise ReleaseError("Paginated count changed during reading")
+        total = page["total_count"]
+        rows.extend(page[key])
+    if len(rows) != total or any(not isinstance(row, dict) or type(row.get("id")) is not int or row["id"] <= 0 for row in rows) \
+            or len({row["id"] for row in rows}) != total:
+        raise ReleaseError("Incomplete or duplicate paginated inventory")
+    return rows
+
+
+def require_unsaved_preparation(ctx):
+    attempt = os.environ.get("GITHUB_RUN_ATTEMPT", "")
+    if not re.fullmatch(r"[1-9][0-9]*", attempt):
+        raise ReleaseError("Current run attempt is unmeasured")
+    for previous in range(1, int(attempt)):
+        jobs = pages(f"repos/{ctx['repository']}/actions/runs/{ctx['run_id']}/attempts/{previous}/jobs", "jobs")
+        if any(type(job.get("run_id")) is not int or str(job["run_id"]) != ctx["run_id"]
+               or type(job.get("run_attempt")) is not int or job["run_attempt"] != previous
+               or job.get("head_sha") != ctx["sha"] or job.get("status") != "completed"
+               or not isinstance(job.get("conclusion"), str) or not job["conclusion"]
+               or not isinstance(job.get("name"), str) or not job["name"]
+               or not isinstance(job.get("steps"), list) for job in jobs):
+            raise ReleaseError("Previous preparation history is incomplete")
+        owners = [job for job in jobs if job["name"] == "Build release package"]
+        if len(owners) > 1:
+            raise ReleaseError("Previous preparation job is ambiguous")
+        if not owners or owners[0]["conclusion"] == "skipped" and not owners[0]["steps"]:
+            continue
+        steps = owners[0]["steps"]
+        if any(not isinstance(step, dict) or type(step.get("number")) is not int or step["number"] <= 0
+               or not isinstance(step.get("name"), str) or not step["name"] for step in steps) \
+                or len({step["number"] for step in steps}) != len(steps):
+            raise ReleaseError("Previous preparation steps are incomplete")
+        saves = [step for step in steps if step["name"] == "Save immutable packages before publication"]
+        if len(saves) != 1 or not (
+            saves[0].get("status") == "completed" and saves[0].get("conclusion") == "skipped"
+            or saves[0].get("status") == "queued" and "conclusion" in saves[0] and saves[0]["conclusion"] is None
+            and "started_at" in saves[0] and saves[0]["started_at"] is None
+        ):
+            raise ReleaseError("The original package may have been saved; refusing replacement bytes")
+
+
 def canonical_version(version):
     if not isinstance(version, str) or not re.fullmatch(r"[0-9][0-9A-Za-z.+-]*", version):
         raise ReleaseError("Invalid version syntax")
@@ -169,14 +220,7 @@ def validate(folder, ctx):
 
 def restore(folder, ctx, required=False):
     verify_tag(ctx)
-    result = gh(f"repos/{ctx['repository']}/actions/runs/{ctx['run_id']}/artifacts?per_page=100", paginate=True)
-    if not isinstance(result, list) or not result:
-        raise ReleaseError("Invalid artifact page envelope")
-    rows = []
-    for page in result:
-        if not isinstance(page, dict) or not isinstance(page.get("artifacts"), list):
-            raise ReleaseError("Invalid artifact response")
-        rows.extend(page["artifacts"])
+    rows = pages(f"repos/{ctx['repository']}/actions/runs/{ctx['run_id']}/artifacts", "artifacts")
     if any(not isinstance(row, dict) or type(row.get("id")) is not int or row["id"] <= 0
            or not isinstance(row.get("name"), str) or not row["name"]
            or type(row.get("expired")) is not bool for row in rows):
@@ -189,6 +233,7 @@ def restore(folder, ctx, required=False):
         existing = {target: integrity(target, version) for target in TARGETS}
         if any(value is not None for value in existing.values()):
             raise ReleaseError("Publication exists without its original package artifact")
+        require_unsaved_preparation(ctx)
         return False
     if len(candidates) != 1 or candidates[0]["expired"]:
         raise ReleaseError("Package artifact is ambiguous or expired")
