@@ -63,7 +63,8 @@ class Remote:
             raise Terminated(target)
         status = 1 if self.lost == target else 0
         self.lost = None
-        return subprocess.CompletedProcess(args, status, b"", b"")
+        stderr = b"npm error code ECONNRESET\nfixture-sensitive-token" if status else b""
+        return subprocess.CompletedProcess(args, status, b"", stderr)
 
     def assert_preflight(self):
         assert set(self.reads[:2]) == set(release.TARGETS), self.reads
@@ -164,6 +165,37 @@ class PackageTests(unittest.TestCase):
                 with self.assertRaises(release.ReleaseError):
                     self.publish(remote, "npmjs")
                 self.assertEqual(remote.writes, [])
+
+    def test_unconfirmed_publication_keeps_only_safe_error_details(self):
+        for target in release.TARGETS:
+            for stderr, code in ((b"npm error code E403\nfixture-sensitive-token", "E403"),
+                                 (b"npm ERR! code ENEEDAUTH\nfixture-sensitive-token", "ENEEDAUTH"),
+                                 (b"npm error code ESECRET_TOKEN\nfixture-sensitive-token", None)):
+                with self.subTest(target=target, code=code):
+                    remote = Remote(self.folder, self.ctx)
+                    response = subprocess.CompletedProcess([], 7, b"fixture-sensitive-token", stderr)
+                    with patch.object(remote, "npm", return_value=response), self.assertRaises(release.ReleaseError) as caught:
+                        self.publish(remote, target)
+                    message = str(caught.exception)
+                    self.assertIn("npm publish exited 7", message)
+                    if code:
+                        self.assertIn(code, message)
+                    self.assertNotIn("fixture-sensitive-token", message)
+                    self.assertNotIn("ESECRET_TOKEN", message)
+                    self.assertEqual(remote.reads, [*release.TARGETS, target], "Read back even after a rejected write")
+                    self.assertEqual(remote.writes, [])
+
+    def test_readback_failure_retains_safe_publish_failure_details(self):
+        remote = Remote(self.folder, self.ctx)
+        response = subprocess.CompletedProcess([], 1, b"fixture-sensitive-token", b"npm error code EOTP\nfixture-sensitive-token")
+        with patch.object(remote, "npm", return_value=response), \
+                patch.object(remote, "integrity", side_effect=[None, None, release.ReleaseError("metadata unavailable")]) as read, \
+                self.assertRaises(release.ReleaseError) as caught:
+            self.publish(remote, "npmjs")
+        self.assertIn("metadata unavailable", str(caught.exception))
+        self.assertIn("npm publish exited 1, EOTP", str(caught.exception))
+        self.assertNotIn("fixture-sensitive-token", str(caught.exception))
+        self.assertEqual(read.call_count, 3)
 
     def test_missing_expired_corrupted_and_malformed_artifact(self):
         for failure in ("missing", "expired", "corrupt", "malformed"):

@@ -309,9 +309,20 @@ def publish(folder, ctx, target):
     if target == "npmjs":
         args += ["--access", "public"]
     # Always read back, including after an ambiguous nonzero command response.
-    npm(target, args)
-    if integrity(target, version) != plan["packages"][target]["integrity"]:
-        raise ReleaseError(f"{target}: publication unconfirmed; rerun the original run")
+    result = npm(target, args)
+    detail = f"npm publish exited {result.returncode}"
+    # Publish output can contain credentials; retain only known error identifiers.
+    code = re.search(rb"(?m)^npm (?:ERR!|error) code (E[A-Z0-9_]+)\r?$", result.stderr or b"")
+    if code and code[1] in {b"E400", b"E401", b"E403", b"E404", b"E409", b"ENEEDAUTH", b"EOTP",
+                           b"EPUBLISHCONFLICT", b"EPRIVATE", b"ETIMEDOUT", b"ECONNRESET", b"ENOTFOUND",
+                           b"ECONNREFUSED", b"EAI_AGAIN"}:
+        detail += ", " + code[1].decode()
+    try:
+        published = integrity(target, version)
+    except ReleaseError as error:
+        raise ReleaseError(f"{error} ({detail}); inspect registry state before retrying the original run") from error
+    if published != plan["packages"][target]["integrity"]:
+        raise ReleaseError(f"{target}: publication unconfirmed ({detail}); inspect the failure before retrying the original run")
     note(f"{target}: package integrity confirmed in channel {channel(ctx['version'])}.")
 
 
