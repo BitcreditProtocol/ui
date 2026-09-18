@@ -5,23 +5,25 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: ui-package-release
+  cancel-in-progress: false
+
 permissions:
   contents: read
-  id-token: write
 
 env:
   NODE_VERSION: "25"
-  NPMJS_PACKAGE_NAME: "@bitcredit/ui-library"
-  GITHUB_PACKAGE_NAME: "@bitcreditprotocol/ui-library"
-  REPOSITORY_URL: "git+https://github.com/BitcreditProtocol/ui.git"
 
 jobs:
   build:
     name: Build release package
     timeout-minutes: 15
     runs-on: ubuntu-latest
-    outputs:
-      version: ${{ steps.release-meta.outputs.version }}
+    permissions:
+      contents: read
+      actions: read
+      packages: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -32,38 +34,33 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Resolve release version
-        id: release-meta
-        shell: bash
-        run: |
-          VERSION="${GITHUB_REF_NAME#v}"
-
-          if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]]; then
-            echo "Invalid release version: ${VERSION}" >&2
-            exit 1
-          fi
-
-          echo "version=${VERSION}" >> "${GITHUB_OUTPUT}"
+      - name: Restore the original registry packages
+        id: package
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/package_release.py restore "$RUNNER_TEMP/release-package"
 
       - name: Install dependencies
+        if: steps.package.outputs.restored != 'true'
         run: npm ci
 
       - name: Build package assets
+        if: steps.package.outputs.restored != 'true'
         run: npm run build
 
-      - name: Stage publishable package
-        run: |
-          mkdir -p release/package
-          cp -R dist release/package/dist
-          cp package.json release/package/package.json
-          cp README.md release/package/README.md
-          cp LICENSE release/package/LICENSE
+      - name: Prepare and verify both registry packages
+        if: steps.package.outputs.restored != 'true'
+        run: python3 .github/scripts/package_release.py prepare "$RUNNER_TEMP/release-package"
 
-      - name: Upload release package
+      - name: Save immutable packages before publication
+        if: steps.package.outputs.restored != 'true'
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: release-package
-          path: release/package
+          path: ${{ runner.temp }}/release-package/
+          retention-days: 90
+          overwrite: false
+          if-no-files-found: error
 
   publish-npmjs:
     name: Publish to npmjs
@@ -71,53 +68,28 @@ jobs:
     timeout-minutes: 15
     runs-on: ubuntu-latest
     environment: release-npmjs
+    permissions:
+      contents: read
+      actions: read
+      packages: read
+      id-token: write
     steps:
-      - name: Download staged package
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download original registry packages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: release-package
-          path: release/package
+          path: ${{ runner.temp }}/release-package/
 
       - name: Set up Node.js for npmjs
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Prepare npmjs manifest and registry config
-        shell: bash
-        run: |
-          cd release/package
-          npm pkg set name="${NPMJS_PACKAGE_NAME}"
-          npm pkg set version="${{ needs.build.outputs.version }}"
-          npm pkg delete private
-          npm pkg set repository.type=git
-          npm pkg set repository.url="${REPOSITORY_URL}"
-          cat > .npmrc <<'EOF'
-          registry=https://registry.npmjs.org/
-          //registry.npmjs.org/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
-
-      - name: Verify npmjs package
-        working-directory: release/package
-        shell: bash
-        run: |
-          npm pack --json --dry-run > pack-summary.json
-          node --input-type=module -e "import fs from 'node:fs'; const summary=JSON.parse(fs.readFileSync('pack-summary.json','utf8')); const files=summary[0]?.files?.map((file)=>file.path) ?? []; const required=['dist/index.cjs','dist/index.mjs','dist/index.d.ts']; const missing=required.filter((file)=>!files.includes(file)); if (files.includes('dist/index.html')) { console.error('Error: app bundle artifact dist/index.html would be published.'); process.exit(1); } if (missing.length > 0) { console.error('Error: missing library artifacts:', missing.join(', ')); process.exit(1); } console.log('npmjs package contents look correct.');"
-
-      - name: Publish to npmjs
-        working-directory: release/package
-        shell: bash
-        run: |
-          VERSION="${{ needs.build.outputs.version }}"
-          TAG="latest"
-
-          case "$VERSION" in
-            *-test|*-test.*|*-test-*) TAG="test" ;;
-            *-beta|*-beta.*|*-beta-*) TAG="beta" ;;
-            *-rc|*-rc.*|*-rc-*) TAG="rc" ;;
-          esac
-
-          npm publish --access public --tag "$TAG"
+      - name: Reconcile npmjs publication
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/package_release.py publish "$RUNNER_TEMP/release-package" npmjs
 
   publish-github-packages:
     name: Publish to GitHub Packages
@@ -127,55 +99,22 @@ jobs:
     environment: release-github
     permissions:
       contents: read
+      actions: read
       packages: write
     steps:
-      - name: Download staged package
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Download original registry packages
         uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: release-package
-          path: release/package
+          path: ${{ runner.temp }}/release-package/
 
       - name: Set up Node.js for GitHub Packages
         uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: Prepare GitHub Packages manifest and registry config
-        shell: bash
-        run: |
-          cd release/package
-          npm pkg set name="${GITHUB_PACKAGE_NAME}"
-          npm pkg set version="${{ needs.build.outputs.version }}"
-          npm pkg delete private
-          npm pkg set repository.type=git
-          npm pkg set repository.url="${REPOSITORY_URL}"
-          cat > .npmrc <<'EOF'
-          @bitcreditprotocol:registry=https://npm.pkg.github.com
-          //npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}
-          EOF
-
-      - name: Verify GitHub Packages package
-        working-directory: release/package
-        shell: bash
-        run: |
-          npm pack --json --dry-run > pack-summary.json
-          node --input-type=module -e "import fs from 'node:fs'; const summary=JSON.parse(fs.readFileSync('pack-summary.json','utf8')); const files=summary[0]?.files?.map((file)=>file.path) ?? []; const required=['dist/index.cjs','dist/index.mjs','dist/index.d.ts']; const missing=required.filter((file)=>!files.includes(file)); if (files.includes('dist/index.html')) { console.error('Error: app bundle artifact dist/index.html would be published.'); process.exit(1); } if (missing.length > 0) { console.error('Error: missing library artifacts:', missing.join(', ')); process.exit(1); } console.log('GitHub package contents look correct.');"
+      - name: Reconcile GitHub Packages publication
         env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to GitHub Packages
-        working-directory: release/package
-        shell: bash
-        run: |
-          VERSION="${{ needs.build.outputs.version }}"
-          TAG="latest"
-
-          case "$VERSION" in
-            *-test|*-test.*|*-test-*) TAG="test" ;;
-            *-beta|*-beta.*|*-beta-*) TAG="beta" ;;
-            *-rc|*-rc.*|*-rc-*) TAG="rc" ;;
-          esac
-
-          npm publish --tag "$TAG"
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ github.token }}
+        run: python3 .github/scripts/package_release.py publish "$RUNNER_TEMP/release-package" github
