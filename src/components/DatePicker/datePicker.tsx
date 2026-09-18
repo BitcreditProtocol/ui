@@ -35,6 +35,7 @@ export interface DatePickerProps {
   order?: SortOrder;
   dateFilterType?: DateFilterType;
   onDateFilterTypeChange?: (type: DateFilterType) => void;
+  shouldDisplayDateFilter?: boolean;
   withTime?: boolean;
   timeFormat?: TimeFormat;
   messages?: UiMessages;
@@ -56,6 +57,7 @@ export function DatePicker({
   order = "asc",
   dateFilterType = "issue",
   onDateFilterTypeChange,
+  shouldDisplayDateFilter = true,
   withTime = false,
   timeFormat = "24h",
   messages,
@@ -265,30 +267,33 @@ export function DatePicker({
           <div className="mt-4 flex flex-col gap-2">
             {allowRangeSelection ? (
               <>
-                <div className="text-xs text-text-200">
-                  {uiText({ key: "ui.datePicker.filterBy", legacyKey: "bills.list.filter.by", messages, t })}
-                </div>
+                {shouldDisplayDateFilter && (
+                  <>
+                    <div className="text-xs text-text-200">
+                      {uiText({ key: "ui.datePicker.filterBy", legacyKey: "bills.list.filter.by", messages, t })}
+                    </div>
 
-                <Tabs
-                  value={dateFilterType}
-                  onValueChange={(value) => {
-                    if (onDateFilterTypeChange) {
-                      onDateFilterTypeChange(value as DateFilterType);
-                    }
-                  }}
-                  className="w-full"
-                >
-                  <TabsList className="gap-0.5 w-full p-0 border-divider-50 bg-elevation-200">
-                    <TabsTrigger value="issue" className="flex items-center gap-1 py-2 bg-elevation-200">
-                      {uiText({ key: "ui.datePicker.issueDate", legacyKey: "bills.list.filter.date.issue", messages, t })}
-                    </TabsTrigger>
-                    <TabsTrigger value="maturity" className="flex items-center gap-1 py-2 bg-elevation-200">
-                      {uiText({ key: "ui.datePicker.maturityDate", legacyKey: "bills.list.filter.date.maturity", messages, t })}
-                    </TabsTrigger>
-                  </TabsList>
-                </Tabs>
-
-                <div className="mt-4 grid grid-cols-9 text-sm leading-5 font-medium">
+                    <Tabs
+                      value={dateFilterType}
+                      onValueChange={(value) => {
+                        if (onDateFilterTypeChange) {
+                          onDateFilterTypeChange(value as DateFilterType);
+                        }
+                      }}
+                      className="w-full"
+                    >
+                      <TabsList className="gap-0.5 w-full p-0 border-divider-50 bg-elevation-200">
+                        <TabsTrigger value="issue" className="flex items-center gap-1 py-2 bg-elevation-200">
+                          {uiText({ key: "ui.datePicker.issueDate", legacyKey: "bills.list.filter.date.issue", messages, t })}
+                        </TabsTrigger>
+                        <TabsTrigger value="maturity" className="flex items-center gap-1 py-2 bg-elevation-200">
+                          {uiText({ key: "ui.datePicker.maturityDate", legacyKey: "bills.list.filter.date.maturity", messages, t })}
+                        </TabsTrigger>
+                      </TabsList>
+                    </Tabs>
+                  </>
+                )}
+                <div className={cn("grid grid-cols-9 text-sm leading-5 font-medium", shouldDisplayDateFilter && "mt-4")}>
                   <div className="col-span-4">
                     <button
                       type="button"
