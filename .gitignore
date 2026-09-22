@@ -28,3 +28,4 @@ coverage
 
 *storybook.log
 storybook-static
+__pycache__/

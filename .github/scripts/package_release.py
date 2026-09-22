@@ -205,7 +205,11 @@ def validate(folder, ctx):
                 or "sha512-" + base64.b64encode(checksum(path, "sha512")).decode() != info.get("integrity")):
             raise ReleaseError(f"{target}: invalid saved package")
         with tarfile.open(path, "r:gz") as archive:
-            manifest = json.load(archive.extractfile("package/package.json"))
+            stream = archive.extractfile("package/package.json")
+            if stream is None:
+                raise ReleaseError(f"{target}: archive manifest is unreadable")
+            with stream:
+                manifest = json.load(stream)
             if manifest.get("name") != name or manifest.get("version") != ctx["version"]:
                 raise ReleaseError(f"{target}: archive manifest mismatch")
             names = set(archive.getnames())
