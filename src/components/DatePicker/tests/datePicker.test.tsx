@@ -209,4 +209,39 @@ describe("DatePicker", () => {
 
     expect(onChange).not.toHaveBeenCalled();
   });
+
+  it("shows the issue/maturity tabs over a range by default", () => {
+    const { openSheet } = renderDatePicker({ mode: "range" });
+    openSheet();
+
+    expect(screen.getByRole("tab", { name: "Issue date" })).toBeInTheDocument();
+    expect(screen.getByRole("tab", { name: "Maturity date" })).toBeInTheDocument();
+  });
+
+  it("hides the issue/maturity tabs when the date filter is turned off", () => {
+    const { openSheet } = renderDatePicker({ mode: "range", shouldDisplayDateFilter: false });
+    openSheet();
+
+    expect(screen.queryByRole("tab", { name: "Issue date" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("tab", { name: "Maturity date" })).not.toBeInTheDocument();
+  });
+
+  it("still picks a range with the date filter turned off", () => {
+    const { openSheet, onChange } = renderDatePicker({ mode: "range", shouldDisplayDateFilter: false });
+    openSheet();
+
+    const pickDay = (name: string) => {
+      const days = screen.getAllByRole("button", { name });
+      fireEvent.click(days.find((el) => !el.className.includes("text-text-200/70"))!);
+    };
+
+    pickDay("16");
+    pickDay("18");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    expect(onChange).toHaveBeenCalledOnce();
+    const range = onChange.mock.calls[0][0] as DateRange;
+    expect(range.from).toBeDefined();
+    expect(range.to).toBeDefined();
+  });
 });
