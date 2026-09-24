@@ -2,6 +2,13 @@
 
 Bitcredit design system and reusable React UI library.
 
+## Development
+
+Use Node.js 24 LTS from `.nvmrc` and npm 11, then run `npm ci`.
+Keep `.nvmrc`, `.node-version` and the npm release workflow's `NODE_VERSION`
+in sync; CI and release checks enforce these pins. These are contributor/build requirements,
+not a Node runtime requirement for browser consumers.
+
 ## Installation
 
 Install the package together with its peer dependencies:
