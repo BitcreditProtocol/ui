@@ -197,7 +197,7 @@ export function DatePicker({
 
       <div
         className={cn(
-          "fixed inset-0 bg-black/30 transition-opacity duration-300 max-w-[430px] mx-auto",
+          "fixed inset-0 bg-black/30 transition-opacity duration-300",
           showCalendar
             ? "opacity-100 visible z-50"
             : isClosing
