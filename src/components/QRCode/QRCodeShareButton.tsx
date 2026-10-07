@@ -8,7 +8,7 @@ import type { UiMessages, UiT } from "@/lib/ui-i18n";
 
 const componentMessages: UiMessages = {
   "ui.qrCodeShareButton.ariaLabel": "Share QR code",
-  "ui.qrCodeShareButton.defaultShareText": "My Bitcredit ecash token:",
+  "ui.qrCodeShareButton.defaultShareText": "My Bitcredit e-cash token:",
   "ui.qrCodeShareButton.sharedSuccessfully": "Shared successfully!",
   "ui.qrCodeShareButton.qrCodeDownloaded": "QR code downloaded!",
   "ui.qrCodeShareButton.tokenCopied": "Token copied to clipboard!",

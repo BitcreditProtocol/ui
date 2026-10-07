@@ -270,7 +270,7 @@ export const defaultUiMessages = {
   "ui.yearPicker.nextYears": "Next years",
   "ui.yearPicker.previousYears": "Previous years",
   "ui.qrCodeShareButton.ariaLabel": "Share QR code",
-  "ui.qrCodeShareButton.defaultShareText": "My Bitcredit ecash token:",
+  "ui.qrCodeShareButton.defaultShareText": "My Bitcredit e-cash token:",
   "ui.qrCodeShareButton.sharedSuccessfully": "Shared successfully!",
   "ui.qrCodeShareButton.qrCodeDownloaded": "QR code downloaded!",
   "ui.qrCodeShareButton.tokenCopied": "Token copied to clipboard!",
