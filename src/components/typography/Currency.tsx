@@ -25,7 +25,7 @@ export type FormattedCurrencyProps = {
    *
    * - `"display"` (default) — convert the amount and show the display/preferred
    *   currency as the primary value. The source currency is not shown.
-   *   Use this for eBill-style display where you want "€43.50" from a SAT amount.
+   *   Use this for eBills-style display where you want "€43.50" from a SAT amount.
    *
    * - `"source"` — show the source currency as the primary value (original
    *   behaviour) and the converted amount as a smaller secondary label.

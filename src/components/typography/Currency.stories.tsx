@@ -99,7 +99,7 @@ export const PrimaryCurrencyModes: Story = {
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-2">
         <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-          primaryCurrency="display" (default) — eBill style
+          primaryCurrency="display" (default) — eBills style
         </span>
         <span className="text-xs text-muted-foreground">Shows converted preferred currency only</span>
         <Currency value={100000} sourceCurrency="sat" />
