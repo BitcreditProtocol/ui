@@ -30,9 +30,13 @@ export default defineConfig({
   build: {
     copyPublicDir: false,
     lib: {
-      entry: path.resolve(dirname, "./src/index.ts"),
+      // bill-pdf is its own entry so the print fonts and pdf-lib only load when an app prints.
+      entry: {
+        index: path.resolve(dirname, "./src/index.ts"),
+        "bill-pdf": path.resolve(dirname, "./src/bill-pdf/index.ts"),
+      },
       formats: ["es", "cjs"],
-      fileName: (format) => (format === "es" ? "index.mjs" : "index.cjs"),
+      fileName: (format, entryName) => `${entryName}.${format === "es" ? "mjs" : "cjs"}`,
       cssFileName: "style",
     },
     rollupOptions: {
