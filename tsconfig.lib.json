@@ -17,7 +17,8 @@
     "src/hooks/**/*.ts",
     "src/lib/**/*.ts",
     "src/utils/**/*.ts",
-    "src/constants/**/*.ts"
+    "src/constants/**/*.ts",
+    "src/bill-pdf/**/*.ts"
   ],
   "exclude": [
     "src/**/*.stories.ts",
