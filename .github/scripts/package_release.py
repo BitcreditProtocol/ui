@@ -13,6 +13,7 @@ import subprocess
 import sys
 import tarfile
 import tempfile
+import time
 from urllib.parse import quote
 import zipfile
 
@@ -21,6 +22,7 @@ TARGETS = {
     "npmjs": ("https://registry.npmjs.org", "@bitcredit/ui-library"),
     "github": ("https://npm.pkg.github.com", "@bitcreditprotocol/ui-library"),
 }
+CONFIRM_DELAYS = (0, 2, 5, 10, 20, 30, 60)
 
 
 class ReleaseError(RuntimeError):
@@ -167,7 +169,8 @@ def npm(target, args):
 
 
 def integrity(target, version):
-    result = npm(target, ["view", TARGETS[target][1] + "@" + version, "dist.integrity", "--json"])
+    result = npm(target, ["view", TARGETS[target][1] + "@" + version,
+                          "dist.integrity", "--json", "--prefer-online"])
     try:
         value = json.loads(result.stdout)
     except ValueError as error:
@@ -176,6 +179,8 @@ def integrity(target, version):
         if isinstance(value, dict) and value.get("error", {}).get("code") == "E404":
             return None
         raise ReleaseError(f"{target}: npm metadata read failed")
+    if isinstance(value, list) and len(value) == 1:
+        value = value[0]
     if not isinstance(value, str) or not value.startswith("sha512-"):
         raise ReleaseError(f"{target}: npm integrity is unmeasured")
     return value
@@ -273,7 +278,12 @@ def prepare(folder, source, ctx):
             result = command(["npm", "pack", "--json", "--ignore-scripts", "--pack-destination", str(folder.resolve())], cwd=staging)
             if result.returncode:
                 raise ReleaseError(f"{target}: npm pack failed")
-            filename = json.loads(result.stdout)[0]["filename"]
+            report = json.loads(result.stdout)
+            if isinstance(report, dict):
+                report = list(report.values())
+            if not isinstance(report, list) or len(report) != 1:
+                raise ReleaseError(f"{target}: unexpected npm pack report")
+            filename = report[0]["filename"]
             if Path(filename).name != filename:
                 raise ReleaseError("Invalid npm archive path")
             path = folder / (target + ".tgz")
@@ -292,6 +302,26 @@ def note(message):
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"], "a") as stream:
             stream.write("- " + message + "\n")
+
+
+def confirm(target, version, expected, detail):
+    failure = None
+    for delay in CONFIRM_DELAYS:
+        if delay:
+            time.sleep(delay)
+        try:
+            published = integrity(target, version)
+        except ReleaseError as error:
+            failure = error
+            continue
+        failure = None
+        if published == expected:
+            return
+        if published is not None:
+            raise ReleaseError(f"{target}: published version contains different bytes ({detail})")
+    if failure is not None:
+        raise ReleaseError(f"{failure} ({detail}); inspect registry state before retrying the original run") from failure
+    raise ReleaseError(f"{target}: publication unconfirmed ({detail}); inspect the failure before retrying the original run")
 
 
 def publish(folder, ctx, target):
@@ -321,12 +351,7 @@ def publish(folder, ctx, target):
                            b"EPUBLISHCONFLICT", b"EPRIVATE", b"ETIMEDOUT", b"ECONNRESET", b"ENOTFOUND",
                            b"ECONNREFUSED", b"EAI_AGAIN"}:
         detail += ", " + code[1].decode()
-    try:
-        published = integrity(target, version)
-    except ReleaseError as error:
-        raise ReleaseError(f"{error} ({detail}); inspect registry state before retrying the original run") from error
-    if published != plan["packages"][target]["integrity"]:
-        raise ReleaseError(f"{target}: publication unconfirmed ({detail}); inspect the failure before retrying the original run")
+    confirm(target, version, plan["packages"][target]["integrity"], detail)
     note(f"{target}: package integrity confirmed in channel {channel(ctx['version'])}.")
 
 
