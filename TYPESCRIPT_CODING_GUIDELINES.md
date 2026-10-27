@@ -57,7 +57,7 @@ Note:
 
 ## 4. TypeScript Rules
 
-1. Prefer `interface` for object and props shapes (e.g., `export interface FooProps`), 
+1. Prefer `interface` for object and props shapes (e.g., `export interface FooProps`),
    and prefer `type` for unions, primitive aliases, and utility/conditional types.
 2. Prefer discriminated unions over multiple boolean flags for UI and async state.
    Discriminated unions must be handled exhaustively — use `switch` + `assertNever(...)` (or equivalent) for impossible states.
