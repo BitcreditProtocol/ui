@@ -93,12 +93,70 @@ class PackageTests(unittest.TestCase):
         cls.tmp.cleanup()
 
     def publish(self, remote, target):
+        # A single confirmation attempt: these fixtures answer immediately, so the
+        # propagation backoff would only add dead time. It has its own test below.
         with patch.object(release, "gh", side_effect=remote.gh), \
                 patch.object(release, "integrity", side_effect=remote.integrity), \
                 patch.object(release, "npm", side_effect=remote.npm), \
                 patch.object(release, "canonical_version", return_value=self.ctx["version"]), \
+                patch.object(release, "CONFIRM_DELAYS", (0,)), \
                 patch.object(release, "note"):
             release.publish(self.folder, self.ctx, target)
+
+    def test_publication_is_confirmed_after_a_propagation_delay(self):
+        remote = Remote(self.folder, self.ctx)
+        lagging = [None, None]
+
+        def integrity(target, version):
+            value = remote.integrity(target, version)
+            # The registry holds the publication, but the packument has not caught up yet.
+            if value is not None and lagging:
+                lagging.pop()
+                return None
+            return value
+
+        naps = []
+        with patch.object(release, "gh", side_effect=remote.gh), \
+                patch.object(release, "integrity", side_effect=integrity), \
+                patch.object(release, "npm", side_effect=remote.npm), \
+                patch.object(release, "canonical_version", return_value=self.ctx["version"]), \
+                patch.object(release, "CONFIRM_DELAYS", (0, 3, 7)), \
+                patch.object(release.time, "sleep", naps.append), \
+                patch.object(release, "note"):
+            release.publish(self.folder, self.ctx, "npmjs")
+        self.assertEqual(len(remote.writes), 1, "A lagging read must not republish")
+        self.assertEqual(remote.reads, [*release.TARGETS, "npmjs", "npmjs", "npmjs"])
+        self.assertEqual(naps, [3, 7], "Backoff must wait between read-backs")
+
+    def test_conflict_from_an_earlier_publication_is_resolved_by_reading_back(self):
+        # The original run published and then failed to confirm, so this run republishes
+        # against a stale packument and the registry answers 409. The bytes are already
+        # ours, so the read-back must settle it rather than fail the release.
+        remote = Remote(self.folder, self.ctx)
+        remote.values["npmjs"] = remote.plan["packages"]["npmjs"]["integrity"]
+        stale = [None, None, None]
+
+        def integrity(target, version):
+            value = remote.integrity(target, version)
+            if value is not None and stale:
+                stale.pop()
+                return None
+            return value
+
+        def npm(target, args):
+            remote.npm(target, args)
+            return subprocess.CompletedProcess(args, 1, b"", b"npm error code E409\n")
+
+        with patch.object(release, "gh", side_effect=remote.gh), \
+                patch.object(release, "integrity", side_effect=integrity), \
+                patch.object(release, "npm", side_effect=npm), \
+                patch.object(release, "canonical_version", return_value=self.ctx["version"]), \
+                patch.object(release, "CONFIRM_DELAYS", (0, 1, 1)), \
+                patch.object(release.time, "sleep"), \
+                patch.object(release, "note"):
+            release.publish(self.folder, self.ctx, "npmjs")
+        self.assertEqual(len(remote.writes), 1)
+        self.assertEqual(remote.reads, [*release.TARGETS, "npmjs", "npmjs", "npmjs"])
 
     def test_channels_cover_prerelease_and_build_metadata(self):
         for version, expected in {
