@@ -62,11 +62,7 @@ Some components and hooks depend on providers from the library. A common app-lev
 
 ```tsx
 import "@bitcredit/ui-library/style.css";
-import {
-  LanguageProvider,
-  PreferencesProvider,
-  Toaster,
-} from "@bitcredit/ui-library";
+import { LanguageProvider, PreferencesProvider, Toaster } from "@bitcredit/ui-library";
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
@@ -102,12 +98,7 @@ Minimal example:
 
 ```tsx
 import "@bitcredit/ui-library/style.css";
-import {
-  Button,
-  UiI18nProvider,
-  defaultUiMessages,
-  type UiTranslationKey,
-} from "@bitcredit/ui-library";
+import { Button, UiI18nProvider, defaultUiMessages, type UiTranslationKey } from "@bitcredit/ui-library";
 
 const appMessages: Partial<Record<UiTranslationKey, string>> = {
   "ui.upload.label": "Datei hochladen",
@@ -139,14 +130,7 @@ Current migration note:
 ## Example Imports
 
 ```tsx
-import {
-  Button,
-  Card,
-  DatePicker,
-  Input,
-  Search,
-  useToast,
-} from "@bitcredit/ui-library";
+import { Button, Card, DatePicker, Input, Search, useToast } from "@bitcredit/ui-library";
 ```
 
 ## Package Notes
