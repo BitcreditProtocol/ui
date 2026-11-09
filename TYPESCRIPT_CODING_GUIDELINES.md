@@ -213,6 +213,7 @@ Guidelines:
 ## 17. Current Repo Standards Already Enforced
 
 These are already partially or fully enforced today:
+
 - TypeScript strict mode
 - React Hooks lint rules
 - import sorting via `simple-import-sort`
@@ -226,6 +227,7 @@ These should be treated as non-optional.
 ## 18. Improvements Still Missing or Worth Adding
 
 The current codebase is in a decent place, but these gaps remain:
+
 1. Add Prettier or an equivalent formatter policy.
    ESLint alone does not fully standardize formatting.
 2. Consider enforcing naming conventions for types and boolean variables through ESLint.
@@ -237,6 +239,7 @@ The current codebase is in a decent place, but these gaps remain:
 ## 19. Practical Rule of Thumb
 
 When there is tension between speed and style:
+
 1. Keep the code correct.
 2. Keep the code readable.
 3. Match existing repo patterns unless they are clearly causing bugs.
