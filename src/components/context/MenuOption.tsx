@@ -14,9 +14,8 @@ type MenuOptionProps = {
 
 export default function MenuOption({ icon, label, defaultValue, disabled: isDisabled }: MenuOptionProps) {
   return (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between text-left">
       <div className="flex items-center gap-3">
-        {/* The row icon sits in a 32px tile; any icon passed in is sized to the 20px the design uses. */}
         <span className="flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-divider-75 bg-elevation-50 [&_svg]:h-5 [&_svg]:w-5">
           {icon}
         </span>
@@ -27,7 +26,7 @@ export default function MenuOption({ icon, label, defaultValue, disabled: isDisa
 
       <div className="flex items-center gap-2">
         {defaultValue && (
-          <Text variant="caption" as="span" className={cn("text-text-200 leading-5", isDisabled && "text-text-100")}>
+          <Text variant="caption" as="span" className={cn("text-text-200 leading-5 text-right", isDisabled && "text-text-100")}>
             {defaultValue}
           </Text>
         )}
